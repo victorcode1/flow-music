@@ -6,7 +6,7 @@ part of 'play_song_id.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playSongIdHash() => r'a7a8dcff0d721e0da2fa56ebe9ef07c9700986fe';
+String _$playSongIdHash() => r'9ddbc14d855f952e6f509105c1f0f0a65ab98f47';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,8 +29,7 @@ class _SystemHash {
   }
 }
 
-abstract class _$PlaySongId
-    extends BuildlessAutoDisposeAsyncNotifier<SongIdResponde?> {
+abstract class _$PlaySongId extends BuildlessAsyncNotifier<SongIdResponde?> {
   late final String songId;
 
   FutureOr<SongIdResponde?> build({
@@ -82,7 +81,7 @@ class PlaySongIdFamily extends Family<AsyncValue<SongIdResponde?>> {
 
 /// See also [PlaySongId].
 class PlaySongIdProvider
-    extends AutoDisposeAsyncNotifierProviderImpl<PlaySongId, SongIdResponde?> {
+    extends AsyncNotifierProviderImpl<PlaySongId, SongIdResponde?> {
   /// See also [PlaySongId].
   PlaySongIdProvider({
     required String songId,
@@ -138,8 +137,7 @@ class PlaySongIdProvider
   }
 
   @override
-  AutoDisposeAsyncNotifierProviderElement<PlaySongId, SongIdResponde?>
-      createElement() {
+  AsyncNotifierProviderElement<PlaySongId, SongIdResponde?> createElement() {
     return _PlaySongIdProviderElement(this);
   }
 
@@ -157,13 +155,13 @@ class PlaySongIdProvider
   }
 }
 
-mixin PlaySongIdRef on AutoDisposeAsyncNotifierProviderRef<SongIdResponde?> {
+mixin PlaySongIdRef on AsyncNotifierProviderRef<SongIdResponde?> {
   /// The parameter `songId` of this provider.
   String get songId;
 }
 
 class _PlaySongIdProviderElement
-    extends AutoDisposeAsyncNotifierProviderElement<PlaySongId, SongIdResponde?>
+    extends AsyncNotifierProviderElement<PlaySongId, SongIdResponde?>
     with PlaySongIdRef {
   _PlaySongIdProviderElement(super.provider);
 

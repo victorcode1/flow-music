@@ -79,10 +79,14 @@ class ListSongControllers extends ChangeNotifier {
         ?.navigationEndpoint
         ?.watchEndpoint
         ?.playlistId;
-    return {idSong ?? '': playListId ?? ''};
+    return {idSong : playListId ?? ''};
   }
 
-  result({required String data}) => ref.watch(searchResultDataProvider(data));
+  AsyncValue result({required String data}) =>
+      ref.watch(searchResultDataProvider(data)).when(
+          data: (data) => AsyncData(data),
+          error: (e, s) => AsyncError(e, s),
+          loading: () => const AsyncLoading());
 
   ///Cantidad de items
   ///
@@ -148,7 +152,12 @@ class ListSongControllers extends ChangeNotifier {
         ?.navigationEndpoint
         ?.watchEndpoint
         ?.playlistId;
-    context.go('/playSong', extra: {idSong: playListId});
+
+    if (context.mounted && context.canPop()) context.pop();
+    context.goNamed('playSong', queryParameters: {
+      'idSong': idSong ?? '',
+      'playListId': playListId ?? '',
+    });
   }
 
   subtitle({required ListSearchResult data, required int index}) {

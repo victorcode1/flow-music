@@ -13,7 +13,40 @@ class MainApp extends ConsumerStatefulWidget {
   ConsumerState<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends ConsumerState<MainApp> {
+class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.detached:
+        ref.read(mainController).setAudioStateDetached();
+      case AppLifecycleState.resumed:
+        ref.read(mainController).setAudioStateResumed();
+        break;
+      case AppLifecycleState.inactive:
+        ref.read(mainController).setAudioStateInactive();
+        break;
+      case AppLifecycleState.paused:
+        ref.read(mainController).setAudioStatePaused();
+        break;
+
+      case AppLifecycleState.hidden:
+        ref.read(mainController).setAudioStateHidden();
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(mainController);

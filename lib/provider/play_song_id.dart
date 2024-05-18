@@ -10,7 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'play_song_id.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 class PlaySongId extends _$PlaySongId {
   @override
   FutureOr<SongIdResponde?> build({required String songId}) {

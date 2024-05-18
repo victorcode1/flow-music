@@ -9,14 +9,14 @@ part 'audio_player_controller.g.dart';
 
 @Riverpod(keepAlive: true)
 class AudioPlayerProvider extends _$AudioPlayerProvider {
-  List<StreamSubscription> streams = [];
+  final List<StreamSubscription> _streams = [];
+
+  PlayerState status() => state.state;
   @override
   AudioPlayer build() => AudioPlayer()..setReleaseMode(ReleaseMode.stop);
 
   Future<void> play({required Source source}) async {
-    await state.stop();
     await state.play(source);
-
     ref.read(mainController).sendMesage(
           'Playing...',
           textKey: const Key('toast-playing'),
@@ -33,7 +33,7 @@ class AudioPlayerProvider extends _$AudioPlayerProvider {
   }
 
   void initState() {
-    streams.add(
+    _streams.add(
       state.onPlayerStateChanged.listen(
         (it) {
           switch (it) {
@@ -55,7 +55,7 @@ class AudioPlayerProvider extends _$AudioPlayerProvider {
         },
       ),
     );
-    streams.add(
+    _streams.add(
       state.onSeekComplete.listen(
         (it) => ref.read(mainController).sendMesage(
               'Seek complete!',
@@ -63,5 +63,20 @@ class AudioPlayerProvider extends _$AudioPlayerProvider {
             ),
       ),
     );
+  }
+
+  void resume() {
+    state.resume();
+  }
+
+  void dispose() {
+    state.dispose();
+    for (var element in _streams) {
+      element.cancel();
+    }
+  }
+
+  void pause() {
+    state.pause();
   }
 }

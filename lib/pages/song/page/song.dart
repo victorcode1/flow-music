@@ -1,6 +1,5 @@
 import 'package:flow_music/domain/sources.dart';
 import 'package:flow_music/pages/song/controller/song_controller.dart';
-import 'package:flow_music/provider/play_song_id.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -20,22 +19,14 @@ class _PlaySongState extends ConsumerState<Song> {
 
   @override
   Widget build(BuildContext context) {
-    return ref
-        .watch(playSongIdProvider(songId: widget.data.keys.first.toString()))
-        .when(
-            data: (data) {
-              final urlSong = data?.streamingData?.adaptiveFormats
-                      ?.firstWhere((element) =>
-                          element.mimeType == "audio/mp4; codecs=\"mp4a.40.5\"")
-                      .url ??
-                  '';
-
-              return ScreenPlay(url: urlSong);
-            },
-            error: (error, stack) => Center(
-                  child: Text('Error $error'),
-                ),
-            loading: () => const Center(child: CircularProgressIndicator()));
+    String? idSong = widget.data['idSong'];
+    String? playListId = widget.data['playListId'];
+    final controller = ref.watch(songController)
+      ..playListSong(playListId: playListId);
+    return controller.result(data: idSong!).when(
+        data: (data) => ScreenPlay(url: controller.urlSong(data: data)),
+        error: (error, stack) => Center(child: Text('Error $error')),
+        loading: () => const Center(child: CircularProgressIndicator()));
   }
 }
 
@@ -52,7 +43,7 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final controller = ref.watch(songController);
+    final controller = ref.watch(songController)..autoPlay(data: widget.url);
     return _SourceTile(
       title: 'Play Song',
       subtitle: widget.url,

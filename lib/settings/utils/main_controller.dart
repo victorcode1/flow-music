@@ -36,4 +36,24 @@ class MainController extends ChangeNotifier {
       ),
     );
   }
+
+  void setAudioStateDetached() {
+    ref.read(audioPlayerProviderProvider.notifier).dispose();
+  }
+
+  void setAudioStateResumed() {
+    ref.read(audioPlayerProviderProvider.notifier).resume();
+  }
+
+  void setAudioStateInactive() {
+    ref.read(audioPlayerProviderProvider.notifier).pause();
+  }
+
+  void setAudioStatePaused() {
+    ref.read(audioPlayerProviderProvider.notifier).pause();
+  }
+
+  void setAudioStateHidden() {
+    ref.read(audioPlayerProviderProvider.notifier).pause();
+  }
 }

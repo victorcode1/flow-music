@@ -6,7 +6,7 @@ part of 'list_search_result.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$searchResultDataHash() => r'8bc533cab1ba5a0f4c074304c6180a4a4f57d2b4';
+String _$searchResultDataHash() => r'f2466ea07aa54e7e5a09cc7758446def573f99ef';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -29,25 +29,16 @@ class _SystemHash {
   }
 }
 
-abstract class _$SearchResultData
-    extends BuildlessAsyncNotifier<ListSearchResult?> {
-  late final String search;
-
-  FutureOr<ListSearchResult?> build(
-    String search,
-  );
-}
-
-/// See also [SearchResultData].
-@ProviderFor(SearchResultData)
+/// See also [searchResultData].
+@ProviderFor(searchResultData)
 const searchResultDataProvider = SearchResultDataFamily();
 
-/// See also [SearchResultData].
+/// See also [searchResultData].
 class SearchResultDataFamily extends Family<AsyncValue<ListSearchResult?>> {
-  /// See also [SearchResultData].
+  /// See also [searchResultData].
   const SearchResultDataFamily();
 
-  /// See also [SearchResultData].
+  /// See also [searchResultData].
   SearchResultDataProvider call(
     String search,
   ) {
@@ -80,14 +71,16 @@ class SearchResultDataFamily extends Family<AsyncValue<ListSearchResult?>> {
   String? get name => r'searchResultDataProvider';
 }
 
-/// See also [SearchResultData].
-class SearchResultDataProvider
-    extends AsyncNotifierProviderImpl<SearchResultData, ListSearchResult?> {
-  /// See also [SearchResultData].
+/// See also [searchResultData].
+class SearchResultDataProvider extends FutureProvider<ListSearchResult?> {
+  /// See also [searchResultData].
   SearchResultDataProvider(
     String search,
   ) : this._internal(
-          () => SearchResultData()..search = search,
+          (ref) => searchResultData(
+            ref as SearchResultDataRef,
+            search,
+          ),
           from: searchResultDataProvider,
           name: r'searchResultDataProvider',
           debugGetCreateSourceHash:
@@ -113,20 +106,13 @@ class SearchResultDataProvider
   final String search;
 
   @override
-  FutureOr<ListSearchResult?> runNotifierBuild(
-    covariant SearchResultData notifier,
+  Override overrideWith(
+    FutureOr<ListSearchResult?> Function(SearchResultDataRef provider) create,
   ) {
-    return notifier.build(
-      search,
-    );
-  }
-
-  @override
-  Override overrideWith(SearchResultData Function() create) {
     return ProviderOverride(
       origin: this,
       override: SearchResultDataProvider._internal(
-        () => create()..search = search,
+        (ref) => create(ref as SearchResultDataRef),
         from: from,
         name: null,
         dependencies: null,
@@ -138,8 +124,7 @@ class SearchResultDataProvider
   }
 
   @override
-  AsyncNotifierProviderElement<SearchResultData, ListSearchResult?>
-      createElement() {
+  FutureProviderElement<ListSearchResult?> createElement() {
     return _SearchResultDataProviderElement(this);
   }
 
@@ -157,14 +142,13 @@ class SearchResultDataProvider
   }
 }
 
-mixin SearchResultDataRef on AsyncNotifierProviderRef<ListSearchResult?> {
+mixin SearchResultDataRef on FutureProviderRef<ListSearchResult?> {
   /// The parameter `search` of this provider.
   String get search;
 }
 
 class _SearchResultDataProviderElement
-    extends AsyncNotifierProviderElement<SearchResultData, ListSearchResult?>
-    with SearchResultDataRef {
+    extends FutureProviderElement<ListSearchResult?> with SearchResultDataRef {
   _SearchResultDataProviderElement(super.provider);
 
   @override
