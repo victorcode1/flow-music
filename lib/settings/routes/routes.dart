@@ -39,7 +39,7 @@ class Route extends _$Route {
                 //data =
                 //    state.uri.queryParameters['id'] as Map<String?, String?>;
                 //  } //
-                return Song(data: data);
+                return SongWidget(data: data);
               },
             )
           ]),

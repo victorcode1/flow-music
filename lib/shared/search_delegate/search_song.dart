@@ -33,7 +33,7 @@ class SearchSong extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     final controller = ref.watch(listSongControllers);
     return query.isNotEmpty
-        ? Song(data: controller.extra(data: query))
+        ? SongWidget(data: controller.extra(data: query))
         : const Center(child: Text("No hay resultados"));
   }
 

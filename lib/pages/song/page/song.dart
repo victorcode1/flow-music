@@ -3,15 +3,15 @@ import 'package:flow_music/pages/song/controller/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class Song extends ConsumerStatefulWidget {
+class SongWidget extends ConsumerStatefulWidget {
   final Map<String?, String?> data;
-  const Song({super.key, required this.data});
+  const SongWidget({super.key, required this.data});
 
   @override
-  ConsumerState<Song> createState() => _PlaySongState();
+  ConsumerState<SongWidget> createState() => _PlaySongState();
 }
 
-class _PlaySongState extends ConsumerState<Song> {
+class _PlaySongState extends ConsumerState<SongWidget> {
   @override
   void initState() {
     super.initState();
