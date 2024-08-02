@@ -1,6 +1,7 @@
 plugins {
     id "com.android.application"
     id "kotlin-android"
+    id "com.google.gms.google-services" // FlutterFire Configuration
     id "dev.flutter.flutter-gradle-plugin"
 }
 
@@ -24,12 +25,13 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.example.flow_music"
-    compileSdk flutter.compileSdkVersion
-    ndkVersion flutter.ndkVersion
+    compileSdk 34
+    ndkVersion "26.1.10909125"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -41,20 +43,32 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.flow_music"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion flutter.minSdkVersion
-        targetSdkVersion flutter.targetSdkVersion
+        minSdkVersion 23
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
 
+    signingConfigs {
+        debug {
+            keyAlias 'AndroidDebugKey'
+            keyPassword 'android'
+            storeFile file("${System.properties['user.home']}/.android/debug.keystore")
+            storePassword 'android'
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            minifyEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            shrinkResources false
             signingConfig signingConfigs.debug
         }
     }
@@ -64,4 +78,16 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.0"
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+    implementation ('com.google.firebase:firebase-auth:23.0.0') {
+        exclude group: 'com.google.android.gms'
+    }
+    implementation ('com.google.android.gms:play-services-measurement-api:22.0.1') {
+        exclude group: 'com.google.android.gms'
+    }
+    implementation ('com.google.android.recaptcha:recaptcha:18.4.0') {
+        exclude group: 'com.google.android.gms'
+    }
+}

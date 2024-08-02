@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "387031162675",
+    "project_id": "flowmusic-5715a",
+    "storage_bucket": "flowmusic-5715a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:387031162675:android:b8ca1005cf469d39272846",
+        "android_client_info": {
+          "package_name": "com.example.flow_music"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCG-72-5HzXCqCGegu_ikErfvS67ntAU6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

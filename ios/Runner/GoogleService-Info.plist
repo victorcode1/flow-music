@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>387031162675-tkngk2hbhhfd1hnevqh4fa88ap88bg4o.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBUdJHpAE8OEeCckJTo9E0kLhmdKDHx2_s</string>
+	<key>GCM_SENDER_ID</key>
+	<string>387031162675</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.flowMusic</string>
+	<key>PROJECT_ID</key>
+	<string>flowmusic-5715a</string>
+	<key>STORAGE_BUCKET</key>
+	<string>flowmusic-5715a.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:387031162675:ios:2d714187855c83b9272846</string>
+</dict>
+</plist>

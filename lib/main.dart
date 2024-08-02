@@ -1,13 +1,34 @@
-import 'package:flow_music/settings/utils/main_controller.dart';
+
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flow_music/controller/main_controller.dart';
+import 'package:flow_music/firebase_options.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MainApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final app = await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // await FirebaseAuth.instance
+  //     .useAuthEmulator('localhost', 60578)
+  //     .whenComplete(() {
+  //   debugPrint('Auth emulator initialized');
+  // }).then((res) {
+  //   debugPrint('Auth emulator initialized');
+  // }).catchError((e, s) {
+  //   debugPrint('Auth emulator error: $e');
+  //   debugPrintStack(stackTrace: s);
+  // });
+  runApp(ProviderScope(
+      child: MainApp(app: app)));
 }
 
 class MainApp extends ConsumerStatefulWidget {
-  const MainApp({super.key});
+  const MainApp({super.key, required this.app});
+  final FirebaseApp app;
 
   @override
   ConsumerState<MainApp> createState() => _MainAppState();
@@ -51,6 +72,10 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final controller = ref.watch(mainController);
     return MaterialApp.router(
+      theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: const Color.fromRGBO(13, 32, 80, 1.0)),
+      debugShowCheckedModeBanner: false,
       routerConfig: controller.router,
       builder: (context, child) {
         return ScaffoldMessenger(
