@@ -1,13 +1,13 @@
 import 'package:flow_music/core/const/roots/rutas.dart';
-import 'package:flow_music/pages/auth/auth_page.dart';
+import 'package:flow_music/pages/auth_page/auth/auth_page.dart';
 import 'package:flow_music/pages/home/page_builder.dart';
-import 'package:flow_music/pages/profile/profile_page.dart';
+import 'package:flow_music/pages/auth_page/profile/profile_page.dart';
 
 import 'package:flow_music/pages/radio/radio_list.dart';
 import 'package:flow_music/pages/radio_content/radio_content.dart';
 import 'package:flow_music/pages/song/song.dart';
-import 'package:flow_music/shared/list_search/list_search.dart';
-import 'package:flow_music/shared/list_search_secondary//list_songs.dart';
+import 'package:flow_music/pages/shared/list_search/list_search.dart';
+import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

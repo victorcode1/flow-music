@@ -12,16 +12,6 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // await FirebaseAuth.instance
-  //     .useAuthEmulator('localhost', 60578)
-  //     .whenComplete(() {
-  //   debugPrint('Auth emulator initialized');
-  // }).then((res) {
-  //   debugPrint('Auth emulator initialized');
-  // }).catchError((e, s) {
-  //   debugPrint('Auth emulator error: $e');
-  //   debugPrintStack(stackTrace: s);
-  // });
   runApp(ProviderScope(
       child: MainApp(app: app)));
 }

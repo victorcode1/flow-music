@@ -13,6 +13,9 @@ class ProfilePage extends ConsumerWidget {
     final platform = Theme.of(context).platform;
 
     return ProfileScreen(
+      appBar: AppBar(
+        title: TextButton(onPressed: () {}, child: const Text('Regresar')),
+      ),
       actions: [
         SignedOutAction((context) {
           controller.logAuth();

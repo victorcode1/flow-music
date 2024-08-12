@@ -4,9 +4,8 @@ import 'package:firebase_ui_localizations/firebase_ui_localizations.dart';
 import 'package:firebase_ui_oauth_apple/firebase_ui_oauth_apple.dart';
 import 'package:firebase_ui_oauth_google/firebase_ui_oauth_google.dart';
 import 'package:flow_music/controller/main_controller.dart';
-import 'package:flow_music/core/const/roots/rutas.dart';
+import 'package:flow_music/pages/auth_page/profile/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AuthPage extends ConsumerWidget {
@@ -26,8 +25,9 @@ class AuthPage extends ConsumerWidget {
         stream: controller.user,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            WidgetsBinding.instance.addPostFrameCallback(
-                (_) => context.go(Rutas.profile.rootValue));
+            // WidgetsBinding.instance.addPostFrameCallback(
+            //     (_) => context.go(Rutas.profile.rootValue));
+            return const ProfilePage();
           }
           // return switch (snapshot.data) {
 
