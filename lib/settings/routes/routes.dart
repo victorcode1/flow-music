@@ -6,7 +6,7 @@ import 'package:flow_music/pages/radio/radio_list.dart';
 import 'package:flow_music/pages/radio_content/radio_content.dart';
 import 'package:flow_music/pages/shared/list_search/list_search.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
-import 'package:flow_music/pages/song/song.dart';
+import 'package:flow_music/pages/song/song_fecht.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

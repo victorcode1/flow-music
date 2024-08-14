@@ -20,7 +20,7 @@ SearModelRequest _$SearModelRequestFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SearModelRequest {
-  Context? get context => throw _privateConstructorUsedError;
+  ContextResultData? get context => throw _privateConstructorUsedError;
   String? get query => throw _privateConstructorUsedError;
   String? get params => throw _privateConstructorUsedError;
 
@@ -36,7 +36,7 @@ abstract class $SearModelRequestCopyWith<$Res> {
           SearModelRequest value, $Res Function(SearModelRequest) then) =
       _$SearModelRequestCopyWithImpl<$Res, SearModelRequest>;
   @useResult
-  $Res call({Context? context, String? query, String? params});
+  $Res call({ContextResultData? context, String? query, String? params});
 
   $ContextCopyWith<$Res>? get context;
 }
@@ -62,7 +62,7 @@ class _$SearModelRequestCopyWithImpl<$Res, $Val extends SearModelRequest>
       context: freezed == context
           ? _value.context
           : context // ignore: cast_nullable_to_non_nullable
-              as Context?,
+              as ContextResultData?,
       query: freezed == query
           ? _value.query
           : query // ignore: cast_nullable_to_non_nullable
@@ -95,7 +95,7 @@ abstract class _$$SearModelRequestImplCopyWith<$Res>
       __$$SearModelRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Context? context, String? query, String? params});
+  $Res call({ContextResultData? context, String? query, String? params});
 
   @override
   $ContextCopyWith<$Res>? get context;
@@ -120,7 +120,7 @@ class __$$SearModelRequestImplCopyWithImpl<$Res>
       context: freezed == context
           ? _value.context
           : context // ignore: cast_nullable_to_non_nullable
-              as Context?,
+              as ContextResultData?,
       query: freezed == query
           ? _value.query
           : query // ignore: cast_nullable_to_non_nullable
@@ -142,7 +142,7 @@ class _$SearModelRequestImpl implements _SearModelRequest {
       _$$SearModelRequestImplFromJson(json);
 
   @override
-  final Context? context;
+  final ContextResultData? context;
   @override
   final String? query;
   @override
@@ -184,7 +184,7 @@ class _$SearModelRequestImpl implements _SearModelRequest {
 
 abstract class _SearModelRequest implements SearModelRequest {
   const factory _SearModelRequest(
-      {final Context? context,
+      {final ContextResultData? context,
       final String? query,
       final String? params}) = _$SearModelRequestImpl;
 
@@ -192,7 +192,7 @@ abstract class _SearModelRequest implements SearModelRequest {
       _$SearModelRequestImpl.fromJson;
 
   @override
-  Context? get context;
+  ContextResultData? get context;
   @override
   String? get query;
   @override
@@ -203,7 +203,7 @@ abstract class _SearModelRequest implements SearModelRequest {
       throw _privateConstructorUsedError;
 }
 
-Context _$ContextFromJson(Map<String, dynamic> json) {
+ContextResultData _$ContextFromJson(Map<String, dynamic> json) {
   return _Context.fromJson(json);
 }
 
@@ -213,13 +213,15 @@ mixin _$Context {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $ContextCopyWith<Context> get copyWith => throw _privateConstructorUsedError;
+  $ContextCopyWith<ContextResultData> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ContextCopyWith<$Res> {
-  factory $ContextCopyWith(Context value, $Res Function(Context) then) =
-      _$ContextCopyWithImpl<$Res, Context>;
+  factory $ContextCopyWith(
+          ContextResultData value, $Res Function(ContextResultData) then) =
+      _$ContextCopyWithImpl<$Res, ContextResultData>;
   @useResult
   $Res call({ClientSearch? client});
 
@@ -227,7 +229,7 @@ abstract class $ContextCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ContextCopyWithImpl<$Res, $Val extends Context>
+class _$ContextCopyWithImpl<$Res, $Val extends ContextResultData>
     implements $ContextCopyWith<$Res> {
   _$ContextCopyWithImpl(this._value, this._then);
 
@@ -339,7 +341,7 @@ class _$ContextImpl implements _Context {
   }
 }
 
-abstract class _Context implements Context {
+abstract class _Context implements ContextResultData {
   const factory _Context({final ClientSearch? client}) = _$ContextImpl;
 
   factory _Context.fromJson(Map<String, dynamic> json) = _$ContextImpl.fromJson;

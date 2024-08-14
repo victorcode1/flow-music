@@ -17,7 +17,8 @@ class ListSongs extends ConsumerWidget {
         builder: (context, snapshot) {
           return ListView.builder(
             itemCount: controllerr.count(
-                data: snapshot.data ?? const list_search.ListSearchSongResult()),
+                data:
+                    snapshot.data ?? const list_search.ListSearchSongResult()),
             itemBuilder: (context, index) {
               return ListTile(
                   onTap: () => controllerr.escuchar(
@@ -40,24 +41,22 @@ class ListSongs extends ConsumerWidget {
                     ),
                   ),
                   subtitle: Text(
-                    controllerr.subtitle(
-                            data: snapshot.data ??
-                                const list_search.ListSearchSongResult(),
-                            index: index) ??
-                        '',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w500),
-                  ),
+                      controllerr.subtitle(
+                              data: snapshot.data ??
+                                  const list_search.ListSearchSongResult(),
+                              index: index) ??
+                          '',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w500)),
                   title: Text(
-                    controllerr.dataRes(
-                        data: snapshot.data ??
-                            const list_search.ListSearchSongResult(),
-                        index: index),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w500),
-                  ));
+                      controllerr.dataRes(
+                          data: snapshot.data ??
+                              const list_search.ListSearchSongResult(),
+                          index: index),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w500)));
             },
           );
         });

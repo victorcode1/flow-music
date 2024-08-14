@@ -11,7 +11,7 @@ _$SearModelRequestImpl _$$SearModelRequestImplFromJson(
     _$SearModelRequestImpl(
       context: json['context'] == null
           ? null
-          : Context.fromJson(json['context'] as Map<String, dynamic>),
+          : ContextResultData.fromJson(json['context'] as Map<String, dynamic>),
       query: json['query'] as String?,
       params: json['params'] as String?,
     );

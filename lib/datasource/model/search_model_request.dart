@@ -6,7 +6,7 @@ part 'search_model_request.g.dart';
 @freezed
 abstract class SearModelRequest with _$SearModelRequest {
   const factory SearModelRequest({
-    Context? context,
+    ContextResultData? context,
     String? query,
     String? params,
   }) = _SearModelRequest;
@@ -16,12 +16,12 @@ abstract class SearModelRequest with _$SearModelRequest {
 }
 
 @freezed
-abstract class Context with _$Context {
-  const factory Context({
+abstract class ContextResultData with _$Context {
+  const factory ContextResultData({
     ClientSearch? client,
   }) = _Context;
 
-  factory Context.fromJson(Map<String, dynamic> json) =>
+  factory ContextResultData.fromJson(Map<String, dynamic> json) =>
       _$ContextFromJson(json);
 }
 
