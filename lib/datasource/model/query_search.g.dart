@@ -27,7 +27,7 @@ _$ContextImpl _$$ContextImplFromJson(Map<String, dynamic> json) =>
     _$ContextImpl(
       client: json['client'] == null
           ? null
-          : Client.fromJson(json['client'] as Map<String, dynamic>),
+          : ClientModel.fromJson(json['client'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$ContextImplToJson(_$ContextImpl instance) =>

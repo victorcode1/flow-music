@@ -22,8 +22,7 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
     final controller = ref.watch(mainController)..initHome(contractView: this);
     return SafeArea(
       child: Scaffold(
-        drawerScrimColor: Colors.black,
-        appBar: const AppAbarMain(),
+        appBar: const AppBarMain(),
         drawer: const AppDrawer(),
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,

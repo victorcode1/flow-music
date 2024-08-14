@@ -4,14 +4,14 @@ part 'list_search_result.freezed.dart';
 part 'list_search_result.g.dart';
 
 @freezed
-abstract class ListSearchResult with _$ListSearchResult {
-  const factory ListSearchResult({
+abstract class ListSearchSongResult with _$ListSearchResult {
+  const factory ListSearchSongResult({
     ResponseContext? responseContext,
     Contents? contents,
     String? trackingParams,
   }) = _ListSearchResult;
 
-  factory ListSearchResult.fromJson(Map<String, dynamic> json) =>
+  factory ListSearchSongResult.fromJson(Map<String, dynamic> json) =>
       _$ListSearchResultFromJson(json);
 }
 

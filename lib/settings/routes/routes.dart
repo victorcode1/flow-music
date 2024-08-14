@@ -1,13 +1,12 @@
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/pages/auth_page/auth/auth_page.dart';
-import 'package:flow_music/pages/home/page_builder.dart';
 import 'package:flow_music/pages/auth_page/profile/profile_page.dart';
-
+import 'package:flow_music/pages/home/page_builder.dart';
 import 'package:flow_music/pages/radio/radio_list.dart';
 import 'package:flow_music/pages/radio_content/radio_content.dart';
-import 'package:flow_music/pages/song/song.dart';
 import 'package:flow_music/pages/shared/list_search/list_search.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
+import 'package:flow_music/pages/song/song.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -39,7 +38,9 @@ class Route extends _$Route {
       Rutas.search => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
-          builder: (context, state) => const ListSearch(),
+          builder: (context, state) {
+            return const ListSearch();
+          },
         ),
       Rutas.profile => GoRoute(
           name: ruta.name,

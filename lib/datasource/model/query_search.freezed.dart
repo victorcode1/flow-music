@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-Client _$ClientFromJson(Map<String, dynamic> json) {
+ClientModel _$ClientFromJson(Map<String, dynamic> json) {
   return _Client.fromJson(json);
 }
 
@@ -28,13 +28,14 @@ mixin _$Client {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $ClientCopyWith<Client> get copyWith => throw _privateConstructorUsedError;
+  $ClientCopyWith<ClientModel> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ClientCopyWith<$Res> {
-  factory $ClientCopyWith(Client value, $Res Function(Client) then) =
-      _$ClientCopyWithImpl<$Res, Client>;
+  factory $ClientCopyWith(ClientModel value, $Res Function(ClientModel) then) =
+      _$ClientCopyWithImpl<$Res, ClientModel>;
   @useResult
   $Res call(
       {String? clientName,
@@ -45,7 +46,7 @@ abstract class $ClientCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ClientCopyWithImpl<$Res, $Val extends Client>
+class _$ClientCopyWithImpl<$Res, $Val extends ClientModel>
     implements $ClientCopyWith<$Res> {
   _$ClientCopyWithImpl(this._value, this._then);
 
@@ -209,7 +210,7 @@ class _$ClientImpl implements _Client {
   }
 }
 
-abstract class _Client implements Client {
+abstract class _Client implements ClientModel {
   factory _Client(
       {final String? clientName,
       final String? clientVersion,
@@ -241,7 +242,7 @@ ContextModel _$ContextModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ContextModel {
-  Client? get client => throw _privateConstructorUsedError;
+  ClientModel? get client => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -255,7 +256,7 @@ abstract class $ContextModelCopyWith<$Res> {
           ContextModel value, $Res Function(ContextModel) then) =
       _$ContextModelCopyWithImpl<$Res, ContextModel>;
   @useResult
-  $Res call({Client? client});
+  $Res call({ClientModel? client});
 
   $ClientCopyWith<$Res>? get client;
 }
@@ -279,7 +280,7 @@ class _$ContextModelCopyWithImpl<$Res, $Val extends ContextModel>
       client: freezed == client
           ? _value.client
           : client // ignore: cast_nullable_to_non_nullable
-              as Client?,
+              as ClientModel?,
     ) as $Val);
   }
 
@@ -304,7 +305,7 @@ abstract class _$$ContextImplCopyWith<$Res>
       __$$ContextImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Client? client});
+  $Res call({ClientModel? client});
 
   @override
   $ClientCopyWith<$Res>? get client;
@@ -327,7 +328,7 @@ class __$$ContextImplCopyWithImpl<$Res>
       client: freezed == client
           ? _value.client
           : client // ignore: cast_nullable_to_non_nullable
-              as Client?,
+              as ClientModel?,
     ));
   }
 }
@@ -341,7 +342,7 @@ class _$ContextImpl implements _Context {
       _$$ContextImplFromJson(json);
 
   @override
-  final Client? client;
+  final ClientModel? client;
 
   @override
   String toString() {
@@ -375,12 +376,12 @@ class _$ContextImpl implements _Context {
 }
 
 abstract class _Context implements ContextModel {
-  factory _Context({final Client? client}) = _$ContextImpl;
+  factory _Context({final ClientModel? client}) = _$ContextImpl;
 
   factory _Context.fromJson(Map<String, dynamic> json) = _$ContextImpl.fromJson;
 
   @override
-  Client? get client;
+  ClientModel? get client;
   @override
   @JsonKey(ignore: true)
   _$$ContextImplCopyWith<_$ContextImpl> get copyWith =>

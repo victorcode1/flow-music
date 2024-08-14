@@ -4,8 +4,8 @@ part 'query_search.freezed.dart';
 part 'query_search.g.dart';
 
 @freezed
-class Client with _$Client {
-  factory Client({
+class ClientModel with _$Client {
+  factory ClientModel({
     String? clientName,
     String? clientVersion,
     String? platform,
@@ -13,13 +13,14 @@ class Client with _$Client {
     String? visitorData,
   }) = _Client;
 
-  factory Client.fromJson(Map<String, dynamic> json) => _$ClientFromJson(json);
+  factory ClientModel.fromJson(Map<String, dynamic> json) =>
+      _$ClientFromJson(json);
 }
 
 @freezed
 class ContextModel with _$ContextModel {
   factory ContextModel({
-    Client? client,
+    ClientModel? client,
   }) = _Context;
 
   factory ContextModel.fromJson(Map<String, dynamic> json) =>

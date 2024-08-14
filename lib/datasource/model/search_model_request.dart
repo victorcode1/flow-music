@@ -18,7 +18,7 @@ abstract class SearModelRequest with _$SearModelRequest {
 @freezed
 abstract class Context with _$Context {
   const factory Context({
-    Client? client,
+    ClientSearch? client,
   }) = _Context;
 
   factory Context.fromJson(Map<String, dynamic> json) =>
@@ -26,8 +26,8 @@ abstract class Context with _$Context {
 }
 
 @freezed
-abstract class Client with _$Client {
-  const factory Client({
+abstract class ClientSearch with _$Client {
+  const factory ClientSearch({
     String? clientName,
     String? clientVersion,
     String? platform,
@@ -35,5 +35,6 @@ abstract class Client with _$Client {
     String? visitorData,
   }) = _Client;
 
-  factory Client.fromJson(Map<String, dynamic> json) => _$ClientFromJson(json);
+  factory ClientSearch.fromJson(Map<String, dynamic> json) =>
+      _$ClientFromJson(json);
 }

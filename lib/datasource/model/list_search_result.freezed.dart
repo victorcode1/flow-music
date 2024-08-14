@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-ListSearchResult _$ListSearchResultFromJson(Map<String, dynamic> json) {
+ListSearchSongResult _$ListSearchResultFromJson(Map<String, dynamic> json) {
   return _ListSearchResult.fromJson(json);
 }
 
@@ -26,15 +26,15 @@ mixin _$ListSearchResult {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $ListSearchResultCopyWith<ListSearchResult> get copyWith =>
+  $ListSearchResultCopyWith<ListSearchSongResult> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ListSearchResultCopyWith<$Res> {
-  factory $ListSearchResultCopyWith(
-          ListSearchResult value, $Res Function(ListSearchResult) then) =
-      _$ListSearchResultCopyWithImpl<$Res, ListSearchResult>;
+  factory $ListSearchResultCopyWith(ListSearchSongResult value,
+          $Res Function(ListSearchSongResult) then) =
+      _$ListSearchResultCopyWithImpl<$Res, ListSearchSongResult>;
   @useResult
   $Res call(
       {ResponseContext? responseContext,
@@ -46,7 +46,7 @@ abstract class $ListSearchResultCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ListSearchResultCopyWithImpl<$Res, $Val extends ListSearchResult>
+class _$ListSearchResultCopyWithImpl<$Res, $Val extends ListSearchSongResult>
     implements $ListSearchResultCopyWith<$Res> {
   _$ListSearchResultCopyWithImpl(this._value, this._then);
 
@@ -208,7 +208,7 @@ class _$ListSearchResultImpl implements _ListSearchResult {
   }
 }
 
-abstract class _ListSearchResult implements ListSearchResult {
+abstract class _ListSearchResult implements ListSearchSongResult {
   const factory _ListSearchResult(
       {final ResponseContext? responseContext,
       final Contents? contents,

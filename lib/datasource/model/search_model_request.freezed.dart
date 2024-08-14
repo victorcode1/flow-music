@@ -209,7 +209,7 @@ Context _$ContextFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Context {
-  Client? get client => throw _privateConstructorUsedError;
+  ClientSearch? get client => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -221,7 +221,7 @@ abstract class $ContextCopyWith<$Res> {
   factory $ContextCopyWith(Context value, $Res Function(Context) then) =
       _$ContextCopyWithImpl<$Res, Context>;
   @useResult
-  $Res call({Client? client});
+  $Res call({ClientSearch? client});
 
   $ClientCopyWith<$Res>? get client;
 }
@@ -245,7 +245,7 @@ class _$ContextCopyWithImpl<$Res, $Val extends Context>
       client: freezed == client
           ? _value.client
           : client // ignore: cast_nullable_to_non_nullable
-              as Client?,
+              as ClientSearch?,
     ) as $Val);
   }
 
@@ -269,7 +269,7 @@ abstract class _$$ContextImplCopyWith<$Res> implements $ContextCopyWith<$Res> {
       __$$ContextImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({Client? client});
+  $Res call({ClientSearch? client});
 
   @override
   $ClientCopyWith<$Res>? get client;
@@ -292,7 +292,7 @@ class __$$ContextImplCopyWithImpl<$Res>
       client: freezed == client
           ? _value.client
           : client // ignore: cast_nullable_to_non_nullable
-              as Client?,
+              as ClientSearch?,
     ));
   }
 }
@@ -306,7 +306,7 @@ class _$ContextImpl implements _Context {
       _$$ContextImplFromJson(json);
 
   @override
-  final Client? client;
+  final ClientSearch? client;
 
   @override
   String toString() {
@@ -340,19 +340,19 @@ class _$ContextImpl implements _Context {
 }
 
 abstract class _Context implements Context {
-  const factory _Context({final Client? client}) = _$ContextImpl;
+  const factory _Context({final ClientSearch? client}) = _$ContextImpl;
 
   factory _Context.fromJson(Map<String, dynamic> json) = _$ContextImpl.fromJson;
 
   @override
-  Client? get client;
+  ClientSearch? get client;
   @override
   @JsonKey(ignore: true)
   _$$ContextImplCopyWith<_$ContextImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
-Client _$ClientFromJson(Map<String, dynamic> json) {
+ClientSearch _$ClientFromJson(Map<String, dynamic> json) {
   return _Client.fromJson(json);
 }
 
@@ -366,13 +366,15 @@ mixin _$Client {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $ClientCopyWith<Client> get copyWith => throw _privateConstructorUsedError;
+  $ClientCopyWith<ClientSearch> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
 abstract class $ClientCopyWith<$Res> {
-  factory $ClientCopyWith(Client value, $Res Function(Client) then) =
-      _$ClientCopyWithImpl<$Res, Client>;
+  factory $ClientCopyWith(
+          ClientSearch value, $Res Function(ClientSearch) then) =
+      _$ClientCopyWithImpl<$Res, ClientSearch>;
   @useResult
   $Res call(
       {String? clientName,
@@ -383,7 +385,7 @@ abstract class $ClientCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ClientCopyWithImpl<$Res, $Val extends Client>
+class _$ClientCopyWithImpl<$Res, $Val extends ClientSearch>
     implements $ClientCopyWith<$Res> {
   _$ClientCopyWithImpl(this._value, this._then);
 
@@ -547,7 +549,7 @@ class _$ClientImpl implements _Client {
   }
 }
 
-abstract class _Client implements Client {
+abstract class _Client implements ClientSearch {
   const factory _Client(
       {final String? clientName,
       final String? clientVersion,

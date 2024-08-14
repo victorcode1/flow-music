@@ -6,7 +6,6 @@ import 'package:flow_music/provider/search.dart';
 import 'package:flow_music/settings/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'list_result.g.dart';
@@ -20,7 +19,7 @@ FutureOr<SearchResult?> searchData(SearchDataRef ref) async {
     String bodyParams = json.encode(QuerySearch(
         input: ref.watch(searchProvider),
         context: ContextModel(
-            client: Client(
+            client: ClientModel(
                 clientName: "WEB_REMIX",
                 clientVersion: "1.20220918",
                 platform: "DESKTOP",
@@ -59,7 +58,7 @@ class SearchDataReq extends _$SearchDataReq {
       String bodyParams = json.encode(QuerySearch(
           input: ref.watch(searchProvider),
           context: ContextModel(
-              client: Client(
+              client: ClientModel(
                   clientName: "WEB_REMIX",
                   clientVersion: "1.20220918",
                   platform: "DESKTOP",

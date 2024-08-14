@@ -1,67 +1,52 @@
-import 'dart:async';
-
 import 'package:flow_music/controller/main_controller.dart';
-import 'package:flow_music/provider/search.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
-  const AppAbarMain({super.key});
+class AppBarMain extends ConsumerWidget implements PreferredSizeWidget {
+  const AppBarMain({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(mainController);
-    final TextEditingController searchController = TextEditingController();
-    Timer? debounce;
-    final FocusNode focusNode = FocusNode();
     return AppBar(
       title: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: TextField(
-                  focusNode: focusNode,
-                  controller: searchController,
-                  onChanged: (query) {
-                    if (debounce?.isActive ?? false) debounce?.cancel();
-                    debounce = Timer(const Duration(milliseconds: 1000), () {
-                      ref.watch(searchProvider.notifier).setValue(query);
-                      context.go('/search');
-                    });
-                  },
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 34,
-                      fontWeight: FontWeight.w500),
-                  textAlign: TextAlign.right,
-                  decoration: const InputDecoration(
-                      hintStyle: TextStyle(
-                          color: Colors.grey,
+              child: Padding(
+                  padding: const EdgeInsets.only(top: 20),
+                  child: TextField(
+                      focusNode: controller.focusNode,
+                      controller: controller.searchController,
+                      onChanged: (query) => controller.searchAppBar(
+                          query: query, context: context),
+                      style: const TextStyle(
+                          color: Colors.black,
                           fontSize: 34,
                           fontWeight: FontWeight.w500),
-                      hintText: 'Search',
-                      border: InputBorder.none)),
-            ),
-          ),
+                      textAlign: TextAlign.right,
+                      decoration: const InputDecoration(
+                          hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 34,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'Search',
+                          border: InputBorder.none)))),
           const SizedBox(width: 20),
           Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: SizedBox(
-              height: 40,
-              width: 40,
-              child: FloatingActionButton(
-                  heroTag: 'user',
-                  onPressed: () => controller.authenticante(context:context),
-                  elevation: 1,
-                  shape: const CircleBorder(),
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.person)),
-            ),
-          ),
+              padding: const EdgeInsets.only(top: 10),
+              child: SizedBox(
+                  height: 40,
+                  width: 40,
+                  child: FloatingActionButton(
+                      heroTag: 'userBtn',
+                      onPressed: () =>
+                          controller.authenticante(context: context),
+                      elevation: 1,
+                      shape: const CircleBorder(),
+                      backgroundColor: Colors.white,
+                      child: const Icon(Icons.person)))),
           const SizedBox(width: 10),
         ],
       ),
