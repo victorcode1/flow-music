@@ -4,7 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart'
-    as listSearch;
+    as list_search;
 import 'package:flow_music/datasource/model/search_result.dart';
 import 'package:flow_music/datasource/model/song_id_response.dart';
 import 'package:flow_music/domain/implements/domain.dart';
@@ -12,7 +12,6 @@ import 'package:flow_music/domain/sources.dart' as sources;
 import 'package:flow_music/pages/components/appbar/controller/App_bar_con.dart';
 import 'package:flow_music/pages/contract/contract.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
-import 'package:flow_music/provider/play_song_id.dart';
 import 'package:flow_music/settings/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -39,13 +38,6 @@ class MainController extends ChangeNotifier {
 
   Stream<User?> get user => _domain.user;
 
-  AsyncValue result({required String data}) =>
-      ref.watch(playSongIdProvider(songId: data)).when(
-            data: (data) => AsyncValue.data(data),
-            error: (error, stack) => AsyncValue.error(error, stack),
-            loading: () => const AsyncValue.loading(),
-          );
-
   GoRouter get router => ref.watch(routeProvider);
 
   void toast(String message, {Key? textKey, required BuildContext context}) {
@@ -62,23 +54,9 @@ class MainController extends ChangeNotifier {
     showSearch(context: context, delegate: delegate);
   }
 
-  void sendMesage(String s, {required Key textKey}) {
-    scaffoldMessage.currentState?.showSnackBar(
-      SnackBar(
-        content: Text(s, key: textKey),
-        duration: Duration(milliseconds: s.length * 25),
-      ),
-    );
-  }
-
   Future<void> autoPlay({required String data}) async {
     if (data.isNotEmpty) {
-      await _domain.setSource(source: sources.UrlSource(data)).whenComplete(() {
-        sendMesage(
-          'Completed setting source.',
-          textKey: const Key('toast-set-source'),
-        );
-      });
+      await _domain.setSource(source: sources.UrlSource(data));
       await _domain.play(source: sources.UrlSource(data));
     }
   }
@@ -96,7 +74,8 @@ class MainController extends ChangeNotifier {
   }
 
   Future<void> setAudioStatePaused() async {
-    return await _domain.pause();
+    await _domain.pause();
+    notifyListeners();
   }
 
   Future<void> setAudioStateHidden() async {
@@ -104,17 +83,16 @@ class MainController extends ChangeNotifier {
   }
 
   Future<void> play({required sources.UrlSource source}) async {
-    return await _domain.play(source: source).whenComplete(() {
-      sendMesage(
-        'Playing...',
-        textKey: const Key('toast-playing'),
-      );
-    });
+    await _domain.play(source: source);
+    notifyListeners();
   }
 
   Future<void> setSource({required sources.UrlSource source}) async {
-    return await _domain.setSource(source: source);
+    await _domain.setSource(source: source);
+    notifyListeners();
   }
+
+  PlayerState get playerState => _domain.status;
 
   Future<void> playListSong({String? playListId}) async {
     if (playListId != null) {
@@ -155,7 +133,7 @@ class MainController extends ChangeNotifier {
   }
 
   void authenticante({required BuildContext context}) {
-    context.go(Rutas.auth.rootValue);
+    context.go(RutasShelf.auth.rootValue);
   }
 
   Future<void> logAuth() async {
@@ -178,7 +156,7 @@ class MainController extends ChangeNotifier {
 
   FocusNode get focusNode => _appBarCon.focusNode;
 
-  Future<listSearch.ListSearchSongResult?> getListSong({required data}) async {
+  Future<list_search.ListSearchSongResult?> getListSong({required data}) async {
     return await _listSongController.getListSong(data: data);
   }
 
@@ -188,33 +166,48 @@ class MainController extends ChangeNotifier {
     super.dispose();
   }
 
-  int count({required listSearch.ListSearchSongResult data}) {
+  int count({required list_search.ListSearchSongResult data}) {
     return _listSongController.count(data: data);
   }
 
   void escuchar(
-      {required listSearch.ListSearchSongResult data,
+      {required list_search.ListSearchSongResult data,
       required BuildContext context,
       required int index}) {
     _listSongController.escuchar(data: data, context: context, index: index);
   }
 
   String imageRes(
-      {required listSearch.ListSearchSongResult data, required int index}) {
+      {required list_search.ListSearchSongResult data, required int index}) {
     return _listSongController.imageRes(data: data, index: index);
   }
 
   String? subtitle(
-      {required listSearch.ListSearchSongResult data, required int index}) {
+      {required list_search.ListSearchSongResult data, required int index}) {
     return _listSongController.subtitle(data: data, index: index);
   }
 
   String dataRes(
-      {required listSearch.ListSearchSongResult data, required int index}) {
+      {required list_search.ListSearchSongResult data, required int index}) {
     return _listSongController.dataRes(data: data, index: index);
   }
 
   Future<Map<String, String>> extra({required String data}) {
     return _listSongController.extra(data: data);
+  }
+
+  Future<SongIdResponde?> getSong({required String data}) async {
+    return await _domain.resultSong(songId: data);
+  }
+
+  void deleteContentSearch() {
+    _appBarCon.searchController.clear();
+    notifyListeners();
+  }
+
+  Future<void> setAudioStateStopped() async {
+    await _domain.stop();
+    debugPrint('Estate ${_domain.status}');
+    notifyListeners();
   }
 }

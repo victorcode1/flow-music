@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ListSongs extends ConsumerWidget {
-  const ListSongs({super.key, required this.data});
-  final String data;
+  const ListSongs({super.key, this.data});
+  final String? data;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

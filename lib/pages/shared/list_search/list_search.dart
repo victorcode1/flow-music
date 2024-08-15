@@ -43,9 +43,8 @@ class _ListSearchState extends ConsumerState<ListSearch> {
                 .searchEndpoint
                 ?.query;
             return ListTile(
-              onTap: () {
-                context.go(Rutas.songs.rootValue, extra: dataRes);
-              },
+              onTap: () =>
+                  context.go(RutasShelf.songs.rootValue, extra: dataRes),
               title: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

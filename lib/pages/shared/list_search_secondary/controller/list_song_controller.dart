@@ -1,3 +1,4 @@
+import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart';
 import 'package:flow_music/datasource/services/http/search_query.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,7 @@ class ListSongController {
         ?.playlistId;
 
     if (context.mounted && context.canPop()) context.pop();
-    context.goNamed('playSong', queryParameters: {
+    context.goNamed(Rutas.playSong.name, queryParameters: {
       'idSong': idSong ?? '',
       'playListId': playListId ?? '',
     });

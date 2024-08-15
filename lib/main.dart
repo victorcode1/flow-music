@@ -1,8 +1,6 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/firebase_options.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -12,8 +10,7 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(ProviderScope(
-      child: MainApp(app: app)));
+  runApp(ProviderScope(child: MainApp(app: app)));
 }
 
 class MainApp extends ConsumerStatefulWidget {

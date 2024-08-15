@@ -1,12 +1,12 @@
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/pages/auth_page/auth/auth_page.dart';
 import 'package:flow_music/pages/auth_page/profile/profile_page.dart';
-import 'package:flow_music/pages/home/page_builder.dart';
+import 'package:flow_music/pages/home/home_page_builder.dart';
 import 'package:flow_music/pages/radio/radio_list.dart';
 import 'package:flow_music/pages/radio_content/radio_content.dart';
 import 'package:flow_music/pages/shared/list_search/list_search.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
-import 'package:flow_music/pages/song/song_fecht.dart';
+import 'package:flow_music/pages/song/song_play.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,68 +16,83 @@ part 'routes.g.dart';
 class Route extends _$Route {
   @override
   GoRouter build() {
-    return GoRouter(initialLocation: Rutas.search.rootValue, routes: [
+    return GoRouter(initialLocation: RutasShelf.search.rootValue, routes: [
+      GoRoute(
+        name: Rutas.playSong.name,
+        path: Rutas.playSong.rootValue,
+        builder: (context, state) {
+          Map<String?, String?> data = {
+            'idSong': state.uri.queryParameters['idSong'],
+            'playListId': state.uri.queryParameters['playListId']
+          };
+          return SongWidget(data: data);
+        },
+      ),
       ShellRoute(
           builder: (context, state, child) {
             return HomePageBuilder(view: child);
           },
           routes: [
-            getRoute(Rutas.search),
-            getRoute(Rutas.auth),
-            getRoute(Rutas.songs),
-            getRoute(Rutas.profile),
-            getRoute(Rutas.radio),
-            getRoute(Rutas.radioRadioContent),
-            getRoute(Rutas.playSong),
+            getRoute(RutasShelf.search),
+            getRoute(RutasShelf.auth),
+            getRoute(RutasShelf.songs),
+            getRoute(RutasShelf.profile),
+            getRoute(RutasShelf.radio),
+            getRoute(RutasShelf.radioRadioContent),
+            //getRoute(Rutas.playSong),
           ]),
     ]);
   }
 
-  GoRoute getRoute(Rutas ruta) {
+  GoRoute getRoute(RutasShelf ruta) {
     return switch (ruta) {
-      Rutas.search => GoRoute(
+      RutasShelf.search => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) {
             return const ListSearch();
           },
         ),
-      Rutas.profile => GoRoute(
+      RutasShelf.profile => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) => const ProfilePage(),
         ),
-      Rutas.auth => GoRoute(
+      RutasShelf.auth => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) => const AuthPage(),
         ),
-      Rutas.songs => GoRoute(
+      RutasShelf.songs => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) {
-            final search = state.extra as String;
-            return ListSongs(data: search);
+            String? search;
+            if ((state.extra as String?) != null) {
+              search = state.extra as String;
+              return ListSongs(data: search);
+            }
+            return const ListSongs();
           },
         ),
-      Rutas.radioRadioContent => GoRoute(
+      RutasShelf.radioRadioContent => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) {
             return const RadioContent();
           }),
-      Rutas.playSong => GoRoute(
-          name: ruta.name,
-          path: ruta.rootValue,
-          builder: (context, state) {
-            Map<String?, String?> data = {
-              'idSong': state.uri.queryParameters['idSong'],
-              'playListId': state.uri.queryParameters['playListId']
-            };
-            return SongWidget(data: data);
-          },
-        ),
-      Rutas.radio => GoRoute(
+      // Rutas.playSong => GoRoute(
+      //     name: ruta.name,
+      //     path: ruta.rootValue,
+      //     builder: (context, state) {
+      //       Map<String?, String?> data = {
+      //         'idSong': state.uri.queryParameters['idSong'],
+      //         'playListId': state.uri.queryParameters['playListId']
+      //       };
+      //       return SongWidget(data: data);
+      //     },
+      //   ),
+      RutasShelf.radio => GoRoute(
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) {

@@ -9,33 +9,43 @@ class AppBarMain extends ConsumerWidget implements PreferredSizeWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(mainController);
     return AppBar(
+      bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(0),
+          child: Visibility(
+            visible: controller.searchController.text.isNotEmpty,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: 70),
+                child: ElevatedButton(
+                    onPressed: () => controller.deleteContentSearch(),
+                    child: const Text('Clear')),
+              ),
+            ),
+          )),
       title: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-              child: Padding(
-                  padding: const EdgeInsets.only(top: 20),
-                  child: TextField(
-                      focusNode: controller.focusNode,
-                      controller: controller.searchController,
-                      onChanged: (query) => controller.searchAppBar(
-                          query: query, context: context),
-                      style: const TextStyle(
-                          color: Colors.black,
+              child: TextField(
+                  focusNode: controller.focusNode,
+                  controller: controller.searchController,
+                  onChanged: (query) =>
+                      controller.searchAppBar(query: query, context: context),
+                  style: const TextStyle(
+                      color: Colors.black,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.right,
+                  decoration: const InputDecoration(
+                      hintStyle: TextStyle(
+                          color: Colors.grey,
                           fontSize: 34,
                           fontWeight: FontWeight.w500),
-                      textAlign: TextAlign.right,
-                      decoration: const InputDecoration(
-                          hintStyle: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 34,
-                              fontWeight: FontWeight.w500),
-                          hintText: 'Search',
-                          border: InputBorder.none)))),
+                      hintText: 'Busca Rapida',
+                      border: InputBorder.none))),
           const SizedBox(width: 20),
           Padding(
-              padding: const EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.only(top: 10, bottom: 10),
               child: SizedBox(
                   height: 40,
                   width: 40,
@@ -54,5 +64,5 @@ class AppBarMain extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 40);
 }

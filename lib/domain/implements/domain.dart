@@ -56,4 +56,8 @@ class Domain {
     SongResult songResult = SongResult();
     return await songResult.songSerch(songId: songId);
   }
+
+  Future<void> stop() async {
+    return await _audio.stopAudio();
+  }
 }

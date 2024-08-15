@@ -19,7 +19,7 @@ class AudioManaget {
 
   Future<void> dispose() async {
     debugPrint('dispose');
-     _audioPlayer.stop();
+    _audioPlayer.stop();
     return await _audioPlayer.dispose();
   }
 
@@ -28,10 +28,20 @@ class AudioManaget {
   }
 
   Future<void> pause() async {
-    return await _audioPlayer.pause();
+    if (_audioPlayer.state == PlayerState.playing) {
+      return await _audioPlayer.pause();
+    }
+    return await _audioPlayer.resume();
   }
 
   Future<void> setSource({required Source source}) async {
     return await source.setOnPlayer(_audioPlayer);
+  }
+
+  Future<void> stopAudio() async {
+    if (_audioPlayer.state == PlayerState.paused) {
+      return await _audioPlayer.stop();
+    }
+    return await _audioPlayer.stop();
   }
 }

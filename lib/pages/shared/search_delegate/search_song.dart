@@ -1,7 +1,7 @@
 //search delegate
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
-import 'package:flow_music/pages/song/song_fecht.dart';
+import 'package:flow_music/pages/song/song_play.dart';
 import 'package:flow_music/provider/search.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -22,11 +22,10 @@ class SearchSong extends SearchDelegate {
   @override
   Widget buildLeading(BuildContext context) {
     return IconButton(
-      onPressed: () {
-        close(context, null);
-      },
-      icon: const Icon(Icons.arrow_back),
-    );
+        onPressed: () {
+          close(context, null);
+        },
+        icon: const Icon(Icons.arrow_back));
   }
 
   @override
