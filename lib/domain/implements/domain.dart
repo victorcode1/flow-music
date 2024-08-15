@@ -1,10 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/datasource/model/search_result.dart';
+import 'package:flow_music/datasource/model/song_id_response.dart';
 import 'package:flow_music/datasource/services/audio/implements_repo.dart';
 import 'package:flow_music/datasource/services/firebase/auth/auth_fire.dart';
 import 'package:flow_music/datasource/services/firebase/core/fire_core.dart';
 import 'package:flow_music/datasource/services/http/search_query.dart';
+import 'package:flow_music/datasource/services/http/song_result.dart';
 import 'package:flow_music/domain/sources.dart' as sources;
 
 class Domain {
@@ -48,5 +50,10 @@ class Domain {
   Future<SearchResult?> getListResult({required String query}) async {
     SearchQuery searchQuery = SearchQuery();
     return await searchQuery.getListSearch(query: query);
+  }
+
+  Future<SongIdResponde?> resultSong({required String songId}) async {
+    SongResult songResult = SongResult();
+    return await songResult.songSerch(songId: songId);
   }
 }

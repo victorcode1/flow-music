@@ -18,6 +18,8 @@ class AudioManaget {
   }
 
   Future<void> dispose() async {
+    debugPrint('dispose');
+     _audioPlayer.stop();
     return await _audioPlayer.dispose();
   }
 

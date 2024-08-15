@@ -12,10 +12,7 @@ class SongWidget extends ConsumerStatefulWidget {
 }
 
 class _PlaySongState extends ConsumerState<SongWidget> {
-  @override
-  void initState() {
-    super.initState();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {

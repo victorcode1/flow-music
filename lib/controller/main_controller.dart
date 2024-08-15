@@ -116,7 +116,7 @@ class MainController extends ChangeNotifier {
     return await _domain.setSource(source: source);
   }
 
-  void playListSong({String? playListId}) {
+  Future<void> playListSong({String? playListId}) async {
     if (playListId != null) {
       switch (_domain.status) {
         case PlayerState.stopped:
@@ -125,12 +125,10 @@ class MainController extends ChangeNotifier {
           break;
         case PlayerState.playing:
           debugPrint('playListId playing: $playListId');
-          ref.watch(playSongIdProvider(songId: playListId)).when(
-                data: (data) => _domain.play(
-                    source: sources.UrlSource(urlSong(data: data))),
-                error: (error, stack) => AsyncValue.error(error, stack),
-                loading: () => const AsyncValue.loading(),
-              );
+          final resultSong = await _domain.resultSong(songId: playListId);
+          //  print('resultSong: $resultSong');
+          _domain.play(source: sources.UrlSource(urlSong(data: resultSong)));
+
           break;
         case PlayerState.paused:
           debugPrint('playListId paused: $playListId');
