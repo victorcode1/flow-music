@@ -26,31 +26,40 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    debugPrint('initState');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print('didChangeDependencies');
   }
 
   @override
   void dispose() {
+    print('dispose');
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    debugPrint('AppLifecycleState: $state');
     switch (state) {
       case AppLifecycleState.detached:
         ref.read(mainController).setAudioStateDetached();
       case AppLifecycleState.resumed:
-        ref.read(mainController).setAudioStateResumed();
+        // ref.read(mainController).setAudioStateResumed();
         break;
       case AppLifecycleState.inactive:
-        ref.read(mainController).setAudioStateInactive();
+        // ref.read(mainController).setAudioStateResumed();
         break;
       case AppLifecycleState.paused:
-        ref.read(mainController).setAudioStatePaused();
+        // ref.read(mainController).setAudioStatePaused();
         break;
 
       case AppLifecycleState.hidden:
-        ref.read(mainController).setAudioStateHidden();
+        // ref.read(mainController).setAudioStateHidden();
         break;
     }
   }

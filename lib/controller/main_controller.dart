@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:audioplayers/audioplayers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart'
@@ -12,10 +11,13 @@ import 'package:flow_music/domain/sources.dart' as sources;
 import 'package:flow_music/pages/components/appbar/controller/App_bar_con.dart';
 import 'package:flow_music/pages/contract/contract.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
+import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flow_music/settings/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:rxdart/rxdart.dart';
 
 final mainController =
     ChangeNotifierProvider<MainController>((ref) => MainController(ref: ref));
@@ -24,17 +26,22 @@ class MainController extends ChangeNotifier {
   late Domain _domain;
   late AppBarCon _appBarCon;
   late ListSongController _listSongController;
-
+  late ChangeNotifierProviderRef ref;
   Contract? contractView;
-  ChangeNotifierProviderRef ref;
+
   GlobalKey<ScaffoldMessengerState> scaffoldMessage =
       GlobalKey<ScaffoldMessengerState>();
 
-  MainController({required this.ref}) {
-    _domain = Domain();
-    _appBarCon = AppBarCon();
-    _listSongController = ListSongController();
+  factory MainController({required ChangeNotifierProviderRef ref}) {
+    _instance.ref = ref;
+    return _instance;
   }
+  static final MainController _instance = MainController._internal();
+
+  MainController._internal()
+      : _domain = Domain(),
+        _appBarCon = AppBarCon(),
+        _listSongController = ListSongController();
 
   Stream<User?> get user => _domain.user;
 
@@ -56,7 +63,7 @@ class MainController extends ChangeNotifier {
 
   Future<void> autoPlay({required String data}) async {
     if (data.isNotEmpty) {
-      await _domain.setSource(source: sources.UrlSource(data));
+      //await _domain.setSource(source: sources.UrlSource(data));
       await _domain.play(source: sources.UrlSource(data));
     }
   }
@@ -74,8 +81,7 @@ class MainController extends ChangeNotifier {
   }
 
   Future<void> setAudioStatePaused() async {
-    await _domain.pause();
-    notifyListeners();
+    await _domain.resume();
   }
 
   Future<void> setAudioStateHidden() async {
@@ -92,35 +98,10 @@ class MainController extends ChangeNotifier {
     notifyListeners();
   }
 
-  PlayerState get playerState => _domain.status;
+  Stream<PlayerState> get playerState => _domain.statusPlay;
 
-  Future<void> playListSong({String? playListId}) async {
-    if (playListId != null) {
-      switch (_domain.status) {
-        case PlayerState.stopped:
-          debugPrint('playListId stopped: $playListId');
-
-          break;
-        case PlayerState.playing:
-          debugPrint('playListId playing: $playListId');
-          final resultSong = await _domain.resultSong(songId: playListId);
-          //  print('resultSong: $resultSong');
-          _domain.play(source: sources.UrlSource(urlSong(data: resultSong)));
-
-          break;
-        case PlayerState.paused:
-          debugPrint('playListId paused: $playListId');
-          break;
-        case PlayerState.completed:
-          debugPrint('playListId completed: $playListId');
-
-          break;
-        case PlayerState.disposed:
-          debugPrint('playListId disposed: $playListId');
-          break;
-      }
-    }
-  }
+  Stream<Duration?> get stremDuracion => _domain.stremDuracion;
+  Stream<Duration?> get stremPosiscion => _domain.stremPosiscion;
 
   String urlSong({required data}) {
     data as SongIdResponde;
@@ -161,14 +142,25 @@ class MainController extends ChangeNotifier {
   }
 
   @override
-  dispose() {
-    _domain.dispose();
+  dispose() async {
+    debugPrint('Dispose MainController');
+    await _domain.dispose();
     super.dispose();
   }
 
+  StreamController<(StreamController<Duration>, StreamController<Duration>)>
+      get streamController => _domain.streamController;
   int count({required list_search.ListSearchSongResult data}) {
     return _listSongController.count(data: data);
   }
+
+  Stream<PositionData> get positionDataStream =>
+      Rx.combineLatest3<Duration?, Duration?, Duration?, PositionData>(
+          _domain.positionStream,
+          _domain.bufferedPositionStream,
+          _domain.durationStream,
+          (position, bufferedPosition, duration) => PositionData(
+              position!, bufferedPosition!, duration ?? Duration.zero));
 
   void escuchar(
       {required list_search.ListSearchSongResult data,
@@ -207,7 +199,9 @@ class MainController extends ChangeNotifier {
 
   Future<void> setAudioStateStopped() async {
     await _domain.stop();
-    debugPrint('Estate ${_domain.status}');
-    notifyListeners();
+  }
+
+  Future<void> seek({required Duration duration}) async {
+    await _domain.seek(duration: duration);
   }
 }

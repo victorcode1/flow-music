@@ -1,5 +1,6 @@
 enum RutasShelf {
   search('/search'),
+
   songs('/songs'),
   radio('/radio'),
   profile('/profile'),
@@ -12,7 +13,8 @@ enum RutasShelf {
 }
 
 enum Rutas {
-  playSong('/playSong');
+  playSong('/playSong'),
+  home('/home');
 
   final String rootValue;
   const Rutas(this.rootValue);

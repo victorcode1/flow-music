@@ -1,16 +1,17 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/pages/components/appbar/app_bar.dart';
 import 'package:flow_music/pages/components/drawer/drawer.dart';
 import 'package:flow_music/pages/contract/contract.dart';
 import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
+import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 
 class HomePageBuilder extends ConsumerStatefulWidget {
   final Widget? view;
-  const HomePageBuilder({super.key, required this.view});
+  const HomePageBuilder({super.key,  this.view});
 
   @override
   ConsumerState<HomePageBuilder> createState() => _HomePageBuilderState();
@@ -21,7 +22,7 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(mainController)..initHome(contractView: this);
-    debugPrint('Estate ${controller.playerState}');
+
     return SafeArea(
       child: Scaffold(
         appBar: const AppBarMain(),
@@ -69,44 +70,78 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
             Expanded(flex: 2, child: widget.view ?? const SizedBox()),
           ],
         ),
-        floatingActionButton: Visibility(
-          visible: controller.playerState != PlayerState.playing &&
-              controller.playerState != PlayerState.paused,
-          child: SizedBox(
-            width: 50,
-            child: FloatingActionButton(
-                heroTag: 'search',
-                elevation: 1,
-                backgroundColor: Colors.white,
-                shape: const CircleBorder(),
-                onPressed: () => controller.search(
-                    context: context, delegate: SearchSong(ref: ref)),
-                child: const Icon(Icons.search)),
-          ),
-        ),
-        bottomSheet: Visibility(
-          visible: controller.playerState == PlayerState.playing ||
-              controller.playerState == PlayerState.paused,
-          child: Card(
-            child: SizedBox(
-              height: 50,
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                      onPressed: () => controller.setAudioStateStopped(),
-                      icon: const Icon(Icons.stop)),
-                  IconButton(
-                      onPressed: () => controller.setAudioStatePaused(),
-                      icon: Icon(controller.playerState == PlayerState.playing
-                          ? Icons.pause
-                          : Icons.play_arrow)),
-                ],
-              ),
-            ),
-          ),
-        ),
+        floatingActionButton: StreamBuilder<PlayerState>(
+            stream: controller.playerState,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const SizedBox();
+
+              return Visibility(
+                visible: !snapshot.data!.playing,
+                child: SizedBox(
+                  width: 50,
+                  child: FloatingActionButton(
+                      heroTag: 'search',
+                      elevation: 1,
+                      backgroundColor: Colors.white,
+                      shape: const CircleBorder(),
+                      onPressed: () => controller.search(
+                          context: context, delegate: SearchSong(ref: ref)),
+                      child: const Icon(Icons.search)),
+                ),
+              );
+            }),
+        bottomSheet: StreamBuilder<PlayerState>(
+            stream: controller.playerState,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) return const SizedBox();
+              return Visibility(
+                visible: snapshot.data!.playing,
+                child: Card(
+                  child: SizedBox(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: StreamBuilder<PositionData>(
+                              stream: controller.positionDataStream,
+                              builder: (context, snapshot) {
+                                //Duration combinedDuration = duration + position;
+                                final positionData = snapshot.data;
+                                return Column(
+                                  children: [
+                                    Flexible(
+                                      child: SeekBar(
+                                        duration: positionData?.duration ??
+                                            Duration.zero,
+                                        position: positionData?.position ??
+                                            Duration.zero,
+                                        bufferedPosition:
+                                            positionData?.bufferedPosition ??
+                                                Duration.zero,
+                                        onChangeEnd: (duration) =>
+                                            controller.seek(duration: duration),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }),
+                        ),
+                        IconButton(
+                            onPressed: () => controller.setAudioStateStopped(),
+                            icon: const Icon(Icons.stop)),
+                        IconButton(
+                            onPressed: () => controller.setAudioStatePaused(),
+                            icon: Icon(snapshot.data!.playing
+                                ? Icons.pause
+                                : Icons.play_arrow)),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
       ),
     );
   }

@@ -32,12 +32,22 @@ class SearchSong extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     final controller = ref.watch(mainController);
     return query.isNotEmpty
-        ? FutureBuilder<Map<String, String>>(
+        ? FutureBuilder<Map<String, String>?>(
             future: controller.extra(data: query),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
+              if (snapshot.hasError) {
+                return Center(child: Text('Error ${snapshot.error}'));
+              }
+              if (snapshot.data == null) {
+                return const Center(child: Text("No hay resultados"));
+              }
+              if (snapshot.data?.isEmpty == null) {
+                return const Center(child: Text("No hay resultados"));
+              }
+
               return SongWidget(data: snapshot.data ?? {});
             })
         : const Center(child: Text("No hay resultados"));

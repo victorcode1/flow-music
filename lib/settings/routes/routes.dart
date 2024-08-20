@@ -28,6 +28,13 @@ class Route extends _$Route {
           return SongWidget(data: data);
         },
       ),
+      GoRoute(
+        name: Rutas.home.name,
+        path: Rutas.home.rootValue,
+        builder: (context, state) {
+          return const HomePageBuilder();
+        },
+      ),
       ShellRoute(
           builder: (context, state, child) {
             return HomePageBuilder(view: child);

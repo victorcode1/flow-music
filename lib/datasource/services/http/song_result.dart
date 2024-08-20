@@ -34,8 +34,6 @@ class SongResult {
           await http.post(Uri.parse(url), headers: headers, body: bodyParams);
 
       if (res.statusCode == 200) {
-        debugPrint(
-            SongIdResponde.fromJson(json.decode(res.body)).toJson().toString());
         return SongIdResponde.fromJson(json.decode(res.body));
       } else {
         throw Exception('Failed to load data!');

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart'
     as list_search;
@@ -28,16 +29,27 @@ class ListSongs extends ConsumerWidget {
                       index: index),
                   style: ListTileStyle.list,
                   leading: SizedBox(
-                    height: 300,
+                    width: 150,
                     child: ClipRRect(
                       clipBehavior: Clip.antiAlias,
                       borderRadius: BorderRadius.circular(0),
-                      child: Image.network(
-                          controllerr.imageRes(
-                              data: snapshot.data ??
-                                  const list_search.ListSearchSongResult(),
-                              index: index),
-                          fit: BoxFit.fitHeight),
+                      child: CachedNetworkImage(
+                        alignment: Alignment.centerRight,
+                        imageUrl: controllerr.imageRes(
+                            data: snapshot.data ??
+                                const list_search.ListSearchSongResult(),
+                            index: index),
+                        imageBuilder: (context, imageProvider) => Container(
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.fitHeight),
+                          ),
+                        ),
+                        placeholder: (context, url) => const Center(
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.person),
+                      ),
                     ),
                   ),
                   subtitle: Text(

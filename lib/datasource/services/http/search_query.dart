@@ -33,7 +33,6 @@ class SearchQuery {
           await http.post(Uri.parse(url), headers: headers, body: bodyParams);
 
       if (res.statusCode == 200) {
-        debugPrint('Data: ${SearchResult.fromJson(json.decode(res.body))}');
         return SearchResult.fromJson(json.decode(res.body));
       } else {
         throw Exception('Failed to load data!');
@@ -65,9 +64,6 @@ class SearchQuery {
       final res =
           await http.post(Uri.parse(url), headers: headers, body: bodyParams);
       if (res.statusCode == 200) {
-        debugPrint(ListSearchSongResult.fromJson(json.decode(res.body))
-            .toJson()
-            .toString());
         return ListSearchSongResult.fromJson(json.decode(res.body));
       } else {
         throw Exception('Failed to load data!');
@@ -78,7 +74,8 @@ class SearchQuery {
       throw Exception('Failed to load data!');
     }
   }
-    Future<SongIdResponde?> fetchSong({required String songId}) async {
+
+  Future<SongIdResponde?> fetchSong({required String songId}) async {
     try {
       String url =
           'https://www.youtube.com/youtubei/v1/player?key=$YOUTUBE_ANDROID_MUSIC';
@@ -104,8 +101,6 @@ class SearchQuery {
           await http.post(Uri.parse(url), headers: headers, body: bodyParams);
 
       if (res.statusCode == 200) {
-        debugPrint(
-            SongIdResponde.fromJson(json.decode(res.body)).toJson().toString());
         return SongIdResponde.fromJson(json.decode(res.body));
       } else {
         throw Exception('Failed to load data!');
