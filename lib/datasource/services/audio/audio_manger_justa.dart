@@ -84,6 +84,9 @@ class AudioManagerJustAudio {
     }
     return await _audioPlayer.play();
   }
+    Future<void> setPause() async {
+     return await _audioPlayer.pause();
+  }
 
   Future<void> stopAudio() async {
     return await _audioPlayer.stop();
@@ -91,5 +94,10 @@ class AudioManagerJustAudio {
 
   Future<void> seek({required Duration duration}) async {
     await _audioPlayer.seek(duration);
+  }
+
+  Future<void> replay() async {
+  await  _audioPlayer.seek(Duration.zero);
+  await  _audioPlayer.play();
   }
 }

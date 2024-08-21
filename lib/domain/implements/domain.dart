@@ -46,7 +46,7 @@ class Domain {
   }
 
   Future<void> pause() async {
-    return await _audio.pause();
+    return await _audio.setPause();
   }
 
   Future<void> play({required sources.UrlSource source}) async {
@@ -82,5 +82,9 @@ class Domain {
 
   void init() {
     _audio.init();
+  }
+
+ Future<void> replay() async {
+   await _audio.replay();
   }
 }

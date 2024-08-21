@@ -123,10 +123,24 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                              onPressed: () =>
-                                  controller.setAudioStateStopped(),
-                              icon: const Icon(Icons.stop)),
+                          StreamBuilder<PlayerState>(
+                              stream: controller.playerState,
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) return const SizedBox();
+                                return SizedBox(
+                                  width: 80,
+                                  height: 80,
+                                  child: FloatingActionButton(
+                                      shape: const CircleBorder(),
+                                      onPressed: () => snapshot.data!.playing
+                                          ? controller.setAudioStateStopped()
+                                          : controller.replay(),
+                                      child: Icon(snapshot.data!.playing
+                                          ? Icons.stop
+                                          : Icons.replay)),
+                                );
+                              }),
+                          const SizedBox(width: 10),
                           SizedBox(
                             width: 80,
                             height: 80,

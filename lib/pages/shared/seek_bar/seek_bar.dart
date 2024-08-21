@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flow_music/controller/main_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SeekBar extends StatefulWidget {
+class SeekBar extends ConsumerStatefulWidget {
   final Duration duration;
   final Duration position;
   final Duration bufferedPosition;
@@ -23,7 +25,7 @@ class SeekBar extends StatefulWidget {
   SeekBarState createState() => SeekBarState();
 }
 
-class SeekBarState extends State<SeekBar> {
+class SeekBarState extends ConsumerState<SeekBar> {
   double? _dragValue;
   late SliderThemeData _sliderThemeData;
 
@@ -38,10 +40,14 @@ class SeekBarState extends State<SeekBar> {
 
   @override
   Widget build(BuildContext context) {
-    // Modificar la duración si estamos en iOS o macOS
+    final controller = ref.watch(mainController);
     final effectiveDuration = Platform.isIOS || Platform.isMacOS
         ? widget.duration ~/ 2
         : widget.duration;
+
+    final effectivePosition = widget.position < effectiveDuration
+        ? widget.position
+        : effectiveDuration;
 
     return Stack(
       children: [
@@ -80,7 +86,8 @@ class SeekBarState extends State<SeekBar> {
           child: Slider(
             min: 0.0,
             max: effectiveDuration.inMilliseconds.toDouble(),
-            value: min(_dragValue ?? widget.position.inMilliseconds.toDouble(),
+            value: min(
+                _dragValue ?? effectivePosition.inMilliseconds.toDouble(),
                 effectiveDuration.inMilliseconds.toDouble()),
             onChanged: (value) {
               setState(() {
@@ -113,10 +120,15 @@ class SeekBarState extends State<SeekBar> {
   }
 
   Duration get _remaining {
+   
     final effectiveDuration = Platform.isIOS || Platform.isMacOS
         ? widget.duration ~/ 2
         : widget.duration;
-    return effectiveDuration - widget.position;
+    final effectivePosition = widget.position < effectiveDuration
+        ? widget.position
+        : effectiveDuration;
+
+    return effectiveDuration - effectivePosition;
   }
 }
 

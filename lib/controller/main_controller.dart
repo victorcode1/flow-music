@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
@@ -84,6 +85,10 @@ class MainController extends ChangeNotifier {
     await _domain.resume();
   }
 
+  Future<void> setAudioPause() async {
+    await _domain.pause();
+  }
+
   Future<void> setAudioStateHidden() async {
     return await _domain.pause();
   }
@@ -158,9 +163,23 @@ class MainController extends ChangeNotifier {
       Rx.combineLatest3<Duration?, Duration?, Duration?, PositionData>(
           _domain.positionStream,
           _domain.bufferedPositionStream,
-          _domain.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
-              position!, bufferedPosition!, duration ?? Duration.zero));
+          _domain.durationStream, (position, bufferedPosition, duration) {
+        if (duration != null && position != null && bufferedPosition != null) {
+          final effectiveDuration =
+              Platform.isIOS || Platform.isMacOS ? duration ~/ 2 : duration;
+          final effectivePosition =
+              position < effectiveDuration ? position : effectiveDuration;
+          if (effectiveDuration == effectivePosition) {
+            debugPrint('stop');
+            //pause
+
+            setAudioPause();
+          }
+        }
+
+        return PositionData(
+            position!, bufferedPosition!, duration ?? Duration.zero);
+      });
 
   void escuchar(
       {required list_search.ListSearchSongResult data,
@@ -209,5 +228,9 @@ class MainController extends ChangeNotifier {
 
   void init() {
     _domain.init();
+  }
+
+  Future<void> replay() async {
+    await _domain.replay();
   }
 }
