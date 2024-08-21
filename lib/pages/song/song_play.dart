@@ -54,6 +54,7 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   @override
   void initState() {
     super.initState();
+    debugPrint('Id video: ${widget.data.videoDetails?.videoId}');
     ref.read(mainController).autoPlay(data: widget.url);
   }
 
@@ -93,27 +94,28 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(flex: 2, child: _SourceTile(data: widget.data)),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Wrap(
-              children: [
-                StreamBuilder<PositionData>(
-                    stream: controller.positionDataStream,
-                    builder: (context, snapshot) {
-                      final positionData = snapshot.data;
-                      return SizedBox(
-                        height: 100,
-                        child: SeekBar(
-                          duration: positionData?.duration ?? Duration.zero,
-                          position: positionData?.position ?? Duration.zero,
-                          bufferedPosition:
-                              positionData?.bufferedPosition ?? Duration.zero,
-                          onChangeEnd: (duration) =>
-                              controller.seek(duration: duration),
-                        ),
-                      );
-                    }),
-                StreamBuilder<PlayerState>(
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              StreamBuilder<PositionData>(
+                  stream: controller.positionDataStream,
+                  builder: (context, snapshot) {
+                    final positionData = snapshot.data;
+                    return SizedBox(
+                      height: 50,
+                      child: SeekBar(
+                        duration: positionData?.duration ?? Duration.zero,
+                        position: positionData?.position ?? Duration.zero,
+                        bufferedPosition:
+                            positionData?.bufferedPosition ?? Duration.zero,
+                        onChangeEnd: (duration) =>
+                            controller.seek(duration: duration),
+                      ),
+                    );
+                  }),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30),
+                child: StreamBuilder<PlayerState>(
                     stream: controller.playerState,
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) return const SizedBox();
@@ -126,8 +128,8 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                                   controller.setAudioStateStopped(),
                               icon: const Icon(Icons.stop)),
                           SizedBox(
-                            width: 100,
-                            height: 100,
+                            width: 80,
+                            height: 80,
                             child: FloatingActionButton(
                                 shape: const CircleBorder(),
                                 onPressed: () =>
@@ -139,8 +141,8 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                         ],
                       );
                     }),
-              ],
-            ),
+              ),
+            ],
           )
         ],
       ),
@@ -151,19 +153,37 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   bool get wantKeepAlive => true;
 }
 
-class _SourceTile extends StatelessWidget {
+class _SourceTile extends ConsumerWidget {
   final SongIdResponde data;
   const _SourceTile({
     required this.data,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return CachedNetworkImage(
-      imageUrl: data.videoDetails?.thumbnail?.thumbnails?[4].url ?? '',
-      placeholder: (context, url) =>
-          const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-      errorWidget: (context, url, error) => const Icon(Icons.error),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(mainController);
+    return Column(
+      children: [
+        Expanded(
+          child: CachedNetworkImage(
+            imageUrl: data.videoDetails?.thumbnail?.thumbnails?[4].url ?? '',
+            placeholder: (context, url) =>
+                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const IconButton(onPressed: null, icon: Icon(Icons.music_note)),
+            const SizedBox(width: 10),
+            IconButton(
+                onPressed: () => controller.changeVieo(
+                    videoId: data.videoDetails?.videoId ?? ''),
+                icon: const Icon(Icons.video_library_outlined)),
+          ],
+        ),
+      ],
     );
   }
 }

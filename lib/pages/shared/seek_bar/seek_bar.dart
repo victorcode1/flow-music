@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -37,20 +38,24 @@ class SeekBarState extends State<SeekBar> {
 
   @override
   Widget build(BuildContext context) {
+    // Modificar la duración si estamos en iOS o macOS
+    final effectiveDuration = Platform.isIOS || Platform.isMacOS
+        ? widget.duration ~/ 2
+        : widget.duration;
+
     return Stack(
       children: [
         SliderTheme(
           data: _sliderThemeData.copyWith(
-            thumbShape: HiddenThumbComponentShape(),
-            activeTrackColor: Colors.blue.shade100,
-            inactiveTrackColor: Colors.grey.shade300,
-          ),
+              thumbShape: HiddenThumbComponentShape(),
+              activeTrackColor: Colors.blue.shade100,
+              inactiveTrackColor: Colors.grey.shade300),
           child: ExcludeSemantics(
             child: Slider(
               min: 0.0,
-              max: widget.duration.inMilliseconds.toDouble(),
+              max: effectiveDuration.inMilliseconds.toDouble(),
               value: min(widget.bufferedPosition.inMilliseconds.toDouble(),
-                  widget.duration.inMilliseconds.toDouble()),
+                  effectiveDuration.inMilliseconds.toDouble()),
               onChanged: (value) {
                 setState(() {
                   _dragValue = value;
@@ -74,9 +79,9 @@ class SeekBarState extends State<SeekBar> {
           ),
           child: Slider(
             min: 0.0,
-            max: widget.duration.inMilliseconds.toDouble(),
+            max: effectiveDuration.inMilliseconds.toDouble(),
             value: min(_dragValue ?? widget.position.inMilliseconds.toDouble(),
-                widget.duration.inMilliseconds.toDouble()),
+                effectiveDuration.inMilliseconds.toDouble()),
             onChanged: (value) {
               setState(() {
                 _dragValue = value;
@@ -107,7 +112,12 @@ class SeekBarState extends State<SeekBar> {
     );
   }
 
-  Duration get _remaining => widget.duration - widget.position;
+  Duration get _remaining {
+    final effectiveDuration = Platform.isIOS || Platform.isMacOS
+        ? widget.duration ~/ 2
+        : widget.duration;
+    return effectiveDuration - widget.position;
+  }
 }
 
 class HiddenThumbComponentShape extends SliderComponentShape {
@@ -146,7 +156,6 @@ void showSliderDialog({
   required double min,
   required double max,
   String valueSuffix = '',
- 
   required double value,
   required Stream<double> stream,
   required ValueChanged<double> onChanged,

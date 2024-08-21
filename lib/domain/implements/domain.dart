@@ -79,4 +79,8 @@ class Domain {
   Future<void> seek({required Duration duration}) async {
     await _audio.seek(duration: duration);
   }
+
+  void init() {
+    _audio.init();
+  }
 }

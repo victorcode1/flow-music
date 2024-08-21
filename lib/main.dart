@@ -1,21 +1,24 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/firebase_options.dart';
+import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final app = await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(ProviderScope(child: MainApp(app: app)));
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends ConsumerStatefulWidget {
-  const MainApp({super.key, required this.app});
-  final FirebaseApp app;
+  const MainApp({
+    super.key,
+  });
 
   @override
   ConsumerState<MainApp> createState() => _MainAppState();
@@ -26,19 +29,21 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    debugPrint('initState');
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+    ));
+    ref.read(mainController).init();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    print('didChangeDependencies');
   }
 
   @override
   void dispose() {
-    print('dispose');
     WidgetsBinding.instance.removeObserver(this);
+    ambiguate(WidgetsBinding.instance)!.removeObserver(this);
     super.dispose();
   }
 

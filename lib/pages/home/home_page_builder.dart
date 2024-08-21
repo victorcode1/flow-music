@@ -11,14 +11,21 @@ import 'package:just_audio/just_audio.dart';
 
 class HomePageBuilder extends ConsumerStatefulWidget {
   final Widget? view;
-  const HomePageBuilder({super.key,  this.view});
+  const HomePageBuilder({super.key, this.view});
 
   @override
   ConsumerState<HomePageBuilder> createState() => _HomePageBuilderState();
 }
 
 class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
+    with WidgetsBindingObserver
     implements Contract {
+  @override
+  void initState() {
+    super.initState();
+    ambiguate(WidgetsBinding.instance)!.addObserver(this);
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(mainController)..initHome(contractView: this);
@@ -105,28 +112,22 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
                       children: [
                         Expanded(
                           child: StreamBuilder<PositionData>(
-                              stream: controller.positionDataStream,
-                              builder: (context, snapshot) {
-                                //Duration combinedDuration = duration + position;
-                                final positionData = snapshot.data;
-                                return Column(
-                                  children: [
-                                    Flexible(
-                                      child: SeekBar(
-                                        duration: positionData?.duration ??
-                                            Duration.zero,
-                                        position: positionData?.position ??
-                                            Duration.zero,
-                                        bufferedPosition:
-                                            positionData?.bufferedPosition ??
-                                                Duration.zero,
-                                        onChangeEnd: (duration) =>
-                                            controller.seek(duration: duration),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }),
+                            stream: controller.positionDataStream,
+                            builder: (context, snapshot) {
+                              final positionData = snapshot.data;
+                              return SeekBar(
+                                duration:
+                                    positionData?.duration ?? Duration.zero,
+                                position:
+                                    positionData?.position ?? Duration.zero,
+                                bufferedPosition:
+                                    positionData?.bufferedPosition ??
+                                        Duration.zero,
+                                onChangeEnd: (newDuration) =>
+                                    controller.seek(duration: newDuration),
+                              );
+                            },
+                          ),
                         ),
                         IconButton(
                             onPressed: () => controller.setAudioStateStopped(),

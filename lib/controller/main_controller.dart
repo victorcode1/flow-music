@@ -204,4 +204,10 @@ class MainController extends ChangeNotifier {
   Future<void> seek({required Duration duration}) async {
     await _domain.seek(duration: duration);
   }
+
+  changeVieo({required String videoId}) {}
+
+  void init() {
+    _domain.init();
+  }
 }

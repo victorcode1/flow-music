@@ -1,12 +1,12 @@
 import 'dart:async';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class AudioManagerJustAudio {
   late AudioPlayer _audioPlayer;
-  Duration? _duration;
-  Duration? _position;
+
   final StreamController<Duration> _durationSubscription =
       StreamController<Duration>.broadcast();
   final StreamController<Duration> _positionSubscription =
@@ -30,6 +30,11 @@ class AudioManagerJustAudio {
     debugPrint('AudioPlayer created ${_audioPlayer.playerState}');
   }
 
+  Future<void> init() async {
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.speech());
+  }
+
   StreamController<(StreamController<Duration>, StreamController<Duration>)>
       get streamController => _streamController;
 
@@ -42,7 +47,16 @@ class AudioManagerJustAudio {
   Future<void> play({required AudioSource source}) async {
     debugPrint('setSource ${_audioPlayer.playerState}');
     if (_audioPlayer.playing) await _audioPlayer.stop();
-    await _audioPlayer.setAudioSource(source);
+    try {
+      await _audioPlayer.setAudioSource(source, initialPosition: Duration.zero);
+    } on Exception catch (e, s) {
+      debugPrintStack(stackTrace: s, label: e.toString());
+    }
+    Duration? duration;
+    while (duration == null) {
+      duration = await _audioPlayer.durationStream.firstWhere((d) => d != null);
+    }
+
     await _audioPlayer.play();
   }
 
