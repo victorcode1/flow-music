@@ -233,4 +233,8 @@ class MainController extends ChangeNotifier {
   Future<void> replay() async {
     await _domain.replay();
   }
+
+  void playRadio({required sources.UrlSource source}) {
+    _domain.playRadio(source: source);
+  }
 }

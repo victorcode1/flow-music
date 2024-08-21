@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/datasource/model/search_result.dart';
 import 'package:flow_music/datasource/model/song_id_response.dart';
+import 'package:flow_music/datasource/services/audio/audio_manger_audiop.dart';
 import 'package:flow_music/datasource/services/audio/audio_manger_justa.dart';
 import 'package:flow_music/datasource/services/firebase/auth/auth_fire.dart';
 import 'package:flow_music/datasource/services/firebase/core/fire_core.dart';
@@ -13,12 +14,14 @@ import 'package:just_audio/just_audio.dart';
 
 class Domain {
   late AudioManagerJustAudio _audio;
+  late AudioManagerAudioPlayer _audioManagerAudioPlayer;
   late AuthFire _auth;
   late FireCore fireCore;
 
   Domain() {
     _audio = AudioManagerJustAudio();
     _auth = AuthFire();
+    _audioManagerAudioPlayer = AudioManagerAudioPlayer();
   }
 
   Stream<PlayerState> get statusPlay => _audio.statusStream;
@@ -50,7 +53,6 @@ class Domain {
   }
 
   Future<void> play({required sources.UrlSource source}) async {
- 
     return await _audio.play(source: AudioSource.uri(Uri.parse(source.url)));
   }
 
@@ -84,7 +86,11 @@ class Domain {
     _audio.init();
   }
 
- Future<void> replay() async {
-   await _audio.replay();
+  Future<void> replay() async {
+    await _audio.replay();
+  }
+
+  void playRadio({required sources.UrlSource source}) {
+    _audioManagerAudioPlayer.play(source: source);
   }
 }

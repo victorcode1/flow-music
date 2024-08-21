@@ -16,7 +16,7 @@ class _RadioContentState extends ConsumerState<RadioContent> {
     super.initState();
     ref
         .read(mainController)
-        .play(source: UrlSource('https://ic.streann.com/wao'));
+        .playRadio(source: UrlSource('https://ic.streann.com/wao'));
   }
 
   @override

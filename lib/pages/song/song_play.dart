@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/song_id_response.dart';
+import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
 import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -70,9 +71,9 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
             onPressed: () => context.go(RutasShelf.songs.rootValue)),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () => context.go(RutasShelf.search.rootValue),
-          ),
+              icon: const Icon(Icons.search),
+              onPressed: () => controller.search(
+                  context: context, delegate: SearchSong(ref: ref))),
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () => context.go(Rutas.home.rootValue),
@@ -123,31 +124,29 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          StreamBuilder<PlayerState>(
-                              stream: controller.playerState,
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) return const SizedBox();
-                                return SizedBox(
-                                  width: 80,
-                                  height: 80,
-                                  child: FloatingActionButton(
-                                      shape: const CircleBorder(),
-                                      onPressed: () => snapshot.data!.playing
-                                          ? controller.setAudioStateStopped()
-                                          : controller.replay(),
-                                      child: Icon(snapshot.data!.playing
-                                          ? Icons.stop
-                                          : Icons.replay)),
-                                );
-                              }),
+                          SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: FloatingActionButton(
+                                heroTag: 'stop song',
+                                shape: const CircleBorder(),
+                                onPressed: () => snapshot.data!.playing
+                                    ? controller.setAudioStateStopped()
+                                    : controller.replay(),
+                                child: Icon(snapshot.data!.playing
+                                    ? Icons.stop
+                                    : Icons.replay)),
+                          ),
                           const SizedBox(width: 10),
                           SizedBox(
                             width: 80,
                             height: 80,
                             child: FloatingActionButton(
+                                heroTag: 'play pause',
                                 shape: const CircleBorder(),
-                                onPressed: () =>
-                                    controller.setAudioStatePaused(),
+                                onPressed: () => snapshot.data!.playing
+                                    ? controller.setAudioStatePaused()
+                                    : controller.replay(),
                                 child: Icon(snapshot.data!.playing
                                     ? Icons.pause
                                     : Icons.play_arrow)),
