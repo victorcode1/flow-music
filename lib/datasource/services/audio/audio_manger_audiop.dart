@@ -26,7 +26,6 @@ class AudioManagerAudioPlayer {
   factory AudioManagerAudioPlayer() => _instance;
   AudioManagerAudioPlayer._internal() {
     _audioPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
-
     debugPrint('AudioPlayer created ${_audioPlayer.state}');
   }
 

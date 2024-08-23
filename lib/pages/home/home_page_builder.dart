@@ -20,6 +20,7 @@ class HomePageBuilder extends ConsumerStatefulWidget {
 class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
     with WidgetsBindingObserver
     implements Contract {
+  Widget? view;
   @override
   void initState() {
     super.initState();
@@ -74,7 +75,16 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
                 ],
               ),
             ),
-            Expanded(flex: 2, child: widget.view ?? const SizedBox()),
+            Expanded(
+                flex: 2,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder:
+                      (Widget child, Animation<double> animation) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
+                  child: view ?? const SizedBox(),
+                )),
           ],
         ),
         floatingActionButton: StreamBuilder<PlayerState>(
@@ -85,16 +95,15 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
               return Visibility(
                 visible: !snapshot.data!.playing,
                 child: SizedBox(
-                  width: 50,
-                  child: FloatingActionButton(
-                      heroTag: 'search',
-                      elevation: 1,
-                      backgroundColor: Colors.white,
-                      shape: const CircleBorder(),
-                      onPressed: () => controller.search(
-                          context: context, delegate: SearchSong(ref: ref)),
-                      child: const Icon(Icons.search)),
-                ),
+                    width: 50,
+                    child: FloatingActionButton(
+                        heroTag: 'search',
+                        elevation: 1,
+                        backgroundColor: Colors.white,
+                        shape: const CircleBorder(),
+                        onPressed: () => controller.search(
+                            context: context, delegate: SearchSong(ref: ref)),
+                        child: const Icon(Icons.search))),
               );
             }),
         bottomSheet: StreamBuilder<PlayerState>(
@@ -159,5 +168,10 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
         builder: (context) => const Center(
               child: CircularProgressIndicator(strokeWidth: 2),
             ));
+  }
+
+  @override
+  void content({required Widget view}) {
+    this.view = view;
   }
 }

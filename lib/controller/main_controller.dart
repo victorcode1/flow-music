@@ -2,13 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart'
     as list_search;
 import 'package:flow_music/datasource/model/search_result.dart';
 import 'package:flow_music/datasource/model/song_id_response.dart';
 import 'package:flow_music/domain/implements/domain.dart';
 import 'package:flow_music/domain/sources.dart' as sources;
+import 'package:flow_music/pages/auth_page/auth/auth_page.dart';
 import 'package:flow_music/pages/components/appbar/controller/App_bar_con.dart';
 import 'package:flow_music/pages/contract/contract.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
@@ -28,6 +28,8 @@ class MainController extends ChangeNotifier {
   late AppBarCon _appBarCon;
   late ListSongController _listSongController;
   late ChangeNotifierProviderRef ref;
+
+  AnimationController? animationController;
   Contract? contractView;
 
   GlobalKey<ScaffoldMessengerState> scaffoldMessage =
@@ -43,6 +45,9 @@ class MainController extends ChangeNotifier {
       : _domain = Domain(),
         _appBarCon = AppBarCon(),
         _listSongController = ListSongController();
+
+  String get actualRouter =>
+      ref.watch(routeProvider).routeInformationProvider.value.uri.path;
 
   Stream<User?> get user => _domain.user;
 
@@ -118,8 +123,19 @@ class MainController extends ChangeNotifier {
     return urlSong;
   }
 
-  void authenticante({required BuildContext context}) {
-    context.go(RutasShelf.auth.rootValue);
+  Future<void> authenticante({required BuildContext context}) async {
+    // context.go(RutasShelf.auth.rootValue);
+    if (!animationController!.isCompleted) {
+      contractView?.content(view: const AuthPage());
+      // notifyListeners();
+      animationController!.forward();
+      await Future.delayed(const Duration(microseconds: 800));
+    } else {
+      animationController!.reverse();
+      await Future.delayed(const Duration(microseconds: 800));
+      contractView?.content(view: const SizedBox());
+    }
+    notifyListeners();
   }
 
   Future<void> logAuth() async {
@@ -236,5 +252,10 @@ class MainController extends ChangeNotifier {
 
   void playRadio({required sources.UrlSource source}) {
     _domain.playRadio(source: source);
+  }
+
+  void chageViewContet() {
+    contractView?.content(view: const SizedBox());
+    notifyListeners();
   }
 }
