@@ -144,6 +144,8 @@ class AuthPage extends ConsumerWidget {
               providers: [
                 EmailAuthProvider(),
                 GoogleProvider(
+                    iOSPreferPlist: true,
+                    redirectUri: 'https://flow-music-1.web.app/__/auth/handler',
                     clientId:
                         'com.googleusercontent.apps.387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0'),
                 AppleProvider(),

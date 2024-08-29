@@ -12,7 +12,20 @@
           "package_name": "com.example.flow_music"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "387031162675-tkngk2hbhhfd1hnevqh4fa88ap88bg4o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flow_music",
+            "certificate_hash": "5b2fcd41d66d8b3b024389b21871bb651b24ed1f"
+          }
+        },
+        {
+          "client_id": "387031162675-i5bjfnrnig2vpdr1cc3r85qq7fknpog3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCG-72-5HzXCqCGegu_ikErfvS67ntAU6U"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "387031162675-i5bjfnrnig2vpdr1cc3r85qq7fknpog3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flowMusic"
+              }
+            }
+          ]
         }
       }
     }

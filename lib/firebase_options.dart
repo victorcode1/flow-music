@@ -64,6 +64,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '387031162675',
     projectId: 'flowmusic-5715a',
     storageBucket: 'flowmusic-5715a.appspot.com',
+    androidClientId: '387031162675-tkngk2hbhhfd1hnevqh4fa88ap88bg4o.apps.googleusercontent.com',
+    iosClientId: '387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0.apps.googleusercontent.com',
     iosBundleId: 'com.example.flowMusic',
   );
 
@@ -73,6 +75,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '387031162675',
     projectId: 'flowmusic-5715a',
     storageBucket: 'flowmusic-5715a.appspot.com',
+    androidClientId: '387031162675-tkngk2hbhhfd1hnevqh4fa88ap88bg4o.apps.googleusercontent.com',
+    iosClientId: '387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0.apps.googleusercontent.com',
     iosBundleId: 'com.example.flowMusic',
   );
 
@@ -85,4 +89,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'flowmusic-5715a.appspot.com',
     measurementId: 'G-K25K8B7SSC',
   );
+
 }
