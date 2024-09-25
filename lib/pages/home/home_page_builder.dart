@@ -2,6 +2,7 @@ import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/pages/components/appbar/app_bar.dart';
 import 'package:flow_music/pages/components/drawer/drawer.dart';
 import 'package:flow_music/pages/contract/contract.dart';
+import 'package:flow_music/pages/shared/lateral_list/latelar_list.dart';
 import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
 import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,6 @@ class HomePageBuilder extends ConsumerStatefulWidget {
 class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
     with WidgetsBindingObserver
     implements Contract {
-  Widget? view;
   @override
   void initState() {
     super.initState();
@@ -29,8 +29,7 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.watch(mainController)..initHome(contractView: this);
-
+    final controller = ref.watch(mainController)..initHome(iO: this);
     return SafeArea(
       child: Scaffold(
         appBar: const AppBarMain(),
@@ -38,60 +37,23 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
         body: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 50,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 100,
-                    child: TextButton(
-                        onPressed: () {
-                          if (context.canPop()) context.pop();
-                          context.go('/radio');
-                        },
-                        child: const RotatedBox(
-                            quarterTurns: 3, child: Text('Radio'))),
-                  ),
-                  const SizedBox(
-                    height: 100,
-                    child: TextButton(
-                      onPressed: null,
-                      child: RotatedBox(
-                          quarterTurns: 3,
-                          child:
-                              SizedBox(height: 100, child: Text('Home Page'))),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 100,
-                    child: TextButton(
-                      onPressed: null,
-                      child:
-                          RotatedBox(quarterTurns: 3, child: Text('Home Page')),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            const LateralList(),
             Expanded(
                 flex: 2,
                 child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                  child: view ?? const SizedBox(),
-                )),
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(opacity: animation, child: child);
+                    },
+                    child: widget.view ??
+                        const SizedBox(child: Text('Pantalla')))),
           ],
         ),
         floatingActionButton: StreamBuilder<PlayerState>(
-            stream: controller.playerState,
+            stream: controller.statusStream,
             builder: (context, snapshot) {
               if (!snapshot.hasData) return const SizedBox();
-
               return Visibility(
                 visible: !snapshot.data!.playing,
                 child: SizedBox(
@@ -107,7 +69,7 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
               );
             }),
         bottomSheet: StreamBuilder<PlayerState>(
-            stream: controller.playerState,
+            stream: controller.statusStream,
             builder: (context, snapshot) {
               if (!snapshot.hasData) return const SizedBox();
               return Visibility(
@@ -165,13 +127,7 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
   void load() {
     showDialog(
         context: context,
-        builder: (context) => const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ));
-  }
-
-  @override
-  void content({required Widget view}) {
-    this.view = view;
+        builder: (context) =>
+            const Center(child: CircularProgressIndicator(strokeWidth: 2)));
   }
 }

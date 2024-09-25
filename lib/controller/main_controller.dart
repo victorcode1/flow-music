@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flow_music/controller/interface/controller_contract.dart';
+import 'package:flow_music/core/sources.dart' as sources;
 import 'package:flow_music/datasource/model/list_search_result.dart'
     as list_search;
-import 'package:flow_music/datasource/model/search_result.dart';
 import 'package:flow_music/datasource/model/song_id_response.dart';
-import 'package:flow_music/domain/implements/domain.dart';
-import 'package:flow_music/domain/sources.dart' as sources;
-import 'package:flow_music/pages/auth_page/auth/auth_page.dart';
-import 'package:flow_music/pages/components/appbar/controller/App_bar_con.dart';
+import 'package:flow_music/domain/implements/general.dart';
 import 'package:flow_music/pages/contract/contract.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
 import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
@@ -23,96 +21,72 @@ import 'package:rxdart/rxdart.dart';
 final mainController =
     ChangeNotifierProvider<MainController>((ref) => MainController(ref: ref));
 
-class MainController extends ChangeNotifier {
-  late Domain _domain;
-  late AppBarCon _appBarCon;
-  late ListSongController _listSongController;
-  late ChangeNotifierProviderRef ref;
-
-  AnimationController? animationController;
-  Contract? contractView;
-
+class MainController extends ChangeNotifier implements ControllerContract {
+  ChangeNotifierProviderRef<MainController> ref;
+  late final GeneralImplement _generalImplement;
+  late final ListSongController _listSongController;
+  Contract? iO;
   GlobalKey<ScaffoldMessengerState> scaffoldMessage =
       GlobalKey<ScaffoldMessengerState>();
 
-  factory MainController({required ChangeNotifierProviderRef ref}) {
-    _instance.ref = ref;
-    return _instance;
-  }
-  static final MainController _instance = MainController._internal();
-
-  MainController._internal()
-      : _domain = Domain(),
-        _appBarCon = AppBarCon(),
+  MainController({required this.ref})
+      : _generalImplement = GeneralImplement(),
         _listSongController = ListSongController();
 
-  String get actualRouter =>
-      ref.watch(routeProvider).routeInformationProvider.value.uri.path;
+  Stream<User?> get user => _generalImplement.userRepository.user;
 
-  Stream<User?> get user => _domain.user;
-
+  @override
   GoRouter get router => ref.watch(routeProvider);
 
-  void toast(String message, {Key? textKey, required BuildContext context}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message, key: textKey),
-        duration: Duration(milliseconds: message.length * 25),
-      ),
-    );
-  }
-
+  @override
   void search(
       {required BuildContext context, required SearchDelegate delegate}) {
     showSearch(context: context, delegate: delegate);
   }
 
+  @override
   Future<void> autoPlay({required String data}) async {
     if (data.isNotEmpty) {
       //await _domain.setSource(source: sources.UrlSource(data));
-      await _domain.play(source: sources.UrlSource(data));
+      await _generalImplement.audioRepository
+          .play(source: sources.UrlSource(data));
     }
   }
 
+  @override
   Future<void> setAudioStateDetached() async {
-    return await _domain.dispose();
+    return await _generalImplement.audioRepository.dispose();
   }
 
-  Future<void> setAudioStateResumed() async {
-    return await _domain.resume();
-  }
-
-  Future<void> setAudioStateInactive() async {
-    return await _domain.pause();
-  }
-
+  @override
   Future<void> setAudioStatePaused() async {
-    await _domain.resume();
+    await _generalImplement.audioRepository.resume();
   }
 
+  @override
   Future<void> setAudioPause() async {
-    await _domain.pause();
+    await _generalImplement.audioRepository.pause();
   }
 
-  Future<void> setAudioStateHidden() async {
-    return await _domain.pause();
-  }
-
-  Future<void> play({required sources.UrlSource source}) async {
-    await _domain.play(source: source);
-    notifyListeners();
-  }
-
+  @override
   Future<void> setSource({required sources.UrlSource source}) async {
-    await _domain.setSource(source: source);
+    await _generalImplement.audioRepository.setSource(source: source);
     notifyListeners();
   }
 
-  Stream<PlayerState> get playerState => _domain.statusPlay;
+  @override
+  Stream<PlayerState> get statusStream =>
+      _generalImplement.audioRepository.statusStream;
 
-  Stream<Duration?> get stremDuracion => _domain.stremDuracion;
-  Stream<Duration?> get stremPosiscion => _domain.stremPosiscion;
+  @override
+  Stream<Duration?> get stremDuracion =>
+      _generalImplement.audioRepository.stremDuracion;
 
+  @override
+  Stream<Duration?> get stremPosiscion =>
+      _generalImplement.audioRepository.stremPosiscion;
+
+  @override
   String urlSong({required data}) {
     data as SongIdResponde;
     final urlSong = data.streamingData?.adaptiveFormats
@@ -123,41 +97,16 @@ class MainController extends ChangeNotifier {
     return urlSong;
   }
 
-  Future<void> authenticante({required BuildContext context}) async {
-    // context.go(RutasShelf.auth.rootValue);
-    if (!animationController!.isCompleted) {
-      contractView?.content(view: const AuthPage());
-      // notifyListeners();
-      animationController!.forward();
-      await Future.delayed(const Duration(microseconds: 800));
-    } else {
-      animationController!.reverse();
-      await Future.delayed(const Duration(microseconds: 800));
-      contractView?.content(view: const SizedBox());
-    }
-    notifyListeners();
-  }
-
+  @override
   Future<void> logAuth() async {
-    return await _domain.logAuth();
+    return await _generalImplement.userRepository.logAuth();
   }
 
-  void initHome({required Contract contractView}) {
-    this.contractView = contractView;
+  void initHome({required Contract iO}) {
+    this.iO = iO;
   }
 
-  void searchAppBar({required String query, required BuildContext context}) {
-    _appBarCon.searchAppBar(
-        query: query, context: context, refresh: () => notifyListeners());
-  }
-
-  Future<SearchResult?> getListResult({required String query}) async =>
-      await _domain.getListResult(query: query);
-
-  TextEditingController get searchController => _appBarCon.searchController;
-
-  FocusNode get focusNode => _appBarCon.focusNode;
-
+  @override
   Future<list_search.ListSearchSongResult?> getListSong({required data}) async {
     return await _listSongController.getListSong(data: data);
   }
@@ -165,21 +114,27 @@ class MainController extends ChangeNotifier {
   @override
   dispose() async {
     debugPrint('Dispose MainController');
-    await _domain.dispose();
+    await _generalImplement.audioRepository.dispose();
     super.dispose();
   }
 
+  @override
   StreamController<(StreamController<Duration>, StreamController<Duration>)>
-      get streamController => _domain.streamController;
+      get streamController =>
+          _generalImplement.audioRepository.streamController;
+
+  @override
   int count({required list_search.ListSearchSongResult data}) {
     return _listSongController.count(data: data);
   }
 
+  @override
   Stream<PositionData> get positionDataStream =>
       Rx.combineLatest3<Duration?, Duration?, Duration?, PositionData>(
-          _domain.positionStream,
-          _domain.bufferedPositionStream,
-          _domain.durationStream, (position, bufferedPosition, duration) {
+          _generalImplement.audioRepository.positionStream,
+          _generalImplement.audioRepository.bufferedPositionStream,
+          _generalImplement.audioRepository.durationStream,
+          (position, bufferedPosition, duration) {
         if (duration != null && position != null && bufferedPosition != null) {
           final effectiveDuration =
               Platform.isIOS || Platform.isMacOS ? duration ~/ 2 : duration;
@@ -197,6 +152,7 @@ class MainController extends ChangeNotifier {
             position!, bufferedPosition!, duration ?? Duration.zero);
       });
 
+  @override
   void escuchar(
       {required list_search.ListSearchSongResult data,
       required BuildContext context,
@@ -204,58 +160,58 @@ class MainController extends ChangeNotifier {
     _listSongController.escuchar(data: data, context: context, index: index);
   }
 
+  @override
   String imageRes(
       {required list_search.ListSearchSongResult data, required int index}) {
     return _listSongController.imageRes(data: data, index: index);
   }
 
+  @override
   String? subtitle(
       {required list_search.ListSearchSongResult data, required int index}) {
     return _listSongController.subtitle(data: data, index: index);
   }
 
+  @override
   String dataRes(
       {required list_search.ListSearchSongResult data, required int index}) {
     return _listSongController.dataRes(data: data, index: index);
   }
 
+  @override
   Future<Map<String, String>> extra({required String data}) {
     return _listSongController.extra(data: data);
   }
 
+  @override
   Future<SongIdResponde?> getSong({required String data}) async {
-    return await _domain.resultSong(songId: data);
+    return await _generalImplement.resultSong(songId: data);
   }
 
-  void deleteContentSearch() {
-    _appBarCon.searchController.clear();
-    notifyListeners();
-  }
-
+  @override
   Future<void> setAudioStateStopped() async {
-    await _domain.stop();
+    await _generalImplement.audioRepository.stop();
   }
 
+  @override
   Future<void> seek({required Duration duration}) async {
-    await _domain.seek(duration: duration);
+    await _generalImplement.audioRepository.seek(duration: duration);
   }
 
   changeVieo({required String videoId}) {}
 
+  @override
   void init() {
-    _domain.init();
+    _generalImplement.audioRepository.init();
   }
 
+  @override
   Future<void> replay() async {
-    await _domain.replay();
+    await _generalImplement.audioRepository.replay();
   }
 
+  @override
   void playRadio({required sources.UrlSource source}) {
-    _domain.playRadio(source: source);
-  }
-
-  void chageViewContet() {
-    contractView?.content(view: const SizedBox());
-    notifyListeners();
+    _generalImplement.audioRepository.playRadio(source: source);
   }
 }

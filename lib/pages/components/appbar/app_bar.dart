@@ -1,4 +1,4 @@
-import 'package:flow_music/controller/main_controller.dart';
+import 'package:flow_music/pages/components/appbar/controller/app_bar_con.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -10,7 +10,7 @@ class AppBarMain extends ConsumerStatefulWidget implements PreferredSizeWidget {
 
   @override
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 50);
 }
 
 class _AppBarMainState extends ConsumerState<AppBarMain>
@@ -18,13 +18,12 @@ class _AppBarMainState extends ConsumerState<AppBarMain>
   @override
   void initState() {
     super.initState();
-    ref.read(mainController).animationController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+    ref.read(appBarController).initAppBar(tickerProvider: this);
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.watch(mainController);
+    final controller = ref.watch(appBarController);
 
     return AppBar(
       leading: Align(
@@ -34,19 +33,11 @@ class _AppBarMainState extends ConsumerState<AppBarMain>
           height: 50,
           padding: const EdgeInsets.only(left: 10, top: 10),
           child: GestureDetector(
-            onTap: () {
-              if (controller.animationController!.isCompleted) {
-                controller.animationController!.reverse();
-                controller.chageViewContet();
-              } else {
-                Scaffold.of(context).openDrawer();
-              }
-            },
+            onTap: () => controller.openDrawer(context: context),
             child: AnimatedIcon(
                 size: 30,
                 icon: AnimatedIcons.menu_arrow,
-                progress: controller.animationController ??
-                    AnimationController(vsync: this),
+                progress: controller.animationController,
                 color: Colors.black),
           ),
         ),

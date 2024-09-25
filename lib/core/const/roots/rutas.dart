@@ -1,6 +1,5 @@
 enum RutasShelf {
-  search('/search'),
-
+  searchAppBar('/searchAppBar'),
   songs('/songs'),
   radio('/radio'),
   profile('/profile'),

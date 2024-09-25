@@ -80,14 +80,18 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
           ),
         ],
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.music_note),
             const SizedBox(width: 10),
-            Text(widget.data.videoDetails?.author ?? ''),
-            const SizedBox(width: 10),
-            const SizedBox(width: 10),
-            Text(widget.data.videoDetails?.title ?? ''),
+            Flexible(
+              child: Text(
+                  "${widget.data.videoDetails?.author} ${widget.data.videoDetails?.title}",
+                  maxLines: 2,
+                  textAlign: TextAlign.end,
+                  overflow: TextOverflow.ellipsis),
+            ),
           ],
         ),
       ),
@@ -117,7 +121,7 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
               Padding(
                 padding: const EdgeInsets.only(bottom: 30),
                 child: StreamBuilder<PlayerState>(
-                    stream: controller.playerState,
+                    stream: controller.statusStream,
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) return const SizedBox();
 

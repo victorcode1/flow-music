@@ -4,7 +4,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
-class AudioManagerJustAudio {
+class JustAudioManager {
   late AudioPlayer _audioPlayer;
 
   final StreamController<Duration> _durationSubscription =
@@ -20,11 +20,10 @@ class AudioManagerJustAudio {
   StreamController? _playerStateChangeSubscription;
 
   // Singleton
-  static final AudioManagerJustAudio _instance =
-      AudioManagerJustAudio._internal();
+  static final JustAudioManager _instance = JustAudioManager._internal();
 
-  factory AudioManagerJustAudio() => _instance;
-  AudioManagerJustAudio._internal() {
+  factory JustAudioManager() => _instance;
+  JustAudioManager._internal() {
     _audioPlayer = AudioPlayer();
 
     debugPrint('AudioPlayer created ${_audioPlayer.playerState}');
@@ -84,8 +83,9 @@ class AudioManagerJustAudio {
     }
     return await _audioPlayer.play();
   }
-    Future<void> setPause() async {
-     return await _audioPlayer.pause();
+
+  Future<void> setPause() async {
+    return await _audioPlayer.pause();
   }
 
   Future<void> stopAudio() async {
@@ -97,7 +97,7 @@ class AudioManagerJustAudio {
   }
 
   Future<void> replay() async {
-  await  _audioPlayer.seek(Duration.zero);
-  await  _audioPlayer.play();
+    await _audioPlayer.seek(Duration.zero);
+    await _audioPlayer.play();
   }
 }
