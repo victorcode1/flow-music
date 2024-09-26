@@ -80,9 +80,8 @@ class SeekBarState extends ConsumerState<SeekBar> {
           ),
         ),
         SliderTheme(
-          data: _sliderThemeData.copyWith(
-            inactiveTrackColor: Colors.transparent,
-          ),
+          data:
+              _sliderThemeData.copyWith(inactiveTrackColor: Colors.transparent),
           child: Slider(
             min: 0.0,
             max: effectiveDuration.inMilliseconds.toDouble(),
@@ -120,7 +119,6 @@ class SeekBarState extends ConsumerState<SeekBar> {
   }
 
   Duration get _remaining {
-   
     final effectiveDuration = Platform.isIOS || Platform.isMacOS
         ? widget.duration ~/ 2
         : widget.duration;

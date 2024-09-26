@@ -13,12 +13,12 @@ final actionCodeSettings = ActionCodeSettings(
   iOSBundleId: 'io.flutter.plugins.fireabaseUiExample',
 );
 
-class AuthFire {
+class AuthFireService {
   late FirebaseAuth _auth;
 
-  static final AuthFire _instance = AuthFire._internal();
-  factory AuthFire() => _instance;
-  AuthFire._internal() {
+  static final AuthFireService _instance = AuthFireService._internal();
+  factory AuthFireService() => _instance;
+  AuthFireService._internal() {
     _auth = FirebaseAuth.instance;
 
     debugPrint('Auth initialized');

@@ -1,6 +1,6 @@
 //search delegate
-import 'package:flow_music/controller/main_controller.dart';
-import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
+import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
+import 'package:flow_music/pages/shared/list_search_secondary/list_songs_with_image.dart';
 import 'package:flow_music/pages/song/song_play.dart';
 import 'package:flow_music/provider/search.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ class SearchSong extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    final controller = ref.watch(mainController);
+    final controller = ref.watch(listSongController);
     return query.isNotEmpty
         ? FutureBuilder<Map<String, String>?>(
             future: controller.extra(data: query),
@@ -48,13 +48,13 @@ class SearchSong extends SearchDelegate {
                 return const Center(child: Text("No hay resultados"));
               }
 
-              return SongWidget(data: snapshot.data ?? {});
+              return SongPlayWidget(data: snapshot.data ?? {});
             })
         : const Center(child: Text("No hay resultados"));
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return ListSongs(data: query);
+    return ListSongsWithImage(data: query);
   }
 }

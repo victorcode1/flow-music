@@ -1,15 +1,27 @@
+import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart';
-import 'package:flow_music/datasource/services/http/search_query.dart';
+import 'package:flow_music/domain/repository/geneal_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ListSongController {
-  ListSongController();
+final listSongController =
+    ChangeNotifierProvider.autoDispose<ListSongController>((ref) {
+  final implement = ref.read(mainController).implement;
+
+  return ListSongController(ref: ref, generalImplement: implement);
+});
+
+class ListSongController extends ChangeNotifier {
+  final GenealRepo generalImplement;
+  final AutoDisposeChangeNotifierProviderRef<ListSongController> ref;
+
+  ListSongController({required this.ref, required this.generalImplement});
 
   Future<ListSearchSongResult?> getListSong({required data}) async {
-    SearchQuery searchQuery = SearchQuery();
-    return await searchQuery.searchResultData(data);
+    return await generalImplement.httpRepo.searchQueryWithImage
+        .searchResultData(data);
   }
 
   int count({required ListSearchSongResult data}) {
@@ -76,7 +88,8 @@ class ListSongController {
         ?.playlistId;
 
     if (context.mounted && context.canPop()) context.pop();
-    context.goNamed(Rutas.playSong.name, queryParameters: {
+
+    context.pushNamed(Rutas.playSong.name, queryParameters: {
       'idSong': idSong ?? '',
       'playListId': playListId ?? '',
     });
@@ -95,15 +108,16 @@ class ListSongController {
           ?.first
           .musicShelfRenderer
           ?.contents?[index]
-          .musicResponsiveListItemRenderer!
-          .thumbnail
-          ?.musicThumbnailRenderer!
-          .thumbnail
-          ?.thumbnails?[1]
+          .musicResponsiveListItemRenderer
+          ?.thumbnail
+          ?.musicThumbnailRenderer
+          ?.thumbnail
+          ?.thumbnails?[0]
           .url ??
       '';
 
-  String? subtitle({required ListSearchSongResult data, required int index}) {
+  String? totalReproduciones(
+      {required ListSearchSongResult data, required int index}) {
     final sub = data
         .contents
         ?.tabbedSearchResultsRenderer
@@ -126,7 +140,8 @@ class ListSongController {
     return sub;
   }
 
-  String dataRes({required ListSearchSongResult data, required int index}) {
+  String nombreCaincion(
+      {required ListSearchSongResult data, required int index}) {
     final dataRes = data
         .contents
         ?.tabbedSearchResultsRenderer

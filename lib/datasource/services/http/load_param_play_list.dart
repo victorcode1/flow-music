@@ -1,0 +1,55 @@
+import 'dart:convert';
+
+import 'package:flow_music/datasource/model/load_params_play_list_response.dart';
+import 'package:flow_music/datasource/services/data_repo/load_params_play_list_repo.dart';
+import 'package:flow_music/settings/utils/utils.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class LoadParamsPlayList extends LoadParamsPlayListRepo {
+  @override
+  Future<LoadParamsPayListResult> loadPlayList({required String songId}) async {
+    try {
+      if (songId.isEmpty) {
+        throw Exception('Failed to load data! songId is empty');
+      }
+      String url =
+          'https://music.youtube.com/youtubei/v1/next?prettyPrint=false';
+
+      Map<String, dynamic> requestData = {
+        "context": {
+          "client": {
+            "clientName": "WEB_REMIX",
+            "clientVersion": "1.20220918",
+            "platform": "DESKTOP",
+            "hl": "en",
+            "visitorData": "CgtEUlRINDFjdm1YayjX1pSaBg%3D%3D"
+          }
+        },
+        "videoId": songId,
+        "isAudioOnly": true,
+        "tunerSettingValue": "AUTOMIX_SETTING_NORMAL",
+        "watchEndpointMusicSupportedConfigs": {
+          "musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+        }
+      };
+
+      String bodyParams = json.encode(requestData);
+
+      Map<String, String> headers = Utils.header();
+      headers['content-length'] = utf8.encode(bodyParams).length.toString();
+
+      final res =
+          await http.post(Uri.parse(url), headers: headers, body: bodyParams);
+
+      if (res.statusCode == 200) {
+        return LoadParamsPayListResult.fromJson(json.decode(res.body));
+      } else {
+        throw Exception('Failed to load data!');
+      }
+    } catch (e, s) {
+      debugPrintStack(label: e.toString(), stackTrace: s);
+      throw Exception('Failed to load data!');
+    }
+  }
+}

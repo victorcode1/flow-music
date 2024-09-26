@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flow_music/core/sources.dart' as sources;
 import 'package:just_audio/just_audio.dart';
 
-abstract class AudioImp {
+abstract class AudioRepo {
   void playRadio({required sources.UrlSource source});
   Future<void> replay();
   Future<void> seek({required Duration duration});

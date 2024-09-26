@@ -73,15 +73,10 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     final controller = ref.watch(mainController);
     return MaterialApp.router(
-      theme: ThemeData(
-          useMaterial3: true,
-          colorSchemeSeed: const Color.fromRGBO(13, 32, 80, 1.0)),
-      debugShowCheckedModeBanner: false,
-      routerConfig: controller.router,
-      builder: (context, child) {
-        return ScaffoldMessenger(
-            key: controller.scaffoldMessage, child: child ?? const SizedBox());
-      },
-    );
+        theme: ThemeData(
+            useMaterial3: true,
+            colorSchemeSeed: const Color.fromRGBO(13, 32, 80, 1.0)),
+        debugShowCheckedModeBanner: false,
+        routerConfig: controller.router);
   }
 }

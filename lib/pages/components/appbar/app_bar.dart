@@ -1,4 +1,5 @@
 import 'package:flow_music/pages/components/appbar/controller/app_bar_con.dart';
+import 'package:flow_music/pages/shared/imagen_perfil/imagen_perfil.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -24,7 +25,6 @@ class _AppBarMainState extends ConsumerState<AppBarMain>
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(appBarController);
-
     return AppBar(
       leading: Align(
         alignment: Alignment.centerLeft,
@@ -70,25 +70,12 @@ class _AppBarMainState extends ConsumerState<AppBarMain>
                   decoration: const InputDecoration(
                       hintStyle: TextStyle(
                           color: Colors.grey,
-                          fontSize: 34,
+                          fontSize: 30,
                           fontWeight: FontWeight.w500),
                       hintText: 'Busca Rapida',
                       border: InputBorder.none))),
           const SizedBox(width: 20),
-          Padding(
-              padding: const EdgeInsets.only(top: 10, bottom: 10),
-              child: SizedBox(
-                  height: 40,
-                  width: 40,
-                  child: FloatingActionButton(
-                      isExtended: false,
-                      heroTag: 'userBtn',
-                      onPressed: () =>
-                          controller.authenticante(context: context),
-                      elevation: 1,
-                      shape: const CircleBorder(),
-                      backgroundColor: Colors.white,
-                      child: const Icon(Icons.person)))),
+          const ImagenPerlfil(),
           const SizedBox(width: 10)
         ],
       ),

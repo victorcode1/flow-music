@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:flow_music/core/sources.dart' as sources;
 import 'package:flow_music/datasource/services/audio/audio_manger_audiop.dart';
 import 'package:flow_music/datasource/services/audio/audio_manger_justa.dart';
-import 'package:flow_music/domain/repository/audio_imp.dart';
+import 'package:flow_music/domain/repository/audio_repo.dart';
 import 'package:just_audio/just_audio.dart';
 
-class AudioRepository extends AudioImp {
+class AudioImp extends AudioRepo {
   final JustAudioManager _controllerManager;
   final AudioManagerAudioPlayer _streamingManager;
-  AudioRepository(
+  AudioImp(
       {required JustAudioManager controllerManager,
       required AudioManagerAudioPlayer streamingManager})
       : _controllerManager = controllerManager,
@@ -19,24 +19,24 @@ class AudioRepository extends AudioImp {
   Stream<PlayerState> get statusStream => _controllerManager.statusStream;
 
   @override
-  Stream<Duration?> get stremDuracion => _streamingManager.streamDuracion;
+  Stream<Duration?> get stremDuracion => _controllerManager.streamDuracion;
 
   @override
-  Stream<Duration?> get stremPosiscion => _streamingManager.streamPosicion;
+  Stream<Duration?> get stremPosiscion => _controllerManager.streamPosicion;
 
   @override
   StreamController<(StreamController<Duration>, StreamController<Duration>)>
       get streamController => _controllerManager.streamController;
 
   @override
-  Stream<Duration?> get positionStream => _streamingManager.streamPosicion;
+  Stream<Duration?> get positionStream => _controllerManager.streamPosicion;
 
   @override
   Stream<Duration?> get bufferedPositionStream =>
-      _streamingManager.streamDuracion;
+      _controllerManager.streamDuracion;
 
   @override
-  Stream<Duration?> get durationStream => _streamingManager.streamDuracion;
+  Stream<Duration?> get durationStream => _controllerManager.streamDuracion;
 
   @override
   Future<void> dispose() {
@@ -84,7 +84,7 @@ class AudioRepository extends AudioImp {
   Future<void> replay() {
     return _controllerManager.replay();
   }
-  
+
   @override
   void playRadio({required sources.UrlSource source}) {
     _streamingManager.play(source: source);

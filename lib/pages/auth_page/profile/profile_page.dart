@@ -12,20 +12,21 @@ class ProfilePage extends ConsumerWidget {
     final controller = ref.watch(mainController);
     final platform = Theme.of(context).platform;
 
-    return ProfileScreen(
-      appBar: AppBar(
-        title: TextButton(onPressed: () {}, child: const Text('Regresar')),
+    return Scaffold(
+      extendBody: true,
+      resizeToAvoidBottomInset: true,
+      body: ProfileScreen(
+        actions: [
+          SignedOutAction((context) {
+            controller.logAuth();
+          }),
+        ],
+        showMFATile: kIsWeb ||
+            platform == TargetPlatform.iOS ||
+            platform == TargetPlatform.android,
+        showUnlinkConfirmationDialog: true,
+        showDeleteConfirmationDialog: true,
       ),
-      actions: [
-        SignedOutAction((context) {
-          controller.logAuth();
-        }),
-      ],
-      showMFATile: kIsWeb ||
-          platform == TargetPlatform.iOS ||
-          platform == TargetPlatform.android,
-      showUnlinkConfirmationDialog: true,
-      showDeleteConfirmationDialog: true,
     );
   }
 }

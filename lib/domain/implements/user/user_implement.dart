@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flow_music/datasource/services/firebase/auth/auth_fire.dart';
+import 'package:flow_music/datasource/services/firebase/auth/auth_fire_service.dart';
 import 'package:flow_music/domain/repository/user_imp.dart';
 
 class UserImplement extends UserImp {
-  final AuthFire _firebaseRepo;
+  final AuthFireService _firebaseRepo;
 
-  UserImplement({required AuthFire firebaseRepo})
+  UserImplement({required AuthFireService firebaseRepo})
       : _firebaseRepo = firebaseRepo;
 
   @override
@@ -14,5 +14,14 @@ class UserImplement extends UserImp {
   @override
   Future<void> logAuth() {
     return _firebaseRepo.logAuth();
+  }
+
+  @override
+  Future<String?> get imagenPerfil async {
+    final user = _firebaseRepo.currentUser;
+    if (user != null) {
+      return user.photoURL;
+    }
+    return null;
   }
 }
