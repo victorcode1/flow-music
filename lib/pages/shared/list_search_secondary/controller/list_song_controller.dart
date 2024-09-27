@@ -1,5 +1,4 @@
 import 'package:flow_music/controller/main_controller.dart';
-import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/list_search_result.dart';
 import 'package:flow_music/domain/repository/geneal_repo.dart';
 import 'package:flutter/material.dart';
@@ -89,10 +88,21 @@ class ListSongController extends ChangeNotifier {
 
     if (context.mounted && context.canPop()) context.pop();
 
-    context.pushNamed(Rutas.playSong.name, queryParameters: {
+    // context.pushNamed(Rutas.playSong.name, queryParameters: {
+    //   'idSong': idSong ?? '',
+    //   'playListId': playListId ?? '',
+    // });
+
+    // ref.read(mainController).buildView((data) => {
+    //       'idSong': idSong ?? '',
+    //       'playListId': playListId ?? '',
+    //     });
+
+    ref.read(mainController).buildView(data: {
       'idSong': idSong ?? '',
       'playListId': playListId ?? '',
     });
+    notifyListeners();
   }
 
   String imageRes({required ListSearchSongResult data, required int index}) =>

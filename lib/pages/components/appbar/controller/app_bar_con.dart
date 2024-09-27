@@ -26,8 +26,6 @@ class AppBarConTroller extends ChangeNotifier {
 
   TextEditingController get searchController => _searchController;
 
-  FocusNode get focusNode => _focusNode;
-
   void initAppBar({required TickerProvider tickerProvider}) {
     _animationController = AnimationController(
         vsync: tickerProvider, duration: const Duration(milliseconds: 300));
@@ -42,6 +40,16 @@ class AppBarConTroller extends ChangeNotifier {
     }
   }
 
+  FocusNode get focusNode => _focusNode;
+  set setFocusNode(KeyEvent keyEvent) {
+    _focusNode.requestFocus();
+    //  print(keyEvent.character);
+    // if (keyEvent.character.toString().length == 1) {
+
+    //   searchController.text = keyEvent.character.toString();
+    // }
+  }
+
   AnimationController get animationController => _animationController;
 
   Future<String?> get imagenPerl => implement.userRepository.imagenPerfil;
@@ -52,6 +60,7 @@ class AppBarConTroller extends ChangeNotifier {
     if (debounce?.isActive ?? false) debounce?.cancel();
     debounce = Timer(const Duration(milliseconds: 1000), () {
       searchController.text = query;
+      ref.read(mainController).extendSize = 50;
       context.push(RutasShelf.searchAppBar.rootValue);
       notifyListeners();
     });
@@ -66,6 +75,7 @@ class AppBarConTroller extends ChangeNotifier {
       await implement.httpRepo.searchAppBarDataRepo.getListSearch(query: query);
 
   void deleteContentSearch() {
+    ref.read(mainController).extendSize = 0;
     searchController.clear();
     notifyListeners();
   }
@@ -77,6 +87,7 @@ class AppBarConTroller extends ChangeNotifier {
       context.push(RutasShelf.auth.rootValue);
       // notifyListeners();
       _animationController.forward();
+
       await Future.delayed(const Duration(microseconds: 800));
     } else {
       _animationController.reverse();
@@ -84,5 +95,7 @@ class AppBarConTroller extends ChangeNotifier {
       //contractView?.content(view: const SizedBox());
       if (context.mounted) context.push(RutasShelf.searchAppBar.rootValue);
     }
+
+    deleteContentSearch();
   }
 }

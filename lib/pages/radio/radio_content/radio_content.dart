@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RadioContent extends ConsumerStatefulWidget {
-  const RadioContent({super.key});
+  final String url;
+  const RadioContent({super.key, required this.url});
 
   @override
   ConsumerState<RadioContent> createState() => _RadioContentState();
@@ -14,9 +15,7 @@ class _RadioContentState extends ConsumerState<RadioContent> {
   @override
   void initState() {
     super.initState();
-    ref
-        .read(mainController)
-        .playRadio(source: UrlSource('https://ic.streann.com/wao'));
+    ref.read(mainController).playRadio(source: UrlSource(widget.url));
   }
 
   @override

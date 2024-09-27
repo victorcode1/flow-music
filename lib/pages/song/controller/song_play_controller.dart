@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flow_music/controller/main_controller.dart';
+import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/core/sources.dart' as sources;
 import 'package:flow_music/datasource/model/song_id_response.dart';
 import 'package:flow_music/domain/repository/geneal_repo.dart';
@@ -14,7 +15,8 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../../datasource/model/load_play_list.dart';
 
-final songPlayController = ChangeNotifierProvider.autoDispose <SongPlayController>((ref) {
+final songPlayController =
+    ChangeNotifierProvider.autoDispose<SongPlayController>((ref) {
   final implement = ref.read(mainController).implement;
   return SongPlayController(ref: ref, implement: implement);
 });
@@ -30,10 +32,10 @@ class SongPlayController extends ChangeNotifier {
 
   SongPlayController({required this.ref, required this.implement});
 
-  Future<void> autoPlay({required String data}) async {
-    if (data.isNotEmpty) {
+  Future<void> autoPlay({required String? data}) async {
+    if (data != null || (data?.isNotEmpty ?? false)) {
       _songIndex = 0;
-      await implement.audioRepository.play(source: sources.UrlSource(data));
+      await implement.audioRepository.play(source: sources.UrlSource(data!));
     }
   }
 
@@ -61,7 +63,8 @@ class SongPlayController extends ChangeNotifier {
   }
 
   void back({required BuildContext context}) {
-    GoRouter.of(context).pop();
+    //context.push(Rutas.home.rootValue);
+  ref.read(mainController).backReturn();
   }
 
   void search(
@@ -97,7 +100,10 @@ class SongPlayController extends ChangeNotifier {
     });
   }
 
-  Future<LoadPayListRessponse> loadPlayList({required String idSong}) async {
+  Future<LoadPayListRessponse> loadPlayList({required String? idSong}) async {
+    if (idSong == null) {
+      return Future.value();
+    }
     final result = await implement.httpRepo.loadParamsPlayList
         .loadPlayList(songId: idSong);
 
@@ -164,7 +170,7 @@ class SongPlayController extends ChangeNotifier {
 
   Future prevSong({LoadPayListRessponse? data}) async {
     if (data != null) {
-      print(_songIndex);
+      debugPrint(_songIndex.toString());
 
       if (_songIndex >= 1) {
         _songIndex--;
@@ -196,7 +202,7 @@ class SongPlayController extends ChangeNotifier {
           }
         });
       }
-      print(_songIndex);
+      debugPrint(_songIndex.toString());
     }
   }
 
@@ -210,7 +216,7 @@ class SongPlayController extends ChangeNotifier {
 
   Future<void> nextSong({LoadPayListRessponse? data}) async {
     if (data != null) {
-      print(_songIndex);
+      debugPrint(_songIndex.toString());
 
       if (_songIndex < 49) {
         _songIndex++;
@@ -233,7 +239,7 @@ class SongPlayController extends ChangeNotifier {
           .playlistPanelVideoRenderer
           ?.videoId;
 
-      print(_songIndex);
+      debugPrint(_songIndex.toString());
       if (idSong != null) {
         await implement.audioRepository.stop();
         final data =
@@ -264,5 +270,5 @@ class SongPlayController extends ChangeNotifier {
     _data = data;
   }
 
-SongIdResponde?  get getData => _data;
+  SongIdResponde? get getData => _data;
 }

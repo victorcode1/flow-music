@@ -2,8 +2,8 @@ import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/pages/auth_page/auth/auth_page.dart';
 import 'package:flow_music/pages/auth_page/profile/profile_page.dart';
 import 'package:flow_music/pages/home/home_page_builder.dart';
+import 'package:flow_music/pages/radio/radio_content/radio_content.dart';
 import 'package:flow_music/pages/radio/radio_list.dart';
-import 'package:flow_music/pages/radio_content/radio_content.dart';
 import 'package:flow_music/pages/shared/list_search_app_bar/list_search_app_bar.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs_with_image.dart';
 import 'package:flow_music/pages/song/song_play.dart';
@@ -88,7 +88,12 @@ class Route extends _$Route {
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) {
-            return const RadioContent();
+            String? url;
+            if ((state.extra as String?) != null) {
+              url = state.extra as String;
+              return RadioContent(url: url);
+            }
+            return const RadioContent(url: '');
           }),
       // Rutas.playSong => GoRoute(
       //     name: ruta.name,

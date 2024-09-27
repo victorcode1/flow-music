@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
-abstract interface class Contract {
+abstract interface class HomeViewInterFace {
   void load();
   void disposeLoad();
+  Widget songPlay({required Map<String, String> data});
 }
 
 abstract interface class ContractData {

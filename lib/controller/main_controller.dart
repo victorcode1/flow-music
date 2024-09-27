@@ -4,10 +4,10 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/controller/interface/controller_contract.dart';
 import 'package:flow_music/core/sources.dart' as sources;
-import 'package:flow_music/datasource/model/song_id_response.dart';
 import 'package:flow_music/domain/implements/general.dart';
 import 'package:flow_music/domain/repository/geneal_repo.dart';
-import 'package:flow_music/pages/contract/contract.dart';
+import 'package:flow_music/pages/components/appbar/controller/app_bar_con.dart';
+import 'package:flow_music/pages/contract/home_view_inter_face.dart';
 import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flow_music/settings/routes/routes.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +21,14 @@ final mainController =
 
 class MainController extends ChangeNotifier implements ControllerContract {
   ChangeNotifierProviderRef<MainController> ref;
+  late HomeViewInterFace _iO;
+  Map<String, String> _data = {};
 
- 
+  final focusNodePrincipal = FocusNode();
+
+  double _extendSize = 0;
+
+  PageController pageController = PageController(initialPage: 0);
 
   MainController({required this.ref});
 
@@ -69,15 +75,14 @@ class MainController extends ChangeNotifier implements ControllerContract {
   Stream<Duration?> get stremPosiscion =>
       implement.audioRepository.stremPosiscion;
 
-   
-   
-
   @override
   Future<void> logAuth() async {
     return await implement.userRepository.logAuth();
   }
 
-  void initHome({required Contract iO}) {}
+  void initHome({required HomeViewInterFace iO}) {
+    _iO = iO;
+  }
 
   @override
   dispose() async {
@@ -114,7 +119,6 @@ class MainController extends ChangeNotifier implements ControllerContract {
             position!, bufferedPosition!, duration ?? Duration.zero);
       });
 
- 
   @override
   Future<void> setAudioStateStopped() async {
     await implement.audioRepository.stop();
@@ -145,7 +149,49 @@ class MainController extends ChangeNotifier implements ControllerContract {
   @override
   GenealRepo get implement => GeneralImplement();
 
+  double get extendSize => _extendSize;
 
+  set extendSize(double value) {
+    _extendSize = value;
+    notifyListeners();
+  }
 
+  void retunrSongView({required BuildContext context}) {
+    // context.pushNamed(Rutas.playSong.name,
+    //     queryParameters: {'idSong': null, 'playListId': null});
 
+    pageController.jumpToPage(1);
+    //notifyListeners();
+  }
+
+  void listenerKey({required KeyEvent value}) {
+    ref.read(appBarController).setFocusNode = value;
+  }
+
+  Widget viewPlay(Widget Function(Map<String, String> data) builder) {
+    return builder(_data);
+  }
+
+  void buildView({Map<String, String>? data}) {
+    if (data != null) {
+      _data = data;
+    }
+    //  final viewPlay = _iO.songPlay(data: data);
+    pageController.jumpToPage(1);
+    notifyListeners();
+  }
+
+  void backReturn() {
+    pageController.jumpToPage(0);
+  }
+
+  Future saveUser({User? user}) async {
+    if (user != null) {
+     await implement.dataRepository.data.saveUser(user: user);
+    }
+  }
+
+  void updateLogAuthData() {
+    implement.dataRepository.data.logAuth( );
+  }
 }

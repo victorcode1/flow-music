@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AppBarMain extends ConsumerStatefulWidget implements PreferredSizeWidget {
-  const AppBarMain({super.key});
+  final double extendSize;
+  const AppBarMain({super.key, required this.extendSize});
 
   @override
   ConsumerState<AppBarMain> createState() => _AppBarMainState();
 
   @override
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 50);
+  Size get preferredSize => Size.fromHeight(kToolbarHeight + extendSize);
 }
 
 class _AppBarMainState extends ConsumerState<AppBarMain>
@@ -30,7 +30,6 @@ class _AppBarMainState extends ConsumerState<AppBarMain>
         alignment: Alignment.centerLeft,
         child: Container(
           width: 80,
-          height: 50,
           padding: const EdgeInsets.only(left: 10, top: 10),
           child: GestureDetector(
             onTap: () => controller.openDrawer(context: context),

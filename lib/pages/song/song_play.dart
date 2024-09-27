@@ -11,8 +11,8 @@ import 'package:just_audio/just_audio.dart';
 import 'controller/song_play_controller.dart';
 
 class SongPlayWidget extends ConsumerStatefulWidget {
-  final Map<String?, String?> data;
-  const SongPlayWidget({super.key, required this.data});
+  final Map<String?, String?>? data;
+  const SongPlayWidget({super.key, this.data});
 
   @override
   ConsumerState<SongPlayWidget> createState() => _PlaySongState();
@@ -22,37 +22,40 @@ class _PlaySongState extends ConsumerState<SongPlayWidget> {
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(songPlayController)
-      ..idSong(idSong: widget.data['idSong']);
+      ..idSong(idSong: widget.data?['idSong']);
+    print('data: ${widget.data?['idSong']}');
 
-    return FutureBuilder<SongIdResponde?>(
-        future: controller.getSong(data: controller.getIdSong),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Material(
-                child:
-                    Center(child: CircularProgressIndicator(strokeWidth: 2)));
-          }
-          if (snapshot.hasError) {
-            return Scaffold(
-                appBar: AppBar(title: const Text('Error')),
-                body: Center(child: Text('Error ${snapshot.error}')));
-          }
-          
-          controller.setData(data: snapshot.data);
-          return ScreenPlay(
-              data: snapshot.data,
-              idSong: controller.getIdSong,
-              url: controller.urlSong(data: snapshot.data!));
-        });
+    return switch ((widget.data?['idSong']?.isEmpty ?? false)) {
+      false => FutureBuilder<SongIdResponde?>(
+          future: controller.getSong(data: widget.data!['idSong'] ?? ''),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Material(
+                  child:
+                      Center(child: CircularProgressIndicator(strokeWidth: 2)));
+            }
+            if (snapshot.hasError) {
+              return Scaffold(
+                  appBar: AppBar(title: const Text('Error')),
+                  body: Center(child: Text('Error ${snapshot.error}')));
+            }
+
+            controller.setData(data: snapshot.data);
+            return ScreenPlay(
+                data: snapshot.data,
+                idSong: controller.getIdSong,
+                url: controller.urlSong(data: snapshot.data!));
+          }),
+      true => const ScreenPlay(),
+    };
   }
 }
 
 class ScreenPlay extends ConsumerStatefulWidget {
-  final String url;
+  final String? url;
   final SongIdResponde? data;
-  final String idSong;
-  const ScreenPlay(
-      {super.key, required this.url, required this.idSong, this.data});
+  final String? idSong;
+  const ScreenPlay({super.key, this.url, this.idSong, this.data});
 
   @override
   ConsumerState<ScreenPlay> createState() => _ScreenPlayState();

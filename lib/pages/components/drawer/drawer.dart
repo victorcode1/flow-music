@@ -7,12 +7,14 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      backgroundColor: Colors.white,
       child: ListView(
         children: [
           const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+              decoration: BoxDecoration(color: Colors.white),
               child: Text('Drawer Header')),
           ListTile(
+            style: ListTileStyle.drawer,
             leading: const Icon(Icons.radio),
             title: const Text('Rado'),
             onTap: () {
