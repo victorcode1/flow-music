@@ -1,6 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/song_id_response.dart';
+import 'package:flow_music/pages/shared/portada_albun/portada_albun.dart';
 import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
 import 'package:flow_music/pages/shared/seek_bar/seek_bar.dart';
 import 'package:flutter/material.dart';
@@ -29,17 +29,19 @@ class _PlaySongState extends ConsumerState<SongPlayWidget> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Material(
-              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            );
+                child:
+                    Center(child: CircularProgressIndicator(strokeWidth: 2)));
           }
           if (snapshot.hasError) {
             return Scaffold(
                 appBar: AppBar(title: const Text('Error')),
                 body: Center(child: Text('Error ${snapshot.error}')));
           }
+          
+          controller.setData(data: snapshot.data);
           return ScreenPlay(
               data: snapshot.data,
-              idSong: widget.data['idSong']!,
+              idSong: controller.getIdSong,
               url: controller.urlSong(data: snapshot.data!));
         });
   }
@@ -214,45 +216,7 @@ class SourceTile extends ConsumerWidget {
 
     return Column(
       children: [
-        Expanded(
-          child: StreamBuilder<SongIdResponde>(
-            stream: controller.streamController.stream,
-            builder: (context, snapshot) {
-              final thumbnails =
-                  snapshot.data?.videoDetails?.thumbnail?.thumbnails;
-              final defaultThumbnails =
-                  data?.videoDetails?.thumbnail?.thumbnails;
-
-              // Helper function to safely get a thumbnail URL
-              String? getThumbnailUrl(
-                  List<ThumbnailElement>? thumbnails, int index) {
-                return thumbnails != null && thumbnails.length > index
-                    ? thumbnails[index].url
-                    : null;
-              }
-
-              // Try to get the first available URL, falling back to defaults if needed
-              String imageUrl = getThumbnailUrl(thumbnails, 4) ??
-                  getThumbnailUrl(defaultThumbnails, 4) ??
-                  getThumbnailUrl(thumbnails, 3) ??
-                  getThumbnailUrl(defaultThumbnails, 3) ??
-                  getThumbnailUrl(thumbnails, 2) ??
-                  getThumbnailUrl(defaultThumbnails, 2) ??
-                  getThumbnailUrl(thumbnails, 1) ??
-                  getThumbnailUrl(defaultThumbnails, 1) ??
-                  getThumbnailUrl(thumbnails, 0) ??
-                  getThumbnailUrl(defaultThumbnails, 0) ??
-                  '';
-
-              return CachedNetworkImage(
-                imageUrl: imageUrl,
-                placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(strokeWidth: 2)),
-                errorWidget: (context, url, error) => const Icon(Icons.error),
-              );
-            },
-          ),
-        ),
+        Expanded(child: PortadaAlbun(data: data)),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

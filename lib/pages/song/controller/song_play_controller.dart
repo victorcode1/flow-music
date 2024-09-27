@@ -14,8 +14,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '../../../datasource/model/load_play_list.dart';
 
-final songPlayController =
-    ChangeNotifierProvider.autoDispose<SongPlayController>((ref) {
+final songPlayController = ChangeNotifierProvider.autoDispose <SongPlayController>((ref) {
   final implement = ref.read(mainController).implement;
   return SongPlayController(ref: ref, implement: implement);
 });
@@ -24,7 +23,8 @@ class SongPlayController extends ChangeNotifier {
   final ChangeNotifierProviderRef<SongPlayController> ref;
   String _idSong = '';
   final GenealRepo implement;
-  int _songIndex = 46;
+  SongIdResponde? _data;
+  int _songIndex = 0;
 
   final streamController = StreamController<SongIdResponde>.broadcast();
 
@@ -32,7 +32,7 @@ class SongPlayController extends ChangeNotifier {
 
   Future<void> autoPlay({required String data}) async {
     if (data.isNotEmpty) {
-      _songIndex = 46;
+      _songIndex = 0;
       await implement.audioRepository.play(source: sources.UrlSource(data));
     }
   }
@@ -259,4 +259,10 @@ class SongPlayController extends ChangeNotifier {
   void changeVieo({required String videoId}) {}
 
   void setStatus({required PlayerState data, LoadPayListRessponse? playList}) {}
+
+  void setData({SongIdResponde? data}) {
+    _data = data;
+  }
+
+SongIdResponde?  get getData => _data;
 }
