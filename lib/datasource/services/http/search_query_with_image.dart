@@ -39,7 +39,7 @@ class SearchQueryWihtImage extends SearchQueryWithImageRepo {
       if (res.statusCode == 200) {
         return ListSearchSongResult.fromJson(json.decode(res.body));
       } else {
-        throw Exception('Failed to load data!');
+        throw Exception('Failed to load data! ${res.statusCode}');
       }
     } catch (e, s) {
       debugPrintStack(label: 'Error: $e', stackTrace: s);

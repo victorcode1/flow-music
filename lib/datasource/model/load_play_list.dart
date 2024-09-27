@@ -1228,7 +1228,7 @@ class PurpleWatchEndpointMusicSupportedConfigs {
 }
 
 class PurpleWatchEndpointMusicConfig {
-  final MusicVideoType? musicVideoType;
+  final String? musicVideoType;
 
   PurpleWatchEndpointMusicConfig({
     this.musicVideoType,
@@ -1236,11 +1236,11 @@ class PurpleWatchEndpointMusicConfig {
 
   factory PurpleWatchEndpointMusicConfig.fromJson(Map<String, dynamic> json) =>
       PurpleWatchEndpointMusicConfig(
-        musicVideoType: musicVideoTypeValues.map[json["musicVideoType"]]!,
+        musicVideoType: json["musicVideoType"],
       );
 
   Map<String, dynamic> toJson() => {
-        "musicVideoType": musicVideoTypeValues.reverse[musicVideoType],
+        "musicVideoType": musicVideoType,
       };
 }
 

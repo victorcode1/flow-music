@@ -24,7 +24,7 @@ class SongPlayController extends ChangeNotifier {
   final ChangeNotifierProviderRef<SongPlayController> ref;
   String _idSong = '';
   final GenealRepo implement;
-  int _songIndex = 0;
+  int _songIndex = 46;
 
   final streamController = StreamController<SongIdResponde>.broadcast();
 
@@ -32,6 +32,7 @@ class SongPlayController extends ChangeNotifier {
 
   Future<void> autoPlay({required String data}) async {
     if (data.isNotEmpty) {
+      _songIndex = 46;
       await implement.audioRepository.play(source: sources.UrlSource(data));
     }
   }
@@ -71,28 +72,30 @@ class SongPlayController extends ChangeNotifier {
   Stream<PlayerState> get statusStream =>
       implement.audioRepository.statusStream;
 
-  Stream<PositionData> get positionDataStream =>
-      Rx.combineLatest3<Duration?, Duration?, Duration?, PositionData>(
-          implement.audioRepository.positionStream,
-          implement.audioRepository.bufferedPositionStream,
-          implement.audioRepository.durationStream,
-          (position, bufferedPosition, duration) {
-        if (duration != null && position != null && bufferedPosition != null) {
-          final effectiveDuration =
-              Platform.isIOS || Platform.isMacOS ? duration ~/ 2 : duration;
-          final effectivePosition =
-              position < effectiveDuration ? position : effectiveDuration;
-          if (effectiveDuration == effectivePosition) {
-            debugPrint('stop');
-            //pause
+  Stream<PositionData> positionDataStream({LoadPayListRessponse? data}) {
+    return Rx.combineLatest3<Duration?, Duration?, Duration?, PositionData>(
+        implement.audioRepository.positionStream,
+        implement.audioRepository.bufferedPositionStream,
+        implement.audioRepository.durationStream,
+        (position, bufferedPosition, duration) {
+      if (duration != null && position != null && bufferedPosition != null) {
+        final effectiveDuration =
+            Platform.isIOS || Platform.isMacOS ? duration ~/ 2 : duration;
+        final effectivePosition =
+            position < effectiveDuration ? position : effectiveDuration;
+        if (effectiveDuration == effectivePosition) {
+          debugPrint('stop');
+          //pause
 
-            setAudioPause();
-          }
+          setAudioStateStopped();
+          nextSong(data: data);
         }
+      }
 
-        return PositionData(
-            position!, bufferedPosition!, duration ?? Duration.zero);
-      });
+      return PositionData(
+          position!, bufferedPosition!, duration ?? Duration.zero);
+    });
+  }
 
   Future<LoadPayListRessponse> loadPlayList({required String idSong}) async {
     final result = await implement.httpRepo.loadParamsPlayList
@@ -161,6 +164,13 @@ class SongPlayController extends ChangeNotifier {
 
   Future prevSong({LoadPayListRessponse? data}) async {
     if (data != null) {
+      print(_songIndex);
+
+      if (_songIndex >= 1) {
+        _songIndex--;
+      } else if (_songIndex == 0) {
+        _songIndex = 0;
+      }
       final idSong = data
           .contents
           ?.singleColumnMusicWatchNextResultsRenderer
@@ -176,12 +186,6 @@ class SongPlayController extends ChangeNotifier {
           ?.contents?[_songIndex]
           .playlistPanelVideoRenderer
           ?.videoId;
-
-      if (_songIndex > 0) {
-        _songIndex--;
-      } else {
-        _songIndex = 49;
-      }
       if (idSong != null) {
         implement.audioRepository.stop();
         implement.httpRepo.songResult.songSerch(songId: idSong).then((data) {
@@ -192,8 +196,7 @@ class SongPlayController extends ChangeNotifier {
           }
         });
       }
-
-      notifyListeners();
+      print(_songIndex);
     }
   }
 
@@ -207,6 +210,13 @@ class SongPlayController extends ChangeNotifier {
 
   Future<void> nextSong({LoadPayListRessponse? data}) async {
     if (data != null) {
+      print(_songIndex);
+
+      if (_songIndex < 49) {
+        _songIndex++;
+      } else if (_songIndex == 49) {
+        _songIndex = 0;
+      }
       final idSong = data
           .contents
           ?.singleColumnMusicWatchNextResultsRenderer
@@ -223,11 +233,7 @@ class SongPlayController extends ChangeNotifier {
           .playlistPanelVideoRenderer
           ?.videoId;
 
-      if (_songIndex < 49) {
-        _songIndex++;
-      } else {
-        _songIndex = 0;
-      }
+      print(_songIndex);
       if (idSong != null) {
         await implement.audioRepository.stop();
         final data =
@@ -239,8 +245,6 @@ class SongPlayController extends ChangeNotifier {
               .play(source: sources.UrlSource(urlSong(data: data)));
         }
       }
-
-      notifyListeners();
     }
   }
 
@@ -252,5 +256,7 @@ class SongPlayController extends ChangeNotifier {
 
   String get getIdSong => _idSong;
 
- void changeVieo({required String videoId}) {}
+  void changeVieo({required String videoId}) {}
+
+  void setStatus({required PlayerState data, LoadPayListRessponse? playList}) {}
 }

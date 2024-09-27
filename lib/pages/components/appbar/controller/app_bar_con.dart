@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/controller/main_controller.dart';
 import 'package:flow_music/core/const/roots/rutas.dart';
 import 'package:flow_music/datasource/model/search_result.dart';
@@ -44,6 +45,8 @@ class AppBarConTroller extends ChangeNotifier {
   AnimationController get animationController => _animationController;
 
   Future<String?> get imagenPerl => implement.userRepository.imagenPerfil;
+
+  Stream<User?> get userSream => implement.userRepository.userStream;
 
   void searchAppBar({required String query, required BuildContext context}) {
     if (debounce?.isActive ?? false) debounce?.cancel();

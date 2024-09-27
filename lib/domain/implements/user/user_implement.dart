@@ -24,4 +24,9 @@ class UserImplement extends UserImp {
     }
     return null;
   }
+
+  @override
+  Stream<User?> get userStream {
+    return _firebaseRepo.user;
+  }
 }

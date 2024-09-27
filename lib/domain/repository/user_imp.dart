@@ -4,4 +4,5 @@ abstract class UserImp {
   Stream<User?> get user;
   Future<void> logAuth();
   Future<String?> get imagenPerfil;
+  Stream<User?> get userStream;
 }

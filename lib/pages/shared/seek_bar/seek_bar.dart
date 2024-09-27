@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:math';
 
-import 'package:flow_music/controller/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -32,7 +31,6 @@ class SeekBarState extends ConsumerState<SeekBar> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     _sliderThemeData = SliderTheme.of(context).copyWith(
       trackHeight: 2.0,
     );
@@ -40,7 +38,6 @@ class SeekBarState extends ConsumerState<SeekBar> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = ref.watch(mainController);
     final effectiveDuration = Platform.isIOS || Platform.isMacOS
         ? widget.duration ~/ 2
         : widget.duration;

@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/pages/components/appbar/controller/app_bar_con.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,8 +21,8 @@ class ImagenPerlfil extends ConsumerWidget {
                 elevation: 1,
                 shape: const CircleBorder(),
                 backgroundColor: Colors.white,
-                child: FutureBuilder<String?>(
-                    future: controller.imagenPerl,
+                child: StreamBuilder<User?>(
+                    stream: controller.userSream,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Icon(Icons.person, color: Colors.black);
@@ -30,7 +31,8 @@ class ImagenPerlfil extends ConsumerWidget {
                       } else if (snapshot.hasData) {
                         return CircleAvatar(
                             radius: 20,
-                            backgroundImage: NetworkImage(snapshot.data!));
+                            backgroundImage:
+                                NetworkImage(snapshot.data?.photoURL ?? ''));
                       }
                       return const Icon(Icons.person, color: Colors.black);
                     }))));

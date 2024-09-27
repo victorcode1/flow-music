@@ -28,8 +28,9 @@ class _PlaySongState extends ConsumerState<SongPlayWidget> {
         future: controller.getSong(data: controller.getIdSong),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-                child: CircularProgressIndicator(strokeWidth: 2));
+            return const Material(
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+            );
           }
           if (snapshot.hasError) {
             return Scaffold(
@@ -67,140 +68,136 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   Widget build(BuildContext context) {
     super.build(context);
     final controller = ref.watch(songPlayController);
-    return StreamBuilder<SongIdResponde>(
-        stream: controller.streamController.stream,
-        builder: (context, snapshot) {
-          return Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text(snapshot.data?.videoDetails?.author ??
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: StreamBuilder<SongIdResponde>(
+            stream: controller.streamController.stream,
+            builder: (context, snapshot) {
+              return Text(snapshot.data?.videoDetails?.author ??
                   widget.data?.videoDetails?.author ??
-                  ''),
-              leading: IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () => controller.back(context: context)),
-              actions: [
-                IconButton(
-                    icon: const Icon(Icons.search),
-                    onPressed: () => controller.search(
-                        context: context, delegate: SearchSong(ref: ref))),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => context.go(Rutas.home.rootValue),
-                ),
-              ],
-            ),
-            body: FutureBuilder(
-                future: controller.loadPlayList(idSong: widget.idSong),
-                builder: (context, playListSnapshot) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(width: 10),
-                          Flexible(
-                              child: Text(
+                  '');
+            }),
+        leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => controller.back(context: context)),
+        actions: [
+          IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () => controller.search(
+                  context: context, delegate: SearchSong(ref: ref))),
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: () => context.go(Rutas.home.rootValue),
+          ),
+        ],
+      ),
+      body: FutureBuilder(
+          future: controller.loadPlayList(idSong: widget.idSong),
+          builder: (context, playListSnapshot) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 10),
+                    Flexible(
+                        child: StreamBuilder<SongIdResponde>(
+                            stream: controller.streamController.stream,
+                            builder: (context, snapshot) {
+                              return Text(
                                   snapshot.data?.videoDetails?.title ??
                                       widget.data?.videoDetails?.title ??
                                       '',
                                   maxLines: 2,
-                                  textAlign: TextAlign.end,
-                                  overflow: TextOverflow.ellipsis)),
-                        ],
-                      ),
-                      Expanded(
-                          flex: 2,
-                          child:
-                              SourceTile(data: snapshot.data ?? widget.data)),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          StreamBuilder<PositionData>(
-                              stream: controller.positionDataStream,
-                              builder: (context, snapshot) {
-                                final positionData = snapshot.data;
-                                return SizedBox(
-                                  height: 50,
-                                  child: SeekBar(
-                                    duration:
-                                        positionData?.duration ?? Duration.zero,
-                                    position:
-                                        positionData?.position ?? Duration.zero,
-                                    bufferedPosition:
-                                        positionData?.bufferedPosition ??
-                                            Duration.zero,
-                                    onChangeEnd: (duration) =>
-                                        controller.seek(duration: duration),
-                                  ),
-                                );
-                              }),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 30),
-                            child: StreamBuilder<PlayerState>(
-                                stream: controller.statusStream,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return const CircularProgressIndicator
-                                        .adaptive();
-                                  }
-                                  if (snapshot.hasError) {
-                                    return Text('Error ${snapshot.error}');
-                                  }
-                                  if (snapshot.data == null) {
-                                    return const CircularProgressIndicator
-                                        .adaptive();
-                                  }
-                                  if (!snapshot.hasData) {
-                                    return const SizedBox();
-                                  }
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis);
+                            })),
+                  ],
+                ),
+                Expanded(flex: 2, child: SourceTile(data: widget.data)),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    StreamBuilder<PositionData>(
+                        stream: controller.positionDataStream(
+                            data: playListSnapshot.data),
+                        builder: (context, snapshot) {
+                          final positionData = snapshot.data;
+                          return SizedBox(
+                            height: 50,
+                            child: SeekBar(
+                              duration: positionData?.duration ?? Duration.zero,
+                              position: positionData?.position ?? Duration.zero,
+                              bufferedPosition:
+                                  positionData?.bufferedPosition ??
+                                      Duration.zero,
+                              onChangeEnd: (duration) =>
+                                  controller.seek(duration: duration),
+                            ),
+                          );
+                        }),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 30),
+                      child: StreamBuilder<PlayerState>(
+                          stream: controller.statusStream,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CircularProgressIndicator.adaptive();
+                            }
+                            if (snapshot.hasError) {
+                              return Text('Error ${snapshot.error}');
+                            }
+                            if (snapshot.data == null) {
+                              return const CircularProgressIndicator.adaptive();
+                            }
+                            if (!snapshot.hasData) {
+                              return const SizedBox();
+                            }
 
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                          onPressed: () =>
-                                              controller.prevSong(data: playListSnapshot.data),
-                                          icon: const Icon(
-                                              Icons.skip_previous_rounded)),
-                                      IconButton(
-                                          onPressed: () =>
-                                              snapshot.data!.playing
-                                                  ? controller
-                                                      .setAudioStateStopped()
-                                                  : controller.replay(),
-                                          icon: Icon(snapshot.data!.playing
-                                              ? Icons.stop
-                                              : Icons.replay)),
-                                      const SizedBox(width: 10),
-                                      IconButton(
-                                          onPressed: () => snapshot
-                                                  .data!.playing
-                                              ? controller.setAudioStatePaused()
-                                              : controller.replay(),
-                                          icon: Icon(snapshot.data!.playing
-                                              ? Icons.pause
-                                              : Icons.play_arrow)),
-                                      IconButton(
-                                          onPressed: () => controller.nextSong(
-                                              data: playListSnapshot.data),
-                                          icon: const Icon(
-                                              Icons.skip_next_rounded)),
-                                    ],
-                                  );
-                                }),
-                          ),
-                        ],
-                      )
-                    ],
-                  );
-                }),
-          );
-        });
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                    onPressed: () => controller.prevSong(
+                                        data: playListSnapshot.data),
+                                    icon: const Icon(
+                                        Icons.skip_previous_rounded)),
+                                IconButton(
+                                    onPressed: () =>
+                                        snapshot.data?.playing ?? false
+                                            ? controller.setAudioStateStopped()
+                                            : controller.replay(),
+                                    icon: Icon(snapshot.data!.playing
+                                        ? Icons.stop
+                                        : Icons.replay)),
+                                const SizedBox(width: 10),
+                                IconButton(
+                                    onPressed: () =>
+                                        snapshot.data?.playing ?? false
+                                            ? controller.setAudioStatePaused()
+                                            : controller.replay(),
+                                    icon: Icon(snapshot.data?.playing ?? false
+                                        ? Icons.pause
+                                        : Icons.play_arrow)),
+                                IconButton(
+                                    onPressed: () => controller.nextSong(
+                                        data: playListSnapshot.data),
+                                    icon: const Icon(Icons.skip_next_rounded)),
+                              ],
+                            );
+                          }),
+                    ),
+                  ],
+                )
+              ],
+            );
+          }),
+    );
   }
 
   @override
@@ -218,11 +215,42 @@ class SourceTile extends ConsumerWidget {
     return Column(
       children: [
         Expanded(
-          child: CachedNetworkImage(
-            imageUrl: data?.videoDetails?.thumbnail?.thumbnails?[4].url ?? '',
-            placeholder: (context, url) =>
-                const Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
+          child: StreamBuilder<SongIdResponde>(
+            stream: controller.streamController.stream,
+            builder: (context, snapshot) {
+              final thumbnails =
+                  snapshot.data?.videoDetails?.thumbnail?.thumbnails;
+              final defaultThumbnails =
+                  data?.videoDetails?.thumbnail?.thumbnails;
+
+              // Helper function to safely get a thumbnail URL
+              String? getThumbnailUrl(
+                  List<ThumbnailElement>? thumbnails, int index) {
+                return thumbnails != null && thumbnails.length > index
+                    ? thumbnails[index].url
+                    : null;
+              }
+
+              // Try to get the first available URL, falling back to defaults if needed
+              String imageUrl = getThumbnailUrl(thumbnails, 4) ??
+                  getThumbnailUrl(defaultThumbnails, 4) ??
+                  getThumbnailUrl(thumbnails, 3) ??
+                  getThumbnailUrl(defaultThumbnails, 3) ??
+                  getThumbnailUrl(thumbnails, 2) ??
+                  getThumbnailUrl(defaultThumbnails, 2) ??
+                  getThumbnailUrl(thumbnails, 1) ??
+                  getThumbnailUrl(defaultThumbnails, 1) ??
+                  getThumbnailUrl(thumbnails, 0) ??
+                  getThumbnailUrl(defaultThumbnails, 0) ??
+                  '';
+
+              return CachedNetworkImage(
+                imageUrl: imageUrl,
+                placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2)),
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              );
+            },
           ),
         ),
         Row(

@@ -56,16 +56,10 @@ class _HomePageBuilderState extends ConsumerState<HomePageBuilder>
               if (!snapshot.hasData) return const SizedBox();
               return Visibility(
                 visible: !snapshot.data!.playing,
-                child: SizedBox(
-                    width: 50,
-                    child: FloatingActionButton(
-                        heroTag: 'search',
-                        elevation: 1,
-                        backgroundColor: Colors.white,
-                        shape: const CircleBorder(),
-                        onPressed: () => controller.search(
-                            context: context, delegate: SearchSong(ref: ref)),
-                        child: const Icon(Icons.search))),
+                child: IconButton(
+                    onPressed: () => controller.search(
+                        context: context, delegate: SearchSong(ref: ref)),
+                    icon: const Icon(Icons.search)),
               );
             }),
         bottomSheet: StreamBuilder<PlayerState>(
