@@ -25,7 +25,6 @@ class JustAudioManager {
   factory JustAudioManager() => _instance;
   JustAudioManager._internal() {
     _audioPlayer = AudioPlayer();
- 
   }
 
   Future<void> init() async {

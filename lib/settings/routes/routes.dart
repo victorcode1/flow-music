@@ -88,12 +88,11 @@ class Route extends _$Route {
           name: ruta.name,
           path: ruta.rootValue,
           builder: (context, state) {
-            String? url;
-            if ((state.extra as String?) != null) {
-              url = state.extra as String;
-              return RadioContent(url: url);
-            }
-            return const RadioContent(url: '');
+            Map<String?, String?> data = {
+              'name': state.uri.queryParameters['name'],
+              'url': state.uri.queryParameters['url']
+            };
+            return RadioContent(url: data['url'] ?? '');
           }),
       // Rutas.playSong => GoRoute(
       //     name: ruta.name,

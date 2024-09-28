@@ -25,6 +25,7 @@ class AuthFireService {
   }
 
   Stream<User?> get user => _auth.authStateChanges();
+  
   User? get currentUser => _auth.currentUser;
 
   Future<void> logAuth() async {

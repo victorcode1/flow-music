@@ -57,11 +57,12 @@ class DatabaseFirestore extends DataStoreRepo {
   }
 
   @override
-  void saveRadio(String text, String text2) {
+  void saveRadio(String text, String text2, String urlImage) {
     try {
       _firestore.collection('radio').add({
         'name': text,
         'url': text2,
+        'urlImage': urlImage,
       });
 
       debugPrint('Radio saved to Firestore.');
@@ -74,4 +75,39 @@ class DatabaseFirestore extends DataStoreRepo {
   @override
   Stream<QuerySnapshot<Map<String, dynamic>>> get listRadio =>
       _firestore.collection('radio').snapshots();
+
+  @override
+  Stream<bool> isAdmin({required User? user}) {
+    try {
+      if (user != null) {
+        final resul = _firestore
+            .collection('users')
+            .doc(user.uid)
+            .snapshots()
+            .map((event) => event.data()!['role'] == 'admin');
+        return resul;
+      } else {
+        return Stream.value(false);
+      }
+    } catch (e, s) {
+      debugPrintStack(label: 'Failed to isAdmin: $e', stackTrace: s);
+      throw Exception('Failed to isAdmin: $e');
+    }
+  }
+
+  @override
+  Future updateRadio(
+      String text, String text2, String? urlImage, String s) async {
+    try {
+      return await _firestore.collection('radio').doc(s).update({
+        'name': text,
+        'url': text2,
+        'urlImage': urlImage,
+      }).then((value) {
+        debugPrint('Radio updated to Firestore.');
+      });
+    } catch (e, s) {
+      debugPrintStack(label: 'Failed to updateRadio: $e', stackTrace: s);
+    }
+  }
 }

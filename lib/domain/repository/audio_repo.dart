@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart' as audio;
 import 'package:flow_music/core/sources.dart' as sources;
 import 'package:just_audio/just_audio.dart';
 
@@ -22,4 +23,6 @@ abstract class AudioRepo {
   Stream<Duration?> get positionStream;
   Stream<Duration?> get bufferedPositionStream;
   Stream<Duration?> get durationStream;
+
+  Stream<audio.PlayerState> get statusRadios;
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:audioplayers/audioplayers.dart' as audio;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flow_music/controller/interface/controller_contract.dart';
 import 'package:flow_music/core/sources.dart' as sources;
@@ -14,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:rxdart/rxdart.dart';
 
 final mainController =
@@ -134,6 +136,7 @@ class MainController extends ChangeNotifier implements ControllerContract {
   @override
   void init() {
     implement.audioRepository.init();
+    _requestPermissions();
   }
 
   @override
@@ -146,10 +149,20 @@ class MainController extends ChangeNotifier implements ControllerContract {
     implement.audioRepository.playRadio(source: source);
   }
 
+  Future<void> _requestPermissions() async {
+    var status = await Permission.photos.status;
+    if (!status.isGranted) {
+      await Permission.photos.request();
+    }
+  }
+
   @override
   GenealRepo get implement => GeneralImplement();
 
   double get extendSize => _extendSize;
+
+  Stream<audio.PlayerState> get statusRadio =>
+      implement.audioRepository.statusRadios;
 
   set extendSize(double value) {
     _extendSize = value;
@@ -187,11 +200,11 @@ class MainController extends ChangeNotifier implements ControllerContract {
 
   Future saveUser({User? user}) async {
     if (user != null) {
-     await implement.dataRepository.data.saveUser(user: user);
+      await implement.dataRepository.data.saveUser(user: user);
     }
   }
 
   void updateLogAuthData() {
-    implement.dataRepository.data.logAuth( );
+    implement.dataRepository.data.logAuth();
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:audioplayers/audioplayers.dart' as audio;
 import 'package:flow_music/core/sources.dart' as sources;
 import 'package:flow_music/datasource/services/audio/audio_manger_audiop.dart';
 import 'package:flow_music/datasource/services/audio/audio_manger_justa.dart';
@@ -89,4 +90,10 @@ class AudioImp extends AudioRepo {
   void playRadio({required sources.UrlSource source}) {
     _streamingManager.play(source: source);
   }
+  
+  @override
+ 
+  Stream<audio.PlayerState> get statusRadios =>  _streamingManager.statusStream;
+
+   
 }

@@ -25,7 +25,8 @@ class AudioManagerAudioPlayer {
 
   factory AudioManagerAudioPlayer() => _instance;
   AudioManagerAudioPlayer._internal() {
-    _audioPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.stop);
+    _audioPlayer = AudioPlayer()..setReleaseMode(ReleaseMode.release);
+
     debugPrint('AudioPlayer created ${_audioPlayer.state}');
   }
 
@@ -43,6 +44,8 @@ class AudioManagerAudioPlayer {
           _position!.inMilliseconds < _duration!.inMilliseconds)
       ? _position!.inMilliseconds / _duration!.inMilliseconds
       : 0.0;
+
+  Stream<PlayerState> get statusStream => _audioPlayer.onPlayerStateChanged;
 
   Future<void> play({required Source source}) async {
     debugPrint('setSource ${_audioPlayer.state}');
