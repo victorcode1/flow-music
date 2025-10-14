@@ -1,21 +1,22 @@
 import 'package:flow_music/provider/list_result.dart';
+import 'package:flow_music/provider/search.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 
 class ListSearch extends ConsumerWidget {
   const ListSearch({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(searchProvider);
     return Container(
-        child: ref.watch(searchDataReqProvider).when(
+        child: ref.watch(searchDataReqProvider(search: value)).when(
             data: (data) => data == null
                 ? null
                 : ListView.builder(
-                    itemCount: data. contents?.first
+                    itemCount: data.contents?.first
                         .searchSuggestionsSectionRenderer?.contents?.length,
                     itemBuilder: (context, index) {
                       final dataRes = data
@@ -58,13 +59,14 @@ class ListSearch extends ConsumerWidget {
                                 fontSize: 16, fontWeight: FontWeight.w500)),
                       ),
                       TextButton(
-                          onPressed: () => ref.read(searchDataReqProvider.notifier).reload(),
+                          onPressed: () =>
+                              ref.read(searchDataReqProvider(search: value).notifier).reload(),
                           child: const Text('Retry'))
                     ],
                   ),
                 ),
             loading: () => const Center(
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CircularProgressIndicator.adaptive(strokeWidth: 2),
                 )));
   }
 }

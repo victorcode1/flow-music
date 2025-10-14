@@ -12,7 +12,7 @@ part of 'search.dart';
 @ProviderFor(Search)
 const searchProvider = SearchProvider._();
 
-final class SearchProvider extends $NotifierProvider<Search, String> {
+final class SearchProvider extends $NotifierProvider<Search, String?> {
   const SearchProvider._()
       : super(
           from: null,
@@ -32,25 +32,25 @@ final class SearchProvider extends $NotifierProvider<Search, String> {
   Search create() => Search();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
+  Override overrideWithValue(String? value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
+      providerOverride: $SyncValueProvider<String?>(value),
     );
   }
 }
 
-String _$searchHash() => r'c63d4e5ade07f9296b00882929adc6807636b31a';
+String _$searchHash() => r'2a97ec182fb2934fe9b35aede321dc48e5baa8a2';
 
-abstract class _$Search extends $Notifier<String> {
-  String build();
+abstract class _$Search extends $Notifier<String?> {
+  String? build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<String?, String?>;
     final element = ref.element as $ClassProviderElement<
-        AnyNotifier<String, String>, String, Object?, Object?>;
+        AnyNotifier<String?, String?>, String?, Object?, Object?>;
     element.handleValue(ref, created);
   }
 }

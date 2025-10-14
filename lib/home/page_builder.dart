@@ -1,10 +1,11 @@
 import 'package:flow_music/home/components/app_bar.dart';
 import 'package:flow_music/home/controller/controller_page_builder.dart';
+import 'package:flow_music/pages/shared/list_search/list_search.dart';
 import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class HomePage extends ConsumerWidget  {
+class HomePage extends ConsumerWidget {
   final Widget? child;
   const HomePage({super.key, this.child});
 
@@ -13,7 +14,7 @@ class HomePage extends ConsumerWidget  {
     final controller = ref.watch(controllerPageBuilder);
     return Scaffold(
       appBar: const AppAbarMain(),
-      body: child,
+      body: child ?? ListSearch(),
       floatingActionButton: FloatingActionButton(
           heroTag: 'floatingActionButtonSearch',
           elevation: 1,

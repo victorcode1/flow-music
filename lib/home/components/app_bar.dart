@@ -6,7 +6,6 @@ import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/provider/search.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
@@ -38,23 +37,13 @@ class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
         actions: [
           IconButton(
             icon: Icon(Icons.search, color: theme.appBarTheme.foregroundColor),
-            onPressed: () {
-              // Expand search or navigate to search page
-              context.go('/search');
-            },
+            onPressed: () => route.go('/search'),
           ),
           const SizedBox(width: 8),
-          FloatingActionButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(LocaleKeys.coming_soon.tr())),
-              );
-            },
-            elevation: 1,
-            mini: true,
-            backgroundColor: theme.colorScheme.primary,
-            child: Icon(Icons.person, color: theme.colorScheme.onPrimary),
-          ),
+          IconButton(
+              onPressed: () {},
+              icon:
+                  Icon(Icons.person, color: theme.appBarTheme.foregroundColor)),
           const SizedBox(width: 8),
           IconButton(
             icon:
@@ -72,8 +61,7 @@ class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
               onChanged: (query) {
                 if (debounce?.isActive ?? false) debounce?.cancel();
                 debounce = Timer(const Duration(milliseconds: 1000), () {
-                  ref.watch(searchProvider.notifier).setValue(query);
-                  context.go('/search');
+                  ref.read(searchProvider.notifier).setValue(query);
                 });
               },
               textAlign: TextAlign.left,

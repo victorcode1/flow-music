@@ -2,18 +2,17 @@ import 'dart:convert';
 
 import 'package:flow_music/core/datasource/model/query_search.dart';
 import 'package:flow_music/core/datasource/model/search_result.dart';
-import 'package:flow_music/provider/search.dart';
 import 'package:flow_music/core/utils/utils.dart';
+import 'package:flow_music/provider/search.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'list_result.g.dart';
 
 @riverpod
 FutureOr<SearchResult?> searchData(Ref ref) async {
-  if (ref.watch(searchProvider).isEmpty) return null;
+  if (ref.watch(searchProvider)?.isEmpty ?? true) return null;
   try {
     String url =
         'https://music.youtube.com/youtubei/v1/music/get_search_suggestions?prettyPrint=false';
@@ -47,17 +46,18 @@ FutureOr<SearchResult?> searchData(Ref ref) async {
 @riverpod
 class SearchDataReq extends _$SearchDataReq {
   @override
-  FutureOr<SearchResult?> build() async {
-    return fethData();
+  FutureOr<SearchResult?> build({required String? search}) async {
+    if (search == null || search.isEmpty) return null;
+    return fethData(search: search);
   }
 
-  FutureOr<SearchResult?> fethData() async {
-    if (ref.watch(searchProvider).isEmpty) return null;
+  FutureOr<SearchResult?> fethData({required String? search}) async {
+    if (ref.watch(searchProvider)?.isEmpty ?? true) return null;
     try {
       String url =
           'https://music.youtube.com/youtubei/v1/music/get_search_suggestions?prettyPrint=false';
       String bodyParams = json.encode(QuerySearch(
-          input: ref.watch(searchProvider),
+          input: search,
           context: ContextModel(
               client: Client(
                   clientName: "WEB_REMIX",
@@ -87,7 +87,7 @@ class SearchDataReq extends _$SearchDataReq {
   Future<void> reload() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
-      return fethData();
+      return fethData(search: search);
     });
   }
 }

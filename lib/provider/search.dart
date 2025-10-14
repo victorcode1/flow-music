@@ -5,11 +5,11 @@ part 'search.g.dart';
 @riverpod
 class Search extends _$Search {
   @override
-  String build() {
-    return '';
+  String? build() {
+    return null;
   }
 
-  setValue(String query) {
+  void setValue(String query) {
     state = query;
   }
 }
