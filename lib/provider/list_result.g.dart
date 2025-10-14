@@ -41,7 +41,7 @@ final class SearchDataProvider extends $FunctionalProvider<
   }
 }
 
-String _$searchDataHash() => r'7358a8478a85170cc8b0afd431eacb4a9e215299';
+String _$searchDataHash() => r'11912d3dc2d65e43732e30a9d5fdb48d4ed7e814';
 
 @ProviderFor(SearchDataReq)
 const searchDataReqProvider = SearchDataReqProvider._();
