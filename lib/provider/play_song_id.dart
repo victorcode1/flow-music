@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flow_music/datasource/model/song_id.dart';
-import 'package:flow_music/datasource/model/song_id_response.dart';
-import 'package:flow_music/settings/utils/apikeys.dart';
-import 'package:flow_music/settings/utils/utils.dart';
+import 'package:flow_music/core/datasource/model/song_id.dart';
+import 'package:flow_music/core/datasource/model/song_id_response.dart';
+import 'package:flow_music/core/utils/apikeys.dart';
+import 'package:flow_music/core/utils/utils.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';

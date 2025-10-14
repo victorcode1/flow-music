@@ -18,7 +18,7 @@ class MainController extends ChangeNotifier {
   GlobalKey<ScaffoldMessengerState> scaffoldMessage =
       GlobalKey<ScaffoldMessengerState>();
 
-  GoRouter get router => ref.watch(routeProvider);
+ 
 
   void toast(String message, {Key? textKey, required BuildContext context}) {
     ScaffoldMessenger.of(context).showSnackBar(

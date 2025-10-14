@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flow_music/datasource/model/query_search.dart';
-import 'package:flow_music/datasource/model/search_result.dart';
+import 'package:flow_music/core/datasource/model/query_search.dart';
+import 'package:flow_music/core/datasource/model/search_result.dart';
 import 'package:flow_music/provider/search.dart';
-import 'package:flow_music/settings/utils/utils.dart';
+import 'package:flow_music/core/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -84,7 +84,7 @@ class SearchDataReq extends _$SearchDataReq {
     }
   }
 
-  reload() async {
+  Future<void> reload() async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       return fethData();

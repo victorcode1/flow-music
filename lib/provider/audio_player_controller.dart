@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flow_music/settings/utils/main_controller.dart';
+import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

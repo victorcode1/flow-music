@@ -1,6 +1,6 @@
-import 'package:audioplayers_platform_interface/src/api/player_state.dart';
-import 'package:flow_music/datasource/model/song_id_response.dart';
-import 'package:flow_music/domain/sources.dart';
+import 'package:audioplayers/audioplayers.dart' show PlayerState;
+import 'package:flow_music/core/datasource/model/song_id_response.dart';
+import 'package:flow_music/core/domain/sources.dart';
 import 'package:flow_music/provider/audio_player_controller.dart';
 import 'package:flow_music/provider/play_song_id.dart';
 import 'package:flutter/material.dart';
@@ -25,11 +25,11 @@ class SongController extends ChangeNotifier {
             loading: () => const AsyncValue.loading(),
           );
 
-  setSource({required UrlSource source}) {
+  void setSource({required UrlSource source}) {
     audio.setSource(source: source);
   }
 
-  play({required UrlSource source}) {
+  void play({required UrlSource source}) {
     audio.play(source: source);
   }
 
@@ -43,14 +43,14 @@ class SongController extends ChangeNotifier {
     return urlSong;
   }
 
-  autoPlay({required String data}) {
+  void autoPlay({required String data}) {
     if (data.isNotEmpty) {
       audio.setSource(source: UrlSource(data));
       audio.play(source: UrlSource(data));
     }
   }
 
-  playListSong({String? playListId}) {
+  void playListSong({String? playListId}) {
     if (playListId != null) {
       switch (audio.status()) {
         case PlayerState.stopped:

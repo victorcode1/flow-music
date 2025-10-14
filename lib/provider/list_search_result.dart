@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:flow_music/datasource/model/list_search_result.dart';
-import 'package:flow_music/datasource/model/search_model_request.dart';
-import 'package:flow_music/settings/utils/utils.dart';
+import 'package:flow_music/core/datasource/model/list_search_result.dart';
+import 'package:flow_music/core/datasource/model/search_model_request.dart';
+import 'package:flow_music/core/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -10,8 +10,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'list_search_result.g.dart';
 
 @Riverpod(keepAlive: true)
-FutureOr<ListSearchResult?> searchResultData(
-    Ref ref, String search) async {
+FutureOr<ListSearchResult?> searchResultData(Ref ref, String search) async {
   if (search.isEmpty) return null;
   try {
     String url =

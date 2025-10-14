@@ -18,5 +18,16 @@
         "titleBar.inactiveBackground": "#42b88399",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "#42b883"
+    "peacock.color": "#42b883",
+    "dart.enableSdkFormatter": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "always",
+        "source.fixAll": "always"
+    },
+    "dart.flutterHotReloadOnSave": "all",
+    "dart.previewFlutterUiGuides": true,
+    "dart.previewFlutterUiGuidesCustomTracking": true,
+    "editor.suggestSelection": "first",
+    "dart.enableCompletionCommitCharacters": true
 }

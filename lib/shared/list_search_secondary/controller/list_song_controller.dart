@@ -1,4 +1,4 @@
-import 'package:flow_music/datasource/model/list_search_result.dart';
+import 'package:flow_music/core/datasource/model/list_search_result.dart';
 import 'package:flow_music/provider/list_search_result.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -80,7 +80,7 @@ class ListSongControllers extends ChangeNotifier {
         ?.navigationEndpoint
         ?.watchEndpoint
         ?.playlistId;
-    return {idSong : playListId ?? ''};
+    return {idSong: playListId ?? ''};
   }
 
   AsyncValue result({required String data}) =>
@@ -161,7 +161,7 @@ class ListSongControllers extends ChangeNotifier {
     });
   }
 
-  subtitle({required ListSearchResult data, required int index}) {
+  String? subtitle({required ListSearchResult data, required int index}) {
     final sub = data
         .contents
         ?.tabbedSearchResultsRenderer
@@ -184,7 +184,7 @@ class ListSongControllers extends ChangeNotifier {
     return sub;
   }
 
-  dataRes({required ListSearchResult data, required int index}) {
+  String dataRes({required ListSearchResult data, required int index}) {
     final dataRes = data
         .contents
         ?.tabbedSearchResultsRenderer

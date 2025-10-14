@@ -1,4 +1,5 @@
-import 'package:flow_music/domain/sources.dart';
+import 'package:flow_music/core/domain/sources.dart';
+
 import 'package:flow_music/pages/song/controller/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

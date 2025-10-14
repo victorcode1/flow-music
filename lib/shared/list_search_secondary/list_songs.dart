@@ -32,7 +32,7 @@ class ListSongs extends ConsumerWidget {
                             ),
                           ),
                           subtitle: Text(
-                            controller.subtitle(data: data, index: index),
+                            controller.subtitle(data: data, index: index) ?? '',
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500),
