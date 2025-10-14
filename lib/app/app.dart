@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/routes/routes.dart';
+import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -54,9 +55,13 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
+      theme: CustomTheme(context: context).theme,
+      themeMode: ThemeMode.system,
       builder: (context, child) {
         return ScaffoldMessenger(
-            key: controller.scaffoldMessage, child: child ?? const SizedBox());
+          key: controller.scaffoldMessage,
+          child: child ?? const SizedBox(),
+        );
       },
     );
   }

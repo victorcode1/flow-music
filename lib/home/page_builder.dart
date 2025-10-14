@@ -1,12 +1,12 @@
-import 'package:flow_music/pages/page_builder/components/app_bar.dart';
-import 'package:flow_music/pages/page_builder/controller/controller_page_builder.dart';
-import 'package:flow_music/shared/search_delegate/search_song.dart';
+import 'package:flow_music/home/components/app_bar.dart';
+import 'package:flow_music/home/controller/controller_page_builder.dart';
+import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class PageBuild extends ConsumerWidget {
-  final Widget child;
-  const PageBuild({super.key, required this.child});
+class HomePage extends ConsumerWidget  {
+  final Widget? child;
+  const HomePage({super.key, this.child});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +15,7 @@ class PageBuild extends ConsumerWidget {
       appBar: const AppAbarMain(),
       body: child,
       floatingActionButton: FloatingActionButton(
-          heroTag: 'search',
+          heroTag: 'floatingActionButtonSearch',
           elevation: 1,
           backgroundColor: Colors.white,
           shape: const CircleBorder(),

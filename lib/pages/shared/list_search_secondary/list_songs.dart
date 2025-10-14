@@ -1,4 +1,4 @@
-import 'package:flow_music/shared/list_search_secondary/controller/list_song_controller.dart';
+import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 

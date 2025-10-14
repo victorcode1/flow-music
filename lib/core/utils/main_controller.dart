@@ -1,7 +1,5 @@
 import 'package:flow_music/provider/audio_player_controller.dart';
-import 'package:flow_music/core/routes/routes.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
@@ -18,8 +16,6 @@ class MainController extends ChangeNotifier {
   GlobalKey<ScaffoldMessengerState> scaffoldMessage =
       GlobalKey<ScaffoldMessengerState>();
 
- 
-
   void toast(String message, {Key? textKey, required BuildContext context}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -29,7 +25,7 @@ class MainController extends ChangeNotifier {
     );
   }
 
-  sendMesage(String s, {required Key textKey}) {
+  void sendMesage(String s, {required Key textKey}) {
     scaffoldMessage.currentState?.showSnackBar(
       SnackBar(
         content: Text(s, key: textKey),

@@ -4,5 +4,18 @@
   "play": "Reproducir",
   "pause": "Pausar",
   "next": "Siguiente",
-  "previous": "Anterior"
+  "previous": "Anterior",
+  "menu": "Menú",
+  "search": "Buscar",
+  "search_music": "Buscar música...",
+  "profile": "Perfil",
+  "home": "Inicio",
+  "library": "Biblioteca",
+  "favorites": "Favoritos",
+  "settings": "Configuración",
+  "coming_soon": "¡Próximamente!",
+  "no_results": "No se encontraron resultados",
+  "loading": "Cargando...",
+  "error": "Ocurrió un error",
+  "retry": "Reintentar"
 }

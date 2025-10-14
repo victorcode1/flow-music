@@ -4,5 +4,18 @@
   "play": "Play",
   "pause": "Pause",
   "next": "Next",
-  "previous": "Previous"
+  "previous": "Previous",
+  "menu": "Menu",
+  "search": "Search",
+  "search_music": "Search music...",
+  "profile": "Profile",
+  "home": "Home",
+  "library": "Library",
+  "favorites": "Favorites",
+  "settings": "Settings",
+  "coming_soon": "Coming soon!",
+  "no_results": "No results found",
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "retry": "Retry"
 }

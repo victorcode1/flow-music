@@ -1,4 +1,4 @@
-import 'package:flow_music/shared/widgets/btn.dart';
+import 'package:flow_music/pages/shared/widgets/btn.dart';
 import 'package:flutter/material.dart';
 
 class SimpleDlg extends StatelessWidget {
