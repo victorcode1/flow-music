@@ -1,5 +1,5 @@
 import 'package:flow_music/core/domain/sources.dart';
-
+import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/pages/song/controller/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -76,27 +76,112 @@ class _SourceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      subtitle: subtitle != null ? Text(subtitle!) : null,
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            tooltip: 'Set Source',
-            key: const Key('set_source_button'),
-            onPressed: setSource,
-            icon: const Icon(Icons.upload_file),
-            color: Theme.of(context).primaryColor,
+    final theme = Theme.of(context);
+    final extras = theme.extension<FlowThemeExtras>();
+    final colors = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          gradient: extras?.secondaryGradient,
+          border: Border.all(color: extras?.subtleStroke ?? colors.outline),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF000000).withValues(
+                alpha: theme.brightness == Brightness.dark ? 0.45 : 0.12,
+              ),
+              blurRadius: 28,
+              offset: const Offset(0, 16),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: extras?.primaryGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Icon(Icons.graphic_eq_rounded,
+                          color: Colors.white, size: 28),
+                    ),
+                  ),
+                  const SizedBox(width: 18),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          title,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
+                          ),
+                        ),
+                        if (subtitle != null) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            subtitle!,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      key: const Key('set_source_button'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: colors.onSurface,
+                        side:
+                            BorderSide(color: extras?.subtleStroke ?? colors.outline),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(22)),
+                      ),
+                      icon: const Icon(Icons.cloud_upload_rounded),
+                      label: const Text('Configurar origen'),
+                      onPressed: setSource,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      key: const Key('play_button'),
+                      icon: const Icon(Icons.play_arrow_rounded, size: 26),
+                      label: const Text('Reproducir'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                      ),
+                      onPressed: play,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          IconButton(
-            key: const Key('play_button'),
-            tooltip: 'Play',
-            onPressed: play,
-            icon: const Icon(Icons.play_arrow),
-            color: Theme.of(context).primaryColor,
-          ),
-        ],
+        ),
       ),
     );
   }

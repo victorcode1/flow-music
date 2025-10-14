@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flow_music/core/datasource/model/query_search.dart';
 import 'package:flow_music/core/datasource/model/search_result.dart';
 import 'package:flow_music/core/utils/utils.dart';
-import 'package:flow_music/provider/search.dart';
+import 'package:flow_music/home/providers/search.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
