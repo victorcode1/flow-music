@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +48,12 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final controller = ref.watch(mainController);
-    final router = ref.watch(routeProvider);
+    final router = ref.read(routeProvider);
     return MaterialApp.router(
       routerConfig: router,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       builder: (context, child) {
         return ScaffoldMessenger(
             key: controller.scaffoldMessage, child: child ?? const SizedBox());
