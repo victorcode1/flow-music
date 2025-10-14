@@ -11,7 +11,7 @@ part 'list_search_result.g.dart';
 
 @Riverpod(keepAlive: true)
 FutureOr<ListSearchResult?> searchResultData(
-    SearchResultDataRef ref, String search) async {
+    Ref ref, String search) async {
   if (search.isEmpty) return null;
   try {
     String url =

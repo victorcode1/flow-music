@@ -4,7 +4,7 @@ part 'query_search.freezed.dart';
 part 'query_search.g.dart';
 
 @freezed
-class Client with _$Client {
+abstract class Client with _$Client {
   factory Client({
     String? clientName,
     String? clientVersion,
@@ -17,7 +17,7 @@ class Client with _$Client {
 }
 
 @freezed
-class ContextModel with _$ContextModel {
+abstract class ContextModel with _$ContextModel {
   factory ContextModel({
     Client? client,
   }) = _Context;
@@ -27,7 +27,7 @@ class ContextModel with _$ContextModel {
 }
 
 @freezed
-class QuerySearch with _$QuerySearch {
+abstract class QuerySearch with _$QuerySearch {
   factory QuerySearch({
     ContextModel? context,
     String? input,

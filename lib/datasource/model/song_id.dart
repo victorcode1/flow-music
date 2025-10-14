@@ -4,7 +4,7 @@ part 'song_id.freezed.dart';
 part 'song_id.g.dart';
 
 @freezed
-class Model with _$Model {
+abstract  class Model with _$Model {
   const factory Model({
     required Context context,
     required String videoId,
@@ -17,7 +17,7 @@ class Model with _$Model {
 }
 
 @freezed
-class Context with _$Context {
+abstract  class Context with _$Context {
   const factory Context({
     required Client client,
     required ThirdParty thirdParty,
@@ -27,7 +27,7 @@ class Context with _$Context {
 }
 
 @freezed
-class Client with _$Client {
+abstract  class Client with _$Client {
   const factory Client({
     required String hl,
     required String gl,
@@ -41,7 +41,7 @@ class Client with _$Client {
 }
 
 @freezed
-class ThirdParty with _$ThirdParty {
+abstract  class ThirdParty with _$ThirdParty {
   const factory ThirdParty({
     required String embedUrl,
   }) = _ThirdParty;
@@ -50,7 +50,7 @@ class ThirdParty with _$ThirdParty {
 }
 
 @freezed
-class PlaybackContext with _$PlaybackContext {
+abstract  class PlaybackContext with _$PlaybackContext {
   const factory PlaybackContext({
     required ContentPlaybackContext contentPlaybackContext,
   }) = _PlaybackContext;
@@ -59,7 +59,7 @@ class PlaybackContext with _$PlaybackContext {
 }
 
 @freezed
-class ContentPlaybackContext with _$ContentPlaybackContext {
+abstract  class ContentPlaybackContext with _$ContentPlaybackContext {
   const factory ContentPlaybackContext({
     required int signatureTimestamp,
   }) = _ContentPlaybackContext;

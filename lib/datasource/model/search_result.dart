@@ -4,7 +4,7 @@ part 'search_result.freezed.dart';
 part 'search_result.g.dart';
 
 @freezed
-class SearchResult with _$SearchResult {
+abstract    class SearchResult with _$SearchResult {
   factory SearchResult({
     ResponseContext? responseContext,
     List<SearchResultContent>? contents,
@@ -16,7 +16,7 @@ class SearchResult with _$SearchResult {
 }
 
 @freezed
-class SearchResultContent with _$SearchResultContent {
+abstract    class SearchResultContent with _$SearchResultContent {
   factory SearchResultContent({
     SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer,
   }) = _SearchResultContent;
@@ -26,7 +26,7 @@ class SearchResultContent with _$SearchResultContent {
 }
 
 @freezed
-class SearchSuggestionsSectionRenderer with _$SearchSuggestionsSectionRenderer {
+abstract  class SearchSuggestionsSectionRenderer with _$SearchSuggestionsSectionRenderer {
   factory SearchSuggestionsSectionRenderer({
     List<SearchSuggestionsSectionRendererContent>? contents,
   }) = _SearchSuggestionsSectionRenderer;
@@ -37,7 +37,7 @@ class SearchSuggestionsSectionRenderer with _$SearchSuggestionsSectionRenderer {
 }
 
 @freezed
-class SearchSuggestionsSectionRendererContent
+abstract  class SearchSuggestionsSectionRendererContent
     with _$SearchSuggestionsSectionRendererContent {
   factory SearchSuggestionsSectionRendererContent({
     SearchSuggestionRenderer? searchSuggestionRenderer,
@@ -49,7 +49,7 @@ class SearchSuggestionsSectionRendererContent
 }
 
 @freezed
-class SearchSuggestionRenderer with _$SearchSuggestionRenderer {
+abstract  class SearchSuggestionRenderer with _$SearchSuggestionRenderer {
   factory SearchSuggestionRenderer({
     Suggestion? suggestion,
     NavigationEndpoint? navigationEndpoint,
@@ -62,7 +62,7 @@ class SearchSuggestionRenderer with _$SearchSuggestionRenderer {
 }
 
 @freezed
-class Suggestion with _$Suggestion {
+abstract  class Suggestion with _$Suggestion {
   factory Suggestion({
     List<Run>? runs,
   }) = _Suggestion;
@@ -72,7 +72,7 @@ class Suggestion with _$Suggestion {
 }
 
 @freezed
-class Run with _$Run {
+abstract  class Run with _$Run {
   factory Run({
     String? text,
     bool? bold,
@@ -82,7 +82,7 @@ class Run with _$Run {
 }
 
 @freezed
-class NavigationEndpoint with _$NavigationEndpoint {
+abstract  class NavigationEndpoint with _$NavigationEndpoint {
   factory NavigationEndpoint({
     String? clickTrackingParams,
     SearchEndpoint? searchEndpoint,
@@ -93,7 +93,7 @@ class NavigationEndpoint with _$NavigationEndpoint {
 }
 
 @freezed
-class SearchEndpoint with _$SearchEndpoint {
+abstract  class SearchEndpoint with _$SearchEndpoint {
   factory SearchEndpoint({
     String? query,
   }) = _SearchEndpoint;
@@ -103,7 +103,7 @@ class SearchEndpoint with _$SearchEndpoint {
 }
 
 @freezed
-class Iconn with _$Iconn {
+abstract  class Iconn with _$Iconn {
   factory Iconn({
     String? iconType,
   }) = _Iconn;
@@ -112,7 +112,7 @@ class Iconn with _$Iconn {
 }
 
 @freezed
-class ResponseContext with _$ResponseContext {
+abstract  class ResponseContext with _$ResponseContext {
   factory ResponseContext({
     String? visitorData,
     List<ServiceTrackingParam>? serviceTrackingParams,
@@ -123,7 +123,7 @@ class ResponseContext with _$ResponseContext {
 }
 
 @freezed
-class ServiceTrackingParam with _$ServiceTrackingParam {
+abstract  class ServiceTrackingParam with _$ServiceTrackingParam {
   factory ServiceTrackingParam({
     String? service,
     List<Param>? params,
@@ -134,7 +134,7 @@ class ServiceTrackingParam with _$ServiceTrackingParam {
 }
 
 @freezed
-class Param with _$Param {
+abstract  class Param with _$Param {
   factory Param({
     String? key,
     String? value,

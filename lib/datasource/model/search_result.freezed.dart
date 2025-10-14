@@ -1,5 +1,5 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
@@ -9,32 +9,54 @@ part of 'search_result.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
-
-SearchResult _$SearchResultFromJson(Map<String, dynamic> json) {
-  return _SearchResult.fromJson(json);
-}
 
 /// @nodoc
 mixin _$SearchResult {
-  ResponseContext? get responseContext => throw _privateConstructorUsedError;
-  List<SearchResultContent>? get contents => throw _privateConstructorUsedError;
-  String? get trackingParams => throw _privateConstructorUsedError;
+  ResponseContext? get responseContext;
+  List<SearchResultContent>? get contents;
+  String? get trackingParams;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+  /// Create a copy of SearchResult
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
   $SearchResultCopyWith<SearchResult> get copyWith =>
-      throw _privateConstructorUsedError;
+      _$SearchResultCopyWithImpl<SearchResult>(
+          this as SearchResult, _$identity);
+
+  /// Serializes this SearchResult to a JSON map.
+  Map<String, dynamic> toJson();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is SearchResult &&
+            (identical(other.responseContext, responseContext) ||
+                other.responseContext == responseContext) &&
+            const DeepCollectionEquality().equals(other.contents, contents) &&
+            (identical(other.trackingParams, trackingParams) ||
+                other.trackingParams == trackingParams));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, responseContext,
+      const DeepCollectionEquality().hash(contents), trackingParams);
+
+  @override
+  String toString() {
+    return 'SearchResult(responseContext: $responseContext, contents: $contents, trackingParams: $trackingParams)';
+  }
 }
 
 /// @nodoc
-abstract class $SearchResultCopyWith<$Res> {
+abstract mixin class $SearchResultCopyWith<$Res> {
   factory $SearchResultCopyWith(
-          SearchResult value, $Res Function(SearchResult) then) =
-      _$SearchResultCopyWithImpl<$Res, SearchResult>;
+          SearchResult value, $Res Function(SearchResult) _then) =
+      _$SearchResultCopyWithImpl;
   @useResult
   $Res call(
       {ResponseContext? responseContext,
@@ -45,15 +67,14 @@ abstract class $SearchResultCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$SearchResultCopyWithImpl<$Res, $Val extends SearchResult>
-    implements $SearchResultCopyWith<$Res> {
-  _$SearchResultCopyWithImpl(this._value, this._then);
+class _$SearchResultCopyWithImpl<$Res> implements $SearchResultCopyWith<$Res> {
+  _$SearchResultCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SearchResult _self;
+  final $Res Function(SearchResult) _then;
 
+  /// Create a copy of SearchResult
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -61,95 +82,213 @@ class _$SearchResultCopyWithImpl<$Res, $Val extends SearchResult>
     Object? contents = freezed,
     Object? trackingParams = freezed,
   }) {
-    return _then(_value.copyWith(
+    return _then(_self.copyWith(
       responseContext: freezed == responseContext
-          ? _value.responseContext
+          ? _self.responseContext
           : responseContext // ignore: cast_nullable_to_non_nullable
               as ResponseContext?,
       contents: freezed == contents
-          ? _value.contents
+          ? _self.contents
           : contents // ignore: cast_nullable_to_non_nullable
               as List<SearchResultContent>?,
       trackingParams: freezed == trackingParams
-          ? _value.trackingParams
+          ? _self.trackingParams
           : trackingParams // ignore: cast_nullable_to_non_nullable
               as String?,
-    ) as $Val);
+    ));
   }
 
+  /// Create a copy of SearchResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
   $ResponseContextCopyWith<$Res>? get responseContext {
-    if (_value.responseContext == null) {
+    if (_self.responseContext == null) {
       return null;
     }
 
-    return $ResponseContextCopyWith<$Res>(_value.responseContext!, (value) {
-      return _then(_value.copyWith(responseContext: value) as $Val);
+    return $ResponseContextCopyWith<$Res>(_self.responseContext!, (value) {
+      return _then(_self.copyWith(responseContext: value));
     });
   }
 }
 
-/// @nodoc
-abstract class _$$SearchResultImplCopyWith<$Res>
-    implements $SearchResultCopyWith<$Res> {
-  factory _$$SearchResultImplCopyWith(
-          _$SearchResultImpl value, $Res Function(_$SearchResultImpl) then) =
-      __$$SearchResultImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {ResponseContext? responseContext,
-      List<SearchResultContent>? contents,
-      String? trackingParams});
+/// Adds pattern-matching-related methods to [SearchResult].
+extension SearchResultPatterns on SearchResult {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
 
-  @override
-  $ResponseContextCopyWith<$Res>? get responseContext;
-}
-
-/// @nodoc
-class __$$SearchResultImplCopyWithImpl<$Res>
-    extends _$SearchResultCopyWithImpl<$Res, _$SearchResultImpl>
-    implements _$$SearchResultImplCopyWith<$Res> {
-  __$$SearchResultImplCopyWithImpl(
-      _$SearchResultImpl _value, $Res Function(_$SearchResultImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? responseContext = freezed,
-    Object? contents = freezed,
-    Object? trackingParams = freezed,
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_SearchResult value)? $default, {
+    required TResult orElse(),
   }) {
-    return _then(_$SearchResultImpl(
-      responseContext: freezed == responseContext
-          ? _value.responseContext
-          : responseContext // ignore: cast_nullable_to_non_nullable
-              as ResponseContext?,
-      contents: freezed == contents
-          ? _value._contents
-          : contents // ignore: cast_nullable_to_non_nullable
-              as List<SearchResultContent>?,
-      trackingParams: freezed == trackingParams
-          ? _value.trackingParams
-          : trackingParams // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ));
+    final _that = this;
+    switch (_that) {
+      case _SearchResult() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_SearchResult value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResult():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_SearchResult value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResult() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(ResponseContext? responseContext,
+            List<SearchResultContent>? contents, String? trackingParams)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResult() when $default != null:
+        return $default(
+            _that.responseContext, _that.contents, _that.trackingParams);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(ResponseContext? responseContext,
+            List<SearchResultContent>? contents, String? trackingParams)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResult():
+        return $default(
+            _that.responseContext, _that.contents, _that.trackingParams);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(ResponseContext? responseContext,
+            List<SearchResultContent>? contents, String? trackingParams)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResult() when $default != null:
+        return $default(
+            _that.responseContext, _that.contents, _that.trackingParams);
+      case _:
+        return null;
+    }
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$SearchResultImpl implements _SearchResult {
-  _$SearchResultImpl(
+class _SearchResult implements SearchResult {
+  _SearchResult(
       {this.responseContext,
       final List<SearchResultContent>? contents,
       this.trackingParams})
       : _contents = contents;
-
-  factory _$SearchResultImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SearchResultImplFromJson(json);
+  factory _SearchResult.fromJson(Map<String, dynamic> json) =>
+      _$SearchResultFromJson(json);
 
   @override
   final ResponseContext? responseContext;
@@ -166,16 +305,26 @@ class _$SearchResultImpl implements _SearchResult {
   @override
   final String? trackingParams;
 
+  /// Create a copy of SearchResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'SearchResult(responseContext: $responseContext, contents: $contents, trackingParams: $trackingParams)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchResultCopyWith<_SearchResult> get copyWith =>
+      __$SearchResultCopyWithImpl<_SearchResult>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$SearchResultToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SearchResultImpl &&
+            other is _SearchResult &&
             (identical(other.responseContext, responseContext) ||
                 other.responseContext == responseContext) &&
             const DeepCollectionEquality().equals(other._contents, _contents) &&
@@ -183,315 +332,681 @@ class _$SearchResultImpl implements _SearchResult {
                 other.trackingParams == trackingParams));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, responseContext,
       const DeepCollectionEquality().hash(_contents), trackingParams);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$SearchResultImplCopyWith<_$SearchResultImpl> get copyWith =>
-      __$$SearchResultImplCopyWithImpl<_$SearchResultImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SearchResultImplToJson(
-      this,
-    );
+  String toString() {
+    return 'SearchResult(responseContext: $responseContext, contents: $contents, trackingParams: $trackingParams)';
   }
 }
 
-abstract class _SearchResult implements SearchResult {
-  factory _SearchResult(
-      {final ResponseContext? responseContext,
-      final List<SearchResultContent>? contents,
-      final String? trackingParams}) = _$SearchResultImpl;
-
-  factory _SearchResult.fromJson(Map<String, dynamic> json) =
-      _$SearchResultImpl.fromJson;
-
-  @override
-  ResponseContext? get responseContext;
-  @override
-  List<SearchResultContent>? get contents;
-  @override
-  String? get trackingParams;
-  @override
-  @JsonKey(ignore: true)
-  _$$SearchResultImplCopyWith<_$SearchResultImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-SearchResultContent _$SearchResultContentFromJson(Map<String, dynamic> json) {
-  return _SearchResultContent.fromJson(json);
-}
-
 /// @nodoc
-mixin _$SearchResultContent {
-  SearchSuggestionsSectionRenderer? get searchSuggestionsSectionRenderer =>
-      throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $SearchResultContentCopyWith<SearchResultContent> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SearchResultContentCopyWith<$Res> {
-  factory $SearchResultContentCopyWith(
-          SearchResultContent value, $Res Function(SearchResultContent) then) =
-      _$SearchResultContentCopyWithImpl<$Res, SearchResultContent>;
+abstract mixin class _$SearchResultCopyWith<$Res>
+    implements $SearchResultCopyWith<$Res> {
+  factory _$SearchResultCopyWith(
+          _SearchResult value, $Res Function(_SearchResult) _then) =
+      __$SearchResultCopyWithImpl;
+  @override
   @useResult
   $Res call(
-      {SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer});
+      {ResponseContext? responseContext,
+      List<SearchResultContent>? contents,
+      String? trackingParams});
 
-  $SearchSuggestionsSectionRendererCopyWith<$Res>?
-      get searchSuggestionsSectionRenderer;
+  @override
+  $ResponseContextCopyWith<$Res>? get responseContext;
 }
 
 /// @nodoc
-class _$SearchResultContentCopyWithImpl<$Res, $Val extends SearchResultContent>
-    implements $SearchResultContentCopyWith<$Res> {
-  _$SearchResultContentCopyWithImpl(this._value, this._then);
+class __$SearchResultCopyWithImpl<$Res>
+    implements _$SearchResultCopyWith<$Res> {
+  __$SearchResultCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final _SearchResult _self;
+  final $Res Function(_SearchResult) _then;
 
-  @pragma('vm:prefer-inline')
+  /// Create a copy of SearchResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
+  @pragma('vm:prefer-inline')
   $Res call({
-    Object? searchSuggestionsSectionRenderer = freezed,
+    Object? responseContext = freezed,
+    Object? contents = freezed,
+    Object? trackingParams = freezed,
   }) {
-    return _then(_value.copyWith(
-      searchSuggestionsSectionRenderer: freezed ==
-              searchSuggestionsSectionRenderer
-          ? _value.searchSuggestionsSectionRenderer
-          : searchSuggestionsSectionRenderer // ignore: cast_nullable_to_non_nullable
-              as SearchSuggestionsSectionRenderer?,
-    ) as $Val);
+    return _then(_SearchResult(
+      responseContext: freezed == responseContext
+          ? _self.responseContext
+          : responseContext // ignore: cast_nullable_to_non_nullable
+              as ResponseContext?,
+      contents: freezed == contents
+          ? _self._contents
+          : contents // ignore: cast_nullable_to_non_nullable
+              as List<SearchResultContent>?,
+      trackingParams: freezed == trackingParams
+          ? _self.trackingParams
+          : trackingParams // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
   }
 
+  /// Create a copy of SearchResult
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  $SearchSuggestionsSectionRendererCopyWith<$Res>?
-      get searchSuggestionsSectionRenderer {
-    if (_value.searchSuggestionsSectionRenderer == null) {
+  $ResponseContextCopyWith<$Res>? get responseContext {
+    if (_self.responseContext == null) {
       return null;
     }
 
-    return $SearchSuggestionsSectionRendererCopyWith<$Res>(
-        _value.searchSuggestionsSectionRenderer!, (value) {
-      return _then(
-          _value.copyWith(searchSuggestionsSectionRenderer: value) as $Val);
+    return $ResponseContextCopyWith<$Res>(_self.responseContext!, (value) {
+      return _then(_self.copyWith(responseContext: value));
     });
   }
 }
 
 /// @nodoc
-abstract class _$$SearchResultContentImplCopyWith<$Res>
-    implements $SearchResultContentCopyWith<$Res> {
-  factory _$$SearchResultContentImplCopyWith(_$SearchResultContentImpl value,
-          $Res Function(_$SearchResultContentImpl) then) =
-      __$$SearchResultContentImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer});
+mixin _$SearchResultContent {
+  SearchSuggestionsSectionRenderer? get searchSuggestionsSectionRenderer;
 
-  @override
-  $SearchSuggestionsSectionRendererCopyWith<$Res>?
-      get searchSuggestionsSectionRenderer;
-}
-
-/// @nodoc
-class __$$SearchResultContentImplCopyWithImpl<$Res>
-    extends _$SearchResultContentCopyWithImpl<$Res, _$SearchResultContentImpl>
-    implements _$$SearchResultContentImplCopyWith<$Res> {
-  __$$SearchResultContentImplCopyWithImpl(_$SearchResultContentImpl _value,
-      $Res Function(_$SearchResultContentImpl) _then)
-      : super(_value, _then);
-
+  /// Create a copy of SearchResultContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? searchSuggestionsSectionRenderer = freezed,
-  }) {
-    return _then(_$SearchResultContentImpl(
-      searchSuggestionsSectionRenderer: freezed ==
-              searchSuggestionsSectionRenderer
-          ? _value.searchSuggestionsSectionRenderer
-          : searchSuggestionsSectionRenderer // ignore: cast_nullable_to_non_nullable
-              as SearchSuggestionsSectionRenderer?,
-    ));
-  }
-}
+  $SearchResultContentCopyWith<SearchResultContent> get copyWith =>
+      _$SearchResultContentCopyWithImpl<SearchResultContent>(
+          this as SearchResultContent, _$identity);
 
-/// @nodoc
-@JsonSerializable()
-class _$SearchResultContentImpl implements _SearchResultContent {
-  _$SearchResultContentImpl({this.searchSuggestionsSectionRenderer});
-
-  factory _$SearchResultContentImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SearchResultContentImplFromJson(json);
-
-  @override
-  final SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer;
-
-  @override
-  String toString() {
-    return 'SearchResultContent(searchSuggestionsSectionRenderer: $searchSuggestionsSectionRenderer)';
-  }
+  /// Serializes this SearchResultContent to a JSON map.
+  Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SearchResultContentImpl &&
+            other is SearchResultContent &&
             (identical(other.searchSuggestionsSectionRenderer,
                     searchSuggestionsSectionRenderer) ||
                 other.searchSuggestionsSectionRenderer ==
                     searchSuggestionsSectionRenderer));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, searchSuggestionsSectionRenderer);
 
-  @JsonKey(ignore: true)
+  @override
+  String toString() {
+    return 'SearchResultContent(searchSuggestionsSectionRenderer: $searchSuggestionsSectionRenderer)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $SearchResultContentCopyWith<$Res> {
+  factory $SearchResultContentCopyWith(
+          SearchResultContent value, $Res Function(SearchResultContent) _then) =
+      _$SearchResultContentCopyWithImpl;
+  @useResult
+  $Res call(
+      {SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer});
+
+  $SearchSuggestionsSectionRendererCopyWith<$Res>?
+      get searchSuggestionsSectionRenderer;
+}
+
+/// @nodoc
+class _$SearchResultContentCopyWithImpl<$Res>
+    implements $SearchResultContentCopyWith<$Res> {
+  _$SearchResultContentCopyWithImpl(this._self, this._then);
+
+  final SearchResultContent _self;
+  final $Res Function(SearchResultContent) _then;
+
+  /// Create a copy of SearchResultContent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? searchSuggestionsSectionRenderer = freezed,
+  }) {
+    return _then(_self.copyWith(
+      searchSuggestionsSectionRenderer: freezed ==
+              searchSuggestionsSectionRenderer
+          ? _self.searchSuggestionsSectionRenderer
+          : searchSuggestionsSectionRenderer // ignore: cast_nullable_to_non_nullable
+              as SearchSuggestionsSectionRenderer?,
+    ));
+  }
+
+  /// Create a copy of SearchResultContent
+  /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
-  _$$SearchResultContentImplCopyWith<_$SearchResultContentImpl> get copyWith =>
-      __$$SearchResultContentImplCopyWithImpl<_$SearchResultContentImpl>(
+  $SearchSuggestionsSectionRendererCopyWith<$Res>?
+      get searchSuggestionsSectionRenderer {
+    if (_self.searchSuggestionsSectionRenderer == null) {
+      return null;
+    }
+
+    return $SearchSuggestionsSectionRendererCopyWith<$Res>(
+        _self.searchSuggestionsSectionRenderer!, (value) {
+      return _then(_self.copyWith(searchSuggestionsSectionRenderer: value));
+    });
+  }
+}
+
+/// Adds pattern-matching-related methods to [SearchResultContent].
+extension SearchResultContentPatterns on SearchResultContent {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_SearchResultContent value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResultContent() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_SearchResultContent value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResultContent():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_SearchResultContent value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResultContent() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResultContent() when $default != null:
+        return $default(_that.searchSuggestionsSectionRenderer);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResultContent():
+        return $default(_that.searchSuggestionsSectionRenderer);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchResultContent() when $default != null:
+        return $default(_that.searchSuggestionsSectionRenderer);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _SearchResultContent implements SearchResultContent {
+  _SearchResultContent({this.searchSuggestionsSectionRenderer});
+  factory _SearchResultContent.fromJson(Map<String, dynamic> json) =>
+      _$SearchResultContentFromJson(json);
+
+  @override
+  final SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer;
+
+  /// Create a copy of SearchResultContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchResultContentCopyWith<_SearchResultContent> get copyWith =>
+      __$SearchResultContentCopyWithImpl<_SearchResultContent>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SearchResultContentImplToJson(
+    return _$SearchResultContentToJson(
       this,
     );
   }
-}
-
-abstract class _SearchResultContent implements SearchResultContent {
-  factory _SearchResultContent(
-      {final SearchSuggestionsSectionRenderer?
-          searchSuggestionsSectionRenderer}) = _$SearchResultContentImpl;
-
-  factory _SearchResultContent.fromJson(Map<String, dynamic> json) =
-      _$SearchResultContentImpl.fromJson;
 
   @override
-  SearchSuggestionsSectionRenderer? get searchSuggestionsSectionRenderer;
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _SearchResultContent &&
+            (identical(other.searchSuggestionsSectionRenderer,
+                    searchSuggestionsSectionRenderer) ||
+                other.searchSuggestionsSectionRenderer ==
+                    searchSuggestionsSectionRenderer));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  @JsonKey(ignore: true)
-  _$$SearchResultContentImplCopyWith<_$SearchResultContentImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  int get hashCode =>
+      Object.hash(runtimeType, searchSuggestionsSectionRenderer);
+
+  @override
+  String toString() {
+    return 'SearchResultContent(searchSuggestionsSectionRenderer: $searchSuggestionsSectionRenderer)';
+  }
 }
 
-SearchSuggestionsSectionRenderer _$SearchSuggestionsSectionRendererFromJson(
-    Map<String, dynamic> json) {
-  return _SearchSuggestionsSectionRenderer.fromJson(json);
+/// @nodoc
+abstract mixin class _$SearchResultContentCopyWith<$Res>
+    implements $SearchResultContentCopyWith<$Res> {
+  factory _$SearchResultContentCopyWith(_SearchResultContent value,
+          $Res Function(_SearchResultContent) _then) =
+      __$SearchResultContentCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {SearchSuggestionsSectionRenderer? searchSuggestionsSectionRenderer});
+
+  @override
+  $SearchSuggestionsSectionRendererCopyWith<$Res>?
+      get searchSuggestionsSectionRenderer;
+}
+
+/// @nodoc
+class __$SearchResultContentCopyWithImpl<$Res>
+    implements _$SearchResultContentCopyWith<$Res> {
+  __$SearchResultContentCopyWithImpl(this._self, this._then);
+
+  final _SearchResultContent _self;
+  final $Res Function(_SearchResultContent) _then;
+
+  /// Create a copy of SearchResultContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? searchSuggestionsSectionRenderer = freezed,
+  }) {
+    return _then(_SearchResultContent(
+      searchSuggestionsSectionRenderer: freezed ==
+              searchSuggestionsSectionRenderer
+          ? _self.searchSuggestionsSectionRenderer
+          : searchSuggestionsSectionRenderer // ignore: cast_nullable_to_non_nullable
+              as SearchSuggestionsSectionRenderer?,
+    ));
+  }
+
+  /// Create a copy of SearchResultContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SearchSuggestionsSectionRendererCopyWith<$Res>?
+      get searchSuggestionsSectionRenderer {
+    if (_self.searchSuggestionsSectionRenderer == null) {
+      return null;
+    }
+
+    return $SearchSuggestionsSectionRendererCopyWith<$Res>(
+        _self.searchSuggestionsSectionRenderer!, (value) {
+      return _then(_self.copyWith(searchSuggestionsSectionRenderer: value));
+    });
+  }
 }
 
 /// @nodoc
 mixin _$SearchSuggestionsSectionRenderer {
-  List<SearchSuggestionsSectionRendererContent>? get contents =>
-      throw _privateConstructorUsedError;
+  List<SearchSuggestionsSectionRendererContent>? get contents;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $SearchSuggestionsSectionRendererCopyWith<SearchSuggestionsSectionRenderer>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SearchSuggestionsSectionRendererCopyWith<$Res> {
-  factory $SearchSuggestionsSectionRendererCopyWith(
-          SearchSuggestionsSectionRenderer value,
-          $Res Function(SearchSuggestionsSectionRenderer) then) =
-      _$SearchSuggestionsSectionRendererCopyWithImpl<$Res,
-          SearchSuggestionsSectionRenderer>;
-  @useResult
-  $Res call({List<SearchSuggestionsSectionRendererContent>? contents});
-}
-
-/// @nodoc
-class _$SearchSuggestionsSectionRendererCopyWithImpl<$Res,
-        $Val extends SearchSuggestionsSectionRenderer>
-    implements $SearchSuggestionsSectionRendererCopyWith<$Res> {
-  _$SearchSuggestionsSectionRendererCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of SearchSuggestionsSectionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $SearchSuggestionsSectionRendererCopyWith<SearchSuggestionsSectionRenderer>
+      get copyWith => _$SearchSuggestionsSectionRendererCopyWithImpl<
+              SearchSuggestionsSectionRenderer>(
+          this as SearchSuggestionsSectionRenderer, _$identity);
+
+  /// Serializes this SearchSuggestionsSectionRenderer to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? contents = freezed,
-  }) {
-    return _then(_value.copyWith(
-      contents: freezed == contents
-          ? _value.contents
-          : contents // ignore: cast_nullable_to_non_nullable
-              as List<SearchSuggestionsSectionRendererContent>?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is SearchSuggestionsSectionRenderer &&
+            const DeepCollectionEquality().equals(other.contents, contents));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(contents));
+
+  @override
+  String toString() {
+    return 'SearchSuggestionsSectionRenderer(contents: $contents)';
   }
 }
 
 /// @nodoc
-abstract class _$$SearchSuggestionsSectionRendererImplCopyWith<$Res>
-    implements $SearchSuggestionsSectionRendererCopyWith<$Res> {
-  factory _$$SearchSuggestionsSectionRendererImplCopyWith(
-          _$SearchSuggestionsSectionRendererImpl value,
-          $Res Function(_$SearchSuggestionsSectionRendererImpl) then) =
-      __$$SearchSuggestionsSectionRendererImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $SearchSuggestionsSectionRendererCopyWith<$Res> {
+  factory $SearchSuggestionsSectionRendererCopyWith(
+          SearchSuggestionsSectionRenderer value,
+          $Res Function(SearchSuggestionsSectionRenderer) _then) =
+      _$SearchSuggestionsSectionRendererCopyWithImpl;
   @useResult
   $Res call({List<SearchSuggestionsSectionRendererContent>? contents});
 }
 
 /// @nodoc
-class __$$SearchSuggestionsSectionRendererImplCopyWithImpl<$Res>
-    extends _$SearchSuggestionsSectionRendererCopyWithImpl<$Res,
-        _$SearchSuggestionsSectionRendererImpl>
-    implements _$$SearchSuggestionsSectionRendererImplCopyWith<$Res> {
-  __$$SearchSuggestionsSectionRendererImplCopyWithImpl(
-      _$SearchSuggestionsSectionRendererImpl _value,
-      $Res Function(_$SearchSuggestionsSectionRendererImpl) _then)
-      : super(_value, _then);
+class _$SearchSuggestionsSectionRendererCopyWithImpl<$Res>
+    implements $SearchSuggestionsSectionRendererCopyWith<$Res> {
+  _$SearchSuggestionsSectionRendererCopyWithImpl(this._self, this._then);
 
+  final SearchSuggestionsSectionRenderer _self;
+  final $Res Function(SearchSuggestionsSectionRenderer) _then;
+
+  /// Create a copy of SearchSuggestionsSectionRenderer
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? contents = freezed,
   }) {
-    return _then(_$SearchSuggestionsSectionRendererImpl(
+    return _then(_self.copyWith(
       contents: freezed == contents
-          ? _value._contents
+          ? _self.contents
           : contents // ignore: cast_nullable_to_non_nullable
               as List<SearchSuggestionsSectionRendererContent>?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [SearchSuggestionsSectionRenderer].
+extension SearchSuggestionsSectionRendererPatterns
+    on SearchSuggestionsSectionRenderer {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_SearchSuggestionsSectionRenderer value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRenderer() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_SearchSuggestionsSectionRenderer value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRenderer():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_SearchSuggestionsSectionRenderer value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRenderer() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(List<SearchSuggestionsSectionRendererContent>? contents)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRenderer() when $default != null:
+        return $default(_that.contents);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(List<SearchSuggestionsSectionRendererContent>? contents)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRenderer():
+        return $default(_that.contents);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(List<SearchSuggestionsSectionRendererContent>? contents)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRenderer() when $default != null:
+        return $default(_that.contents);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$SearchSuggestionsSectionRendererImpl
-    implements _SearchSuggestionsSectionRenderer {
-  _$SearchSuggestionsSectionRendererImpl(
+class _SearchSuggestionsSectionRenderer
+    implements SearchSuggestionsSectionRenderer {
+  _SearchSuggestionsSectionRenderer(
       {final List<SearchSuggestionsSectionRendererContent>? contents})
       : _contents = contents;
-
-  factory _$SearchSuggestionsSectionRendererImpl.fromJson(
+  factory _SearchSuggestionsSectionRenderer.fromJson(
           Map<String, dynamic> json) =>
-      _$$SearchSuggestionsSectionRendererImplFromJson(json);
+      _$SearchSuggestionsSectionRendererFromJson(json);
 
   final List<SearchSuggestionsSectionRendererContent>? _contents;
   @override
@@ -503,423 +1018,758 @@ class _$SearchSuggestionsSectionRendererImpl
     return EqualUnmodifiableListView(value);
   }
 
+  /// Create a copy of SearchSuggestionsSectionRenderer
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'SearchSuggestionsSectionRenderer(contents: $contents)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchSuggestionsSectionRendererCopyWith<_SearchSuggestionsSectionRenderer>
+      get copyWith => __$SearchSuggestionsSectionRendererCopyWithImpl<
+          _SearchSuggestionsSectionRenderer>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$SearchSuggestionsSectionRendererToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SearchSuggestionsSectionRendererImpl &&
+            other is _SearchSuggestionsSectionRenderer &&
             const DeepCollectionEquality().equals(other._contents, _contents));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, const DeepCollectionEquality().hash(_contents));
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$SearchSuggestionsSectionRendererImplCopyWith<
-          _$SearchSuggestionsSectionRendererImpl>
-      get copyWith => __$$SearchSuggestionsSectionRendererImplCopyWithImpl<
-          _$SearchSuggestionsSectionRendererImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SearchSuggestionsSectionRendererImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _SearchSuggestionsSectionRenderer
-    implements SearchSuggestionsSectionRenderer {
-  factory _SearchSuggestionsSectionRenderer(
-          {final List<SearchSuggestionsSectionRendererContent>? contents}) =
-      _$SearchSuggestionsSectionRendererImpl;
-
-  factory _SearchSuggestionsSectionRenderer.fromJson(
-          Map<String, dynamic> json) =
-      _$SearchSuggestionsSectionRendererImpl.fromJson;
-
-  @override
-  List<SearchSuggestionsSectionRendererContent>? get contents;
-  @override
-  @JsonKey(ignore: true)
-  _$$SearchSuggestionsSectionRendererImplCopyWith<
-          _$SearchSuggestionsSectionRendererImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-SearchSuggestionsSectionRendererContent
-    _$SearchSuggestionsSectionRendererContentFromJson(
-        Map<String, dynamic> json) {
-  return _SearchSuggestionsSectionRendererContent.fromJson(json);
-}
-
-/// @nodoc
-mixin _$SearchSuggestionsSectionRendererContent {
-  SearchSuggestionRenderer? get searchSuggestionRenderer =>
-      throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $SearchSuggestionsSectionRendererContentCopyWith<
-          SearchSuggestionsSectionRendererContent>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SearchSuggestionsSectionRendererContentCopyWith<$Res> {
-  factory $SearchSuggestionsSectionRendererContentCopyWith(
-          SearchSuggestionsSectionRendererContent value,
-          $Res Function(SearchSuggestionsSectionRendererContent) then) =
-      _$SearchSuggestionsSectionRendererContentCopyWithImpl<$Res,
-          SearchSuggestionsSectionRendererContent>;
-  @useResult
-  $Res call({SearchSuggestionRenderer? searchSuggestionRenderer});
-
-  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer;
-}
-
-/// @nodoc
-class _$SearchSuggestionsSectionRendererContentCopyWithImpl<$Res,
-        $Val extends SearchSuggestionsSectionRendererContent>
-    implements $SearchSuggestionsSectionRendererContentCopyWith<$Res> {
-  _$SearchSuggestionsSectionRendererContentCopyWithImpl(
-      this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? searchSuggestionRenderer = freezed,
-  }) {
-    return _then(_value.copyWith(
-      searchSuggestionRenderer: freezed == searchSuggestionRenderer
-          ? _value.searchSuggestionRenderer
-          : searchSuggestionRenderer // ignore: cast_nullable_to_non_nullable
-              as SearchSuggestionRenderer?,
-    ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer {
-    if (_value.searchSuggestionRenderer == null) {
-      return null;
-    }
-
-    return $SearchSuggestionRendererCopyWith<$Res>(
-        _value.searchSuggestionRenderer!, (value) {
-      return _then(_value.copyWith(searchSuggestionRenderer: value) as $Val);
-    });
+  String toString() {
+    return 'SearchSuggestionsSectionRenderer(contents: $contents)';
   }
 }
 
 /// @nodoc
-abstract class _$$SearchSuggestionsSectionRendererContentImplCopyWith<$Res>
-    implements $SearchSuggestionsSectionRendererContentCopyWith<$Res> {
-  factory _$$SearchSuggestionsSectionRendererContentImplCopyWith(
-          _$SearchSuggestionsSectionRendererContentImpl value,
-          $Res Function(_$SearchSuggestionsSectionRendererContentImpl) then) =
-      __$$SearchSuggestionsSectionRendererContentImplCopyWithImpl<$Res>;
+abstract mixin class _$SearchSuggestionsSectionRendererCopyWith<$Res>
+    implements $SearchSuggestionsSectionRendererCopyWith<$Res> {
+  factory _$SearchSuggestionsSectionRendererCopyWith(
+          _SearchSuggestionsSectionRenderer value,
+          $Res Function(_SearchSuggestionsSectionRenderer) _then) =
+      __$SearchSuggestionsSectionRendererCopyWithImpl;
   @override
   @useResult
-  $Res call({SearchSuggestionRenderer? searchSuggestionRenderer});
-
-  @override
-  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer;
+  $Res call({List<SearchSuggestionsSectionRendererContent>? contents});
 }
 
 /// @nodoc
-class __$$SearchSuggestionsSectionRendererContentImplCopyWithImpl<$Res>
-    extends _$SearchSuggestionsSectionRendererContentCopyWithImpl<$Res,
-        _$SearchSuggestionsSectionRendererContentImpl>
-    implements _$$SearchSuggestionsSectionRendererContentImplCopyWith<$Res> {
-  __$$SearchSuggestionsSectionRendererContentImplCopyWithImpl(
-      _$SearchSuggestionsSectionRendererContentImpl _value,
-      $Res Function(_$SearchSuggestionsSectionRendererContentImpl) _then)
-      : super(_value, _then);
+class __$SearchSuggestionsSectionRendererCopyWithImpl<$Res>
+    implements _$SearchSuggestionsSectionRendererCopyWith<$Res> {
+  __$SearchSuggestionsSectionRendererCopyWithImpl(this._self, this._then);
 
-  @pragma('vm:prefer-inline')
+  final _SearchSuggestionsSectionRenderer _self;
+  final $Res Function(_SearchSuggestionsSectionRenderer) _then;
+
+  /// Create a copy of SearchSuggestionsSectionRenderer
+  /// with the given fields replaced by the non-null parameter values.
   @override
+  @pragma('vm:prefer-inline')
   $Res call({
-    Object? searchSuggestionRenderer = freezed,
+    Object? contents = freezed,
   }) {
-    return _then(_$SearchSuggestionsSectionRendererContentImpl(
-      searchSuggestionRenderer: freezed == searchSuggestionRenderer
-          ? _value.searchSuggestionRenderer
-          : searchSuggestionRenderer // ignore: cast_nullable_to_non_nullable
-              as SearchSuggestionRenderer?,
+    return _then(_SearchSuggestionsSectionRenderer(
+      contents: freezed == contents
+          ? _self._contents
+          : contents // ignore: cast_nullable_to_non_nullable
+              as List<SearchSuggestionsSectionRendererContent>?,
     ));
   }
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$SearchSuggestionsSectionRendererContentImpl
-    implements _SearchSuggestionsSectionRendererContent {
-  _$SearchSuggestionsSectionRendererContentImpl(
-      {this.searchSuggestionRenderer});
+mixin _$SearchSuggestionsSectionRendererContent {
+  SearchSuggestionRenderer? get searchSuggestionRenderer;
 
-  factory _$SearchSuggestionsSectionRendererContentImpl.fromJson(
-          Map<String, dynamic> json) =>
-      _$$SearchSuggestionsSectionRendererContentImplFromJson(json);
+  /// Create a copy of SearchSuggestionsSectionRendererContent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $SearchSuggestionsSectionRendererContentCopyWith<
+          SearchSuggestionsSectionRendererContent>
+      get copyWith => _$SearchSuggestionsSectionRendererContentCopyWithImpl<
+              SearchSuggestionsSectionRendererContent>(
+          this as SearchSuggestionsSectionRendererContent, _$identity);
 
-  @override
-  final SearchSuggestionRenderer? searchSuggestionRenderer;
-
-  @override
-  String toString() {
-    return 'SearchSuggestionsSectionRendererContent(searchSuggestionRenderer: $searchSuggestionRenderer)';
-  }
+  /// Serializes this SearchSuggestionsSectionRendererContent to a JSON map.
+  Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SearchSuggestionsSectionRendererContentImpl &&
+            other is SearchSuggestionsSectionRendererContent &&
             (identical(
                     other.searchSuggestionRenderer, searchSuggestionRenderer) ||
                 other.searchSuggestionRenderer == searchSuggestionRenderer));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, searchSuggestionRenderer);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$SearchSuggestionsSectionRendererContentImplCopyWith<
-          _$SearchSuggestionsSectionRendererContentImpl>
-      get copyWith =>
-          __$$SearchSuggestionsSectionRendererContentImplCopyWithImpl<
-              _$SearchSuggestionsSectionRendererContentImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SearchSuggestionsSectionRendererContentImplToJson(
-      this,
-    );
+  String toString() {
+    return 'SearchSuggestionsSectionRendererContent(searchSuggestionRenderer: $searchSuggestionRenderer)';
   }
 }
 
-abstract class _SearchSuggestionsSectionRendererContent
-    implements SearchSuggestionsSectionRendererContent {
-  factory _SearchSuggestionsSectionRendererContent(
-          {final SearchSuggestionRenderer? searchSuggestionRenderer}) =
-      _$SearchSuggestionsSectionRendererContentImpl;
-
-  factory _SearchSuggestionsSectionRendererContent.fromJson(
-          Map<String, dynamic> json) =
-      _$SearchSuggestionsSectionRendererContentImpl.fromJson;
-
-  @override
-  SearchSuggestionRenderer? get searchSuggestionRenderer;
-  @override
-  @JsonKey(ignore: true)
-  _$$SearchSuggestionsSectionRendererContentImplCopyWith<
-          _$SearchSuggestionsSectionRendererContentImpl>
-      get copyWith => throw _privateConstructorUsedError;
-}
-
-SearchSuggestionRenderer _$SearchSuggestionRendererFromJson(
-    Map<String, dynamic> json) {
-  return _SearchSuggestionRenderer.fromJson(json);
-}
-
 /// @nodoc
-mixin _$SearchSuggestionRenderer {
-  Suggestion? get suggestion => throw _privateConstructorUsedError;
-  NavigationEndpoint? get navigationEndpoint =>
-      throw _privateConstructorUsedError;
-  String? get trackingParams => throw _privateConstructorUsedError;
-  Iconn? get icon => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $SearchSuggestionRendererCopyWith<SearchSuggestionRenderer> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SearchSuggestionRendererCopyWith<$Res> {
-  factory $SearchSuggestionRendererCopyWith(SearchSuggestionRenderer value,
-          $Res Function(SearchSuggestionRenderer) then) =
-      _$SearchSuggestionRendererCopyWithImpl<$Res, SearchSuggestionRenderer>;
+abstract mixin class $SearchSuggestionsSectionRendererContentCopyWith<$Res> {
+  factory $SearchSuggestionsSectionRendererContentCopyWith(
+          SearchSuggestionsSectionRendererContent value,
+          $Res Function(SearchSuggestionsSectionRendererContent) _then) =
+      _$SearchSuggestionsSectionRendererContentCopyWithImpl;
   @useResult
-  $Res call(
-      {Suggestion? suggestion,
-      NavigationEndpoint? navigationEndpoint,
-      String? trackingParams,
-      Iconn? icon});
+  $Res call({SearchSuggestionRenderer? searchSuggestionRenderer});
 
-  $SuggestionCopyWith<$Res>? get suggestion;
-  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint;
-  $IconnCopyWith<$Res>? get icon;
+  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer;
 }
 
 /// @nodoc
-class _$SearchSuggestionRendererCopyWithImpl<$Res,
-        $Val extends SearchSuggestionRenderer>
-    implements $SearchSuggestionRendererCopyWith<$Res> {
-  _$SearchSuggestionRendererCopyWithImpl(this._value, this._then);
+class _$SearchSuggestionsSectionRendererContentCopyWithImpl<$Res>
+    implements $SearchSuggestionsSectionRendererContentCopyWith<$Res> {
+  _$SearchSuggestionsSectionRendererContentCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final SearchSuggestionsSectionRendererContent _self;
+  final $Res Function(SearchSuggestionsSectionRendererContent) _then;
 
+  /// Create a copy of SearchSuggestionsSectionRendererContent
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? suggestion = freezed,
-    Object? navigationEndpoint = freezed,
-    Object? trackingParams = freezed,
-    Object? icon = freezed,
+    Object? searchSuggestionRenderer = freezed,
   }) {
-    return _then(_value.copyWith(
-      suggestion: freezed == suggestion
-          ? _value.suggestion
-          : suggestion // ignore: cast_nullable_to_non_nullable
-              as Suggestion?,
-      navigationEndpoint: freezed == navigationEndpoint
-          ? _value.navigationEndpoint
-          : navigationEndpoint // ignore: cast_nullable_to_non_nullable
-              as NavigationEndpoint?,
-      trackingParams: freezed == trackingParams
-          ? _value.trackingParams
-          : trackingParams // ignore: cast_nullable_to_non_nullable
-              as String?,
-      icon: freezed == icon
-          ? _value.icon
-          : icon // ignore: cast_nullable_to_non_nullable
-              as Iconn?,
-    ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $SuggestionCopyWith<$Res>? get suggestion {
-    if (_value.suggestion == null) {
-      return null;
-    }
-
-    return $SuggestionCopyWith<$Res>(_value.suggestion!, (value) {
-      return _then(_value.copyWith(suggestion: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint {
-    if (_value.navigationEndpoint == null) {
-      return null;
-    }
-
-    return $NavigationEndpointCopyWith<$Res>(_value.navigationEndpoint!,
-        (value) {
-      return _then(_value.copyWith(navigationEndpoint: value) as $Val);
-    });
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $IconnCopyWith<$Res>? get icon {
-    if (_value.icon == null) {
-      return null;
-    }
-
-    return $IconnCopyWith<$Res>(_value.icon!, (value) {
-      return _then(_value.copyWith(icon: value) as $Val);
-    });
-  }
-}
-
-/// @nodoc
-abstract class _$$SearchSuggestionRendererImplCopyWith<$Res>
-    implements $SearchSuggestionRendererCopyWith<$Res> {
-  factory _$$SearchSuggestionRendererImplCopyWith(
-          _$SearchSuggestionRendererImpl value,
-          $Res Function(_$SearchSuggestionRendererImpl) then) =
-      __$$SearchSuggestionRendererImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call(
-      {Suggestion? suggestion,
-      NavigationEndpoint? navigationEndpoint,
-      String? trackingParams,
-      Iconn? icon});
-
-  @override
-  $SuggestionCopyWith<$Res>? get suggestion;
-  @override
-  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint;
-  @override
-  $IconnCopyWith<$Res>? get icon;
-}
-
-/// @nodoc
-class __$$SearchSuggestionRendererImplCopyWithImpl<$Res>
-    extends _$SearchSuggestionRendererCopyWithImpl<$Res,
-        _$SearchSuggestionRendererImpl>
-    implements _$$SearchSuggestionRendererImplCopyWith<$Res> {
-  __$$SearchSuggestionRendererImplCopyWithImpl(
-      _$SearchSuggestionRendererImpl _value,
-      $Res Function(_$SearchSuggestionRendererImpl) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? suggestion = freezed,
-    Object? navigationEndpoint = freezed,
-    Object? trackingParams = freezed,
-    Object? icon = freezed,
-  }) {
-    return _then(_$SearchSuggestionRendererImpl(
-      suggestion: freezed == suggestion
-          ? _value.suggestion
-          : suggestion // ignore: cast_nullable_to_non_nullable
-              as Suggestion?,
-      navigationEndpoint: freezed == navigationEndpoint
-          ? _value.navigationEndpoint
-          : navigationEndpoint // ignore: cast_nullable_to_non_nullable
-              as NavigationEndpoint?,
-      trackingParams: freezed == trackingParams
-          ? _value.trackingParams
-          : trackingParams // ignore: cast_nullable_to_non_nullable
-              as String?,
-      icon: freezed == icon
-          ? _value.icon
-          : icon // ignore: cast_nullable_to_non_nullable
-              as Iconn?,
+    return _then(_self.copyWith(
+      searchSuggestionRenderer: freezed == searchSuggestionRenderer
+          ? _self.searchSuggestionRenderer
+          : searchSuggestionRenderer // ignore: cast_nullable_to_non_nullable
+              as SearchSuggestionRenderer?,
     ));
+  }
+
+  /// Create a copy of SearchSuggestionsSectionRendererContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer {
+    if (_self.searchSuggestionRenderer == null) {
+      return null;
+    }
+
+    return $SearchSuggestionRendererCopyWith<$Res>(
+        _self.searchSuggestionRenderer!, (value) {
+      return _then(_self.copyWith(searchSuggestionRenderer: value));
+    });
+  }
+}
+
+/// Adds pattern-matching-related methods to [SearchSuggestionsSectionRendererContent].
+extension SearchSuggestionsSectionRendererContentPatterns
+    on SearchSuggestionsSectionRendererContent {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_SearchSuggestionsSectionRendererContent value)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRendererContent() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_SearchSuggestionsSectionRendererContent value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRendererContent():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_SearchSuggestionsSectionRendererContent value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRendererContent() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(SearchSuggestionRenderer? searchSuggestionRenderer)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRendererContent() when $default != null:
+        return $default(_that.searchSuggestionRenderer);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(SearchSuggestionRenderer? searchSuggestionRenderer)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRendererContent():
+        return $default(_that.searchSuggestionRenderer);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(SearchSuggestionRenderer? searchSuggestionRenderer)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionsSectionRendererContent() when $default != null:
+        return $default(_that.searchSuggestionRenderer);
+      case _:
+        return null;
+    }
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$SearchSuggestionRendererImpl implements _SearchSuggestionRenderer {
-  _$SearchSuggestionRendererImpl(
+class _SearchSuggestionsSectionRendererContent
+    implements SearchSuggestionsSectionRendererContent {
+  _SearchSuggestionsSectionRendererContent({this.searchSuggestionRenderer});
+  factory _SearchSuggestionsSectionRendererContent.fromJson(
+          Map<String, dynamic> json) =>
+      _$SearchSuggestionsSectionRendererContentFromJson(json);
+
+  @override
+  final SearchSuggestionRenderer? searchSuggestionRenderer;
+
+  /// Create a copy of SearchSuggestionsSectionRendererContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchSuggestionsSectionRendererContentCopyWith<
+          _SearchSuggestionsSectionRendererContent>
+      get copyWith => __$SearchSuggestionsSectionRendererContentCopyWithImpl<
+          _SearchSuggestionsSectionRendererContent>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$SearchSuggestionsSectionRendererContentToJson(
+      this,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _SearchSuggestionsSectionRendererContent &&
+            (identical(
+                    other.searchSuggestionRenderer, searchSuggestionRenderer) ||
+                other.searchSuggestionRenderer == searchSuggestionRenderer));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, searchSuggestionRenderer);
+
+  @override
+  String toString() {
+    return 'SearchSuggestionsSectionRendererContent(searchSuggestionRenderer: $searchSuggestionRenderer)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$SearchSuggestionsSectionRendererContentCopyWith<$Res>
+    implements $SearchSuggestionsSectionRendererContentCopyWith<$Res> {
+  factory _$SearchSuggestionsSectionRendererContentCopyWith(
+          _SearchSuggestionsSectionRendererContent value,
+          $Res Function(_SearchSuggestionsSectionRendererContent) _then) =
+      __$SearchSuggestionsSectionRendererContentCopyWithImpl;
+  @override
+  @useResult
+  $Res call({SearchSuggestionRenderer? searchSuggestionRenderer});
+
+  @override
+  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer;
+}
+
+/// @nodoc
+class __$SearchSuggestionsSectionRendererContentCopyWithImpl<$Res>
+    implements _$SearchSuggestionsSectionRendererContentCopyWith<$Res> {
+  __$SearchSuggestionsSectionRendererContentCopyWithImpl(
+      this._self, this._then);
+
+  final _SearchSuggestionsSectionRendererContent _self;
+  final $Res Function(_SearchSuggestionsSectionRendererContent) _then;
+
+  /// Create a copy of SearchSuggestionsSectionRendererContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? searchSuggestionRenderer = freezed,
+  }) {
+    return _then(_SearchSuggestionsSectionRendererContent(
+      searchSuggestionRenderer: freezed == searchSuggestionRenderer
+          ? _self.searchSuggestionRenderer
+          : searchSuggestionRenderer // ignore: cast_nullable_to_non_nullable
+              as SearchSuggestionRenderer?,
+    ));
+  }
+
+  /// Create a copy of SearchSuggestionsSectionRendererContent
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SearchSuggestionRendererCopyWith<$Res>? get searchSuggestionRenderer {
+    if (_self.searchSuggestionRenderer == null) {
+      return null;
+    }
+
+    return $SearchSuggestionRendererCopyWith<$Res>(
+        _self.searchSuggestionRenderer!, (value) {
+      return _then(_self.copyWith(searchSuggestionRenderer: value));
+    });
+  }
+}
+
+/// @nodoc
+mixin _$SearchSuggestionRenderer {
+  Suggestion? get suggestion;
+  NavigationEndpoint? get navigationEndpoint;
+  String? get trackingParams;
+  Iconn? get icon;
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $SearchSuggestionRendererCopyWith<SearchSuggestionRenderer> get copyWith =>
+      _$SearchSuggestionRendererCopyWithImpl<SearchSuggestionRenderer>(
+          this as SearchSuggestionRenderer, _$identity);
+
+  /// Serializes this SearchSuggestionRenderer to a JSON map.
+  Map<String, dynamic> toJson();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is SearchSuggestionRenderer &&
+            (identical(other.suggestion, suggestion) ||
+                other.suggestion == suggestion) &&
+            (identical(other.navigationEndpoint, navigationEndpoint) ||
+                other.navigationEndpoint == navigationEndpoint) &&
+            (identical(other.trackingParams, trackingParams) ||
+                other.trackingParams == trackingParams) &&
+            (identical(other.icon, icon) || other.icon == icon));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, suggestion, navigationEndpoint, trackingParams, icon);
+
+  @override
+  String toString() {
+    return 'SearchSuggestionRenderer(suggestion: $suggestion, navigationEndpoint: $navigationEndpoint, trackingParams: $trackingParams, icon: $icon)';
+  }
+}
+
+/// @nodoc
+abstract mixin class $SearchSuggestionRendererCopyWith<$Res> {
+  factory $SearchSuggestionRendererCopyWith(SearchSuggestionRenderer value,
+          $Res Function(SearchSuggestionRenderer) _then) =
+      _$SearchSuggestionRendererCopyWithImpl;
+  @useResult
+  $Res call(
+      {Suggestion? suggestion,
+      NavigationEndpoint? navigationEndpoint,
+      String? trackingParams,
+      Iconn? icon});
+
+  $SuggestionCopyWith<$Res>? get suggestion;
+  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint;
+  $IconnCopyWith<$Res>? get icon;
+}
+
+/// @nodoc
+class _$SearchSuggestionRendererCopyWithImpl<$Res>
+    implements $SearchSuggestionRendererCopyWith<$Res> {
+  _$SearchSuggestionRendererCopyWithImpl(this._self, this._then);
+
+  final SearchSuggestionRenderer _self;
+  final $Res Function(SearchSuggestionRenderer) _then;
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? suggestion = freezed,
+    Object? navigationEndpoint = freezed,
+    Object? trackingParams = freezed,
+    Object? icon = freezed,
+  }) {
+    return _then(_self.copyWith(
+      suggestion: freezed == suggestion
+          ? _self.suggestion
+          : suggestion // ignore: cast_nullable_to_non_nullable
+              as Suggestion?,
+      navigationEndpoint: freezed == navigationEndpoint
+          ? _self.navigationEndpoint
+          : navigationEndpoint // ignore: cast_nullable_to_non_nullable
+              as NavigationEndpoint?,
+      trackingParams: freezed == trackingParams
+          ? _self.trackingParams
+          : trackingParams // ignore: cast_nullable_to_non_nullable
+              as String?,
+      icon: freezed == icon
+          ? _self.icon
+          : icon // ignore: cast_nullable_to_non_nullable
+              as Iconn?,
+    ));
+  }
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SuggestionCopyWith<$Res>? get suggestion {
+    if (_self.suggestion == null) {
+      return null;
+    }
+
+    return $SuggestionCopyWith<$Res>(_self.suggestion!, (value) {
+      return _then(_self.copyWith(suggestion: value));
+    });
+  }
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint {
+    if (_self.navigationEndpoint == null) {
+      return null;
+    }
+
+    return $NavigationEndpointCopyWith<$Res>(_self.navigationEndpoint!,
+        (value) {
+      return _then(_self.copyWith(navigationEndpoint: value));
+    });
+  }
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $IconnCopyWith<$Res>? get icon {
+    if (_self.icon == null) {
+      return null;
+    }
+
+    return $IconnCopyWith<$Res>(_self.icon!, (value) {
+      return _then(_self.copyWith(icon: value));
+    });
+  }
+}
+
+/// Adds pattern-matching-related methods to [SearchSuggestionRenderer].
+extension SearchSuggestionRendererPatterns on SearchSuggestionRenderer {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_SearchSuggestionRenderer value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionRenderer() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_SearchSuggestionRenderer value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionRenderer():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_SearchSuggestionRenderer value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionRenderer() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            Suggestion? suggestion,
+            NavigationEndpoint? navigationEndpoint,
+            String? trackingParams,
+            Iconn? icon)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionRenderer() when $default != null:
+        return $default(_that.suggestion, _that.navigationEndpoint,
+            _that.trackingParams, _that.icon);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            Suggestion? suggestion,
+            NavigationEndpoint? navigationEndpoint,
+            String? trackingParams,
+            Iconn? icon)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionRenderer():
+        return $default(_that.suggestion, _that.navigationEndpoint,
+            _that.trackingParams, _that.icon);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            Suggestion? suggestion,
+            NavigationEndpoint? navigationEndpoint,
+            String? trackingParams,
+            Iconn? icon)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchSuggestionRenderer() when $default != null:
+        return $default(_that.suggestion, _that.navigationEndpoint,
+            _that.trackingParams, _that.icon);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _SearchSuggestionRenderer implements SearchSuggestionRenderer {
+  _SearchSuggestionRenderer(
       {this.suggestion,
       this.navigationEndpoint,
       this.trackingParams,
       this.icon});
-
-  factory _$SearchSuggestionRendererImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SearchSuggestionRendererImplFromJson(json);
+  factory _SearchSuggestionRenderer.fromJson(Map<String, dynamic> json) =>
+      _$SearchSuggestionRendererFromJson(json);
 
   @override
   final Suggestion? suggestion;
@@ -930,16 +1780,27 @@ class _$SearchSuggestionRendererImpl implements _SearchSuggestionRenderer {
   @override
   final Iconn? icon;
 
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'SearchSuggestionRenderer(suggestion: $suggestion, navigationEndpoint: $navigationEndpoint, trackingParams: $trackingParams, icon: $icon)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchSuggestionRendererCopyWith<_SearchSuggestionRenderer> get copyWith =>
+      __$SearchSuggestionRendererCopyWithImpl<_SearchSuggestionRenderer>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$SearchSuggestionRendererToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SearchSuggestionRendererImpl &&
+            other is _SearchSuggestionRenderer &&
             (identical(other.suggestion, suggestion) ||
                 other.suggestion == suggestion) &&
             (identical(other.navigationEndpoint, navigationEndpoint) ||
@@ -949,137 +1810,349 @@ class _$SearchSuggestionRendererImpl implements _SearchSuggestionRenderer {
             (identical(other.icon, icon) || other.icon == icon));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, suggestion, navigationEndpoint, trackingParams, icon);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$SearchSuggestionRendererImplCopyWith<_$SearchSuggestionRendererImpl>
-      get copyWith => __$$SearchSuggestionRendererImplCopyWithImpl<
-          _$SearchSuggestionRendererImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SearchSuggestionRendererImplToJson(
-      this,
-    );
+  String toString() {
+    return 'SearchSuggestionRenderer(suggestion: $suggestion, navigationEndpoint: $navigationEndpoint, trackingParams: $trackingParams, icon: $icon)';
   }
 }
 
-abstract class _SearchSuggestionRenderer implements SearchSuggestionRenderer {
-  factory _SearchSuggestionRenderer(
-      {final Suggestion? suggestion,
-      final NavigationEndpoint? navigationEndpoint,
-      final String? trackingParams,
-      final Iconn? icon}) = _$SearchSuggestionRendererImpl;
+/// @nodoc
+abstract mixin class _$SearchSuggestionRendererCopyWith<$Res>
+    implements $SearchSuggestionRendererCopyWith<$Res> {
+  factory _$SearchSuggestionRendererCopyWith(_SearchSuggestionRenderer value,
+          $Res Function(_SearchSuggestionRenderer) _then) =
+      __$SearchSuggestionRendererCopyWithImpl;
+  @override
+  @useResult
+  $Res call(
+      {Suggestion? suggestion,
+      NavigationEndpoint? navigationEndpoint,
+      String? trackingParams,
+      Iconn? icon});
 
-  factory _SearchSuggestionRenderer.fromJson(Map<String, dynamic> json) =
-      _$SearchSuggestionRendererImpl.fromJson;
-
   @override
-  Suggestion? get suggestion;
+  $SuggestionCopyWith<$Res>? get suggestion;
   @override
-  NavigationEndpoint? get navigationEndpoint;
+  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint;
   @override
-  String? get trackingParams;
-  @override
-  Iconn? get icon;
-  @override
-  @JsonKey(ignore: true)
-  _$$SearchSuggestionRendererImplCopyWith<_$SearchSuggestionRendererImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  $IconnCopyWith<$Res>? get icon;
 }
 
-Suggestion _$SuggestionFromJson(Map<String, dynamic> json) {
-  return _Suggestion.fromJson(json);
+/// @nodoc
+class __$SearchSuggestionRendererCopyWithImpl<$Res>
+    implements _$SearchSuggestionRendererCopyWith<$Res> {
+  __$SearchSuggestionRendererCopyWithImpl(this._self, this._then);
+
+  final _SearchSuggestionRenderer _self;
+  final $Res Function(_SearchSuggestionRenderer) _then;
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? suggestion = freezed,
+    Object? navigationEndpoint = freezed,
+    Object? trackingParams = freezed,
+    Object? icon = freezed,
+  }) {
+    return _then(_SearchSuggestionRenderer(
+      suggestion: freezed == suggestion
+          ? _self.suggestion
+          : suggestion // ignore: cast_nullable_to_non_nullable
+              as Suggestion?,
+      navigationEndpoint: freezed == navigationEndpoint
+          ? _self.navigationEndpoint
+          : navigationEndpoint // ignore: cast_nullable_to_non_nullable
+              as NavigationEndpoint?,
+      trackingParams: freezed == trackingParams
+          ? _self.trackingParams
+          : trackingParams // ignore: cast_nullable_to_non_nullable
+              as String?,
+      icon: freezed == icon
+          ? _self.icon
+          : icon // ignore: cast_nullable_to_non_nullable
+              as Iconn?,
+    ));
+  }
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SuggestionCopyWith<$Res>? get suggestion {
+    if (_self.suggestion == null) {
+      return null;
+    }
+
+    return $SuggestionCopyWith<$Res>(_self.suggestion!, (value) {
+      return _then(_self.copyWith(suggestion: value));
+    });
+  }
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $NavigationEndpointCopyWith<$Res>? get navigationEndpoint {
+    if (_self.navigationEndpoint == null) {
+      return null;
+    }
+
+    return $NavigationEndpointCopyWith<$Res>(_self.navigationEndpoint!,
+        (value) {
+      return _then(_self.copyWith(navigationEndpoint: value));
+    });
+  }
+
+  /// Create a copy of SearchSuggestionRenderer
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $IconnCopyWith<$Res>? get icon {
+    if (_self.icon == null) {
+      return null;
+    }
+
+    return $IconnCopyWith<$Res>(_self.icon!, (value) {
+      return _then(_self.copyWith(icon: value));
+    });
+  }
 }
 
 /// @nodoc
 mixin _$Suggestion {
-  List<Run>? get runs => throw _privateConstructorUsedError;
+  List<Run>? get runs;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $SuggestionCopyWith<Suggestion> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SuggestionCopyWith<$Res> {
-  factory $SuggestionCopyWith(
-          Suggestion value, $Res Function(Suggestion) then) =
-      _$SuggestionCopyWithImpl<$Res, Suggestion>;
-  @useResult
-  $Res call({List<Run>? runs});
-}
-
-/// @nodoc
-class _$SuggestionCopyWithImpl<$Res, $Val extends Suggestion>
-    implements $SuggestionCopyWith<$Res> {
-  _$SuggestionCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of Suggestion
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $SuggestionCopyWith<Suggestion> get copyWith =>
+      _$SuggestionCopyWithImpl<Suggestion>(this as Suggestion, _$identity);
+
+  /// Serializes this Suggestion to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? runs = freezed,
-  }) {
-    return _then(_value.copyWith(
-      runs: freezed == runs
-          ? _value.runs
-          : runs // ignore: cast_nullable_to_non_nullable
-              as List<Run>?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Suggestion &&
+            const DeepCollectionEquality().equals(other.runs, runs));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(runs));
+
+  @override
+  String toString() {
+    return 'Suggestion(runs: $runs)';
   }
 }
 
 /// @nodoc
-abstract class _$$SuggestionImplCopyWith<$Res>
-    implements $SuggestionCopyWith<$Res> {
-  factory _$$SuggestionImplCopyWith(
-          _$SuggestionImpl value, $Res Function(_$SuggestionImpl) then) =
-      __$$SuggestionImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $SuggestionCopyWith<$Res> {
+  factory $SuggestionCopyWith(
+          Suggestion value, $Res Function(Suggestion) _then) =
+      _$SuggestionCopyWithImpl;
   @useResult
   $Res call({List<Run>? runs});
 }
 
 /// @nodoc
-class __$$SuggestionImplCopyWithImpl<$Res>
-    extends _$SuggestionCopyWithImpl<$Res, _$SuggestionImpl>
-    implements _$$SuggestionImplCopyWith<$Res> {
-  __$$SuggestionImplCopyWithImpl(
-      _$SuggestionImpl _value, $Res Function(_$SuggestionImpl) _then)
-      : super(_value, _then);
+class _$SuggestionCopyWithImpl<$Res> implements $SuggestionCopyWith<$Res> {
+  _$SuggestionCopyWithImpl(this._self, this._then);
 
+  final Suggestion _self;
+  final $Res Function(Suggestion) _then;
+
+  /// Create a copy of Suggestion
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? runs = freezed,
   }) {
-    return _then(_$SuggestionImpl(
+    return _then(_self.copyWith(
       runs: freezed == runs
-          ? _value._runs
+          ? _self.runs
           : runs // ignore: cast_nullable_to_non_nullable
               as List<Run>?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [Suggestion].
+extension SuggestionPatterns on Suggestion {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_Suggestion value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Suggestion() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_Suggestion value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Suggestion():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_Suggestion value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Suggestion() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(List<Run>? runs)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Suggestion() when $default != null:
+        return $default(_that.runs);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(List<Run>? runs) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Suggestion():
+        return $default(_that.runs);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(List<Run>? runs)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Suggestion() when $default != null:
+        return $default(_that.runs);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$SuggestionImpl implements _Suggestion {
-  _$SuggestionImpl({final List<Run>? runs}) : _runs = runs;
-
-  factory _$SuggestionImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SuggestionImplFromJson(json);
+class _Suggestion implements Suggestion {
+  _Suggestion({final List<Run>? runs}) : _runs = runs;
+  factory _Suggestion.fromJson(Map<String, dynamic> json) =>
+      _$SuggestionFromJson(json);
 
   final List<Run>? _runs;
   @override
@@ -1091,745 +2164,1589 @@ class _$SuggestionImpl implements _Suggestion {
     return EqualUnmodifiableListView(value);
   }
 
+  /// Create a copy of Suggestion
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'Suggestion(runs: $runs)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SuggestionCopyWith<_Suggestion> get copyWith =>
+      __$SuggestionCopyWithImpl<_Suggestion>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$SuggestionToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SuggestionImpl &&
+            other is _Suggestion &&
             const DeepCollectionEquality().equals(other._runs, _runs));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, const DeepCollectionEquality().hash(_runs));
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$SuggestionImplCopyWith<_$SuggestionImpl> get copyWith =>
-      __$$SuggestionImplCopyWithImpl<_$SuggestionImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SuggestionImplToJson(
-      this,
-    );
+  String toString() {
+    return 'Suggestion(runs: $runs)';
   }
 }
 
-abstract class _Suggestion implements Suggestion {
-  factory _Suggestion({final List<Run>? runs}) = _$SuggestionImpl;
-
-  factory _Suggestion.fromJson(Map<String, dynamic> json) =
-      _$SuggestionImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$SuggestionCopyWith<$Res>
+    implements $SuggestionCopyWith<$Res> {
+  factory _$SuggestionCopyWith(
+          _Suggestion value, $Res Function(_Suggestion) _then) =
+      __$SuggestionCopyWithImpl;
   @override
-  List<Run>? get runs;
-  @override
-  @JsonKey(ignore: true)
-  _$$SuggestionImplCopyWith<_$SuggestionImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call({List<Run>? runs});
 }
 
-Run _$RunFromJson(Map<String, dynamic> json) {
-  return _Run.fromJson(json);
+/// @nodoc
+class __$SuggestionCopyWithImpl<$Res> implements _$SuggestionCopyWith<$Res> {
+  __$SuggestionCopyWithImpl(this._self, this._then);
+
+  final _Suggestion _self;
+  final $Res Function(_Suggestion) _then;
+
+  /// Create a copy of Suggestion
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? runs = freezed,
+  }) {
+    return _then(_Suggestion(
+      runs: freezed == runs
+          ? _self._runs
+          : runs // ignore: cast_nullable_to_non_nullable
+              as List<Run>?,
+    ));
+  }
 }
 
 /// @nodoc
 mixin _$Run {
-  String? get text => throw _privateConstructorUsedError;
-  bool? get bold => throw _privateConstructorUsedError;
+  String? get text;
+  bool? get bold;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $RunCopyWith<Run> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $RunCopyWith<$Res> {
-  factory $RunCopyWith(Run value, $Res Function(Run) then) =
-      _$RunCopyWithImpl<$Res, Run>;
-  @useResult
-  $Res call({String? text, bool? bold});
-}
-
-/// @nodoc
-class _$RunCopyWithImpl<$Res, $Val extends Run> implements $RunCopyWith<$Res> {
-  _$RunCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of Run
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $RunCopyWith<Run> get copyWith =>
+      _$RunCopyWithImpl<Run>(this as Run, _$identity);
+
+  /// Serializes this Run to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? text = freezed,
-    Object? bold = freezed,
-  }) {
-    return _then(_value.copyWith(
-      text: freezed == text
-          ? _value.text
-          : text // ignore: cast_nullable_to_non_nullable
-              as String?,
-      bold: freezed == bold
-          ? _value.bold
-          : bold // ignore: cast_nullable_to_non_nullable
-              as bool?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Run &&
+            (identical(other.text, text) || other.text == text) &&
+            (identical(other.bold, bold) || other.bold == bold));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, text, bold);
+
+  @override
+  String toString() {
+    return 'Run(text: $text, bold: $bold)';
   }
 }
 
 /// @nodoc
-abstract class _$$RunImplCopyWith<$Res> implements $RunCopyWith<$Res> {
-  factory _$$RunImplCopyWith(_$RunImpl value, $Res Function(_$RunImpl) then) =
-      __$$RunImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $RunCopyWith<$Res> {
+  factory $RunCopyWith(Run value, $Res Function(Run) _then) = _$RunCopyWithImpl;
   @useResult
   $Res call({String? text, bool? bold});
 }
 
 /// @nodoc
-class __$$RunImplCopyWithImpl<$Res> extends _$RunCopyWithImpl<$Res, _$RunImpl>
-    implements _$$RunImplCopyWith<$Res> {
-  __$$RunImplCopyWithImpl(_$RunImpl _value, $Res Function(_$RunImpl) _then)
-      : super(_value, _then);
+class _$RunCopyWithImpl<$Res> implements $RunCopyWith<$Res> {
+  _$RunCopyWithImpl(this._self, this._then);
 
+  final Run _self;
+  final $Res Function(Run) _then;
+
+  /// Create a copy of Run
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? text = freezed,
     Object? bold = freezed,
   }) {
-    return _then(_$RunImpl(
+    return _then(_self.copyWith(
       text: freezed == text
-          ? _value.text
+          ? _self.text
           : text // ignore: cast_nullable_to_non_nullable
               as String?,
       bold: freezed == bold
-          ? _value.bold
+          ? _self.bold
           : bold // ignore: cast_nullable_to_non_nullable
               as bool?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [Run].
+extension RunPatterns on Run {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_Run value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Run() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_Run value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Run():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_Run value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Run() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? text, bool? bold)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Run() when $default != null:
+        return $default(_that.text, _that.bold);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? text, bool? bold) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Run():
+        return $default(_that.text, _that.bold);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? text, bool? bold)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Run() when $default != null:
+        return $default(_that.text, _that.bold);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$RunImpl implements _Run {
-  _$RunImpl({this.text, this.bold});
-
-  factory _$RunImpl.fromJson(Map<String, dynamic> json) =>
-      _$$RunImplFromJson(json);
+class _Run implements Run {
+  _Run({this.text, this.bold});
+  factory _Run.fromJson(Map<String, dynamic> json) => _$RunFromJson(json);
 
   @override
   final String? text;
   @override
   final bool? bold;
 
+  /// Create a copy of Run
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'Run(text: $text, bold: $bold)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$RunCopyWith<_Run> get copyWith =>
+      __$RunCopyWithImpl<_Run>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$RunToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$RunImpl &&
+            other is _Run &&
             (identical(other.text, text) || other.text == text) &&
             (identical(other.bold, bold) || other.bold == bold));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, text, bold);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$RunImplCopyWith<_$RunImpl> get copyWith =>
-      __$$RunImplCopyWithImpl<_$RunImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$RunImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _Run implements Run {
-  factory _Run({final String? text, final bool? bold}) = _$RunImpl;
-
-  factory _Run.fromJson(Map<String, dynamic> json) = _$RunImpl.fromJson;
-
-  @override
-  String? get text;
-  @override
-  bool? get bold;
-  @override
-  @JsonKey(ignore: true)
-  _$$RunImplCopyWith<_$RunImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-NavigationEndpoint _$NavigationEndpointFromJson(Map<String, dynamic> json) {
-  return _NavigationEndpoint.fromJson(json);
-}
-
-/// @nodoc
-mixin _$NavigationEndpoint {
-  String? get clickTrackingParams => throw _privateConstructorUsedError;
-  SearchEndpoint? get searchEndpoint => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $NavigationEndpointCopyWith<NavigationEndpoint> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $NavigationEndpointCopyWith<$Res> {
-  factory $NavigationEndpointCopyWith(
-          NavigationEndpoint value, $Res Function(NavigationEndpoint) then) =
-      _$NavigationEndpointCopyWithImpl<$Res, NavigationEndpoint>;
-  @useResult
-  $Res call({String? clickTrackingParams, SearchEndpoint? searchEndpoint});
-
-  $SearchEndpointCopyWith<$Res>? get searchEndpoint;
-}
-
-/// @nodoc
-class _$NavigationEndpointCopyWithImpl<$Res, $Val extends NavigationEndpoint>
-    implements $NavigationEndpointCopyWith<$Res> {
-  _$NavigationEndpointCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? clickTrackingParams = freezed,
-    Object? searchEndpoint = freezed,
-  }) {
-    return _then(_value.copyWith(
-      clickTrackingParams: freezed == clickTrackingParams
-          ? _value.clickTrackingParams
-          : clickTrackingParams // ignore: cast_nullable_to_non_nullable
-              as String?,
-      searchEndpoint: freezed == searchEndpoint
-          ? _value.searchEndpoint
-          : searchEndpoint // ignore: cast_nullable_to_non_nullable
-              as SearchEndpoint?,
-    ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $SearchEndpointCopyWith<$Res>? get searchEndpoint {
-    if (_value.searchEndpoint == null) {
-      return null;
-    }
-
-    return $SearchEndpointCopyWith<$Res>(_value.searchEndpoint!, (value) {
-      return _then(_value.copyWith(searchEndpoint: value) as $Val);
-    });
+  String toString() {
+    return 'Run(text: $text, bold: $bold)';
   }
 }
 
 /// @nodoc
-abstract class _$$NavigationEndpointImplCopyWith<$Res>
-    implements $NavigationEndpointCopyWith<$Res> {
-  factory _$$NavigationEndpointImplCopyWith(_$NavigationEndpointImpl value,
-          $Res Function(_$NavigationEndpointImpl) then) =
-      __$$NavigationEndpointImplCopyWithImpl<$Res>;
+abstract mixin class _$RunCopyWith<$Res> implements $RunCopyWith<$Res> {
+  factory _$RunCopyWith(_Run value, $Res Function(_Run) _then) =
+      __$RunCopyWithImpl;
   @override
   @useResult
-  $Res call({String? clickTrackingParams, SearchEndpoint? searchEndpoint});
-
-  @override
-  $SearchEndpointCopyWith<$Res>? get searchEndpoint;
+  $Res call({String? text, bool? bold});
 }
 
 /// @nodoc
-class __$$NavigationEndpointImplCopyWithImpl<$Res>
-    extends _$NavigationEndpointCopyWithImpl<$Res, _$NavigationEndpointImpl>
-    implements _$$NavigationEndpointImplCopyWith<$Res> {
-  __$$NavigationEndpointImplCopyWithImpl(_$NavigationEndpointImpl _value,
-      $Res Function(_$NavigationEndpointImpl) _then)
-      : super(_value, _then);
+class __$RunCopyWithImpl<$Res> implements _$RunCopyWith<$Res> {
+  __$RunCopyWithImpl(this._self, this._then);
 
-  @pragma('vm:prefer-inline')
+  final _Run _self;
+  final $Res Function(_Run) _then;
+
+  /// Create a copy of Run
+  /// with the given fields replaced by the non-null parameter values.
   @override
+  @pragma('vm:prefer-inline')
   $Res call({
-    Object? clickTrackingParams = freezed,
-    Object? searchEndpoint = freezed,
+    Object? text = freezed,
+    Object? bold = freezed,
   }) {
-    return _then(_$NavigationEndpointImpl(
-      clickTrackingParams: freezed == clickTrackingParams
-          ? _value.clickTrackingParams
-          : clickTrackingParams // ignore: cast_nullable_to_non_nullable
+    return _then(_Run(
+      text: freezed == text
+          ? _self.text
+          : text // ignore: cast_nullable_to_non_nullable
               as String?,
-      searchEndpoint: freezed == searchEndpoint
-          ? _value.searchEndpoint
-          : searchEndpoint // ignore: cast_nullable_to_non_nullable
-              as SearchEndpoint?,
+      bold: freezed == bold
+          ? _self.bold
+          : bold // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$NavigationEndpointImpl implements _NavigationEndpoint {
-  _$NavigationEndpointImpl({this.clickTrackingParams, this.searchEndpoint});
+mixin _$NavigationEndpoint {
+  String? get clickTrackingParams;
+  SearchEndpoint? get searchEndpoint;
 
-  factory _$NavigationEndpointImpl.fromJson(Map<String, dynamic> json) =>
-      _$$NavigationEndpointImplFromJson(json);
+  /// Create a copy of NavigationEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $NavigationEndpointCopyWith<NavigationEndpoint> get copyWith =>
+      _$NavigationEndpointCopyWithImpl<NavigationEndpoint>(
+          this as NavigationEndpoint, _$identity);
 
-  @override
-  final String? clickTrackingParams;
-  @override
-  final SearchEndpoint? searchEndpoint;
-
-  @override
-  String toString() {
-    return 'NavigationEndpoint(clickTrackingParams: $clickTrackingParams, searchEndpoint: $searchEndpoint)';
-  }
+  /// Serializes this NavigationEndpoint to a JSON map.
+  Map<String, dynamic> toJson();
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NavigationEndpointImpl &&
+            other is NavigationEndpoint &&
             (identical(other.clickTrackingParams, clickTrackingParams) ||
                 other.clickTrackingParams == clickTrackingParams) &&
             (identical(other.searchEndpoint, searchEndpoint) ||
                 other.searchEndpoint == searchEndpoint));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode =>
       Object.hash(runtimeType, clickTrackingParams, searchEndpoint);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$NavigationEndpointImplCopyWith<_$NavigationEndpointImpl> get copyWith =>
-      __$$NavigationEndpointImplCopyWithImpl<_$NavigationEndpointImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$NavigationEndpointImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _NavigationEndpoint implements NavigationEndpoint {
-  factory _NavigationEndpoint(
-      {final String? clickTrackingParams,
-      final SearchEndpoint? searchEndpoint}) = _$NavigationEndpointImpl;
-
-  factory _NavigationEndpoint.fromJson(Map<String, dynamic> json) =
-      _$NavigationEndpointImpl.fromJson;
-
-  @override
-  String? get clickTrackingParams;
-  @override
-  SearchEndpoint? get searchEndpoint;
-  @override
-  @JsonKey(ignore: true)
-  _$$NavigationEndpointImplCopyWith<_$NavigationEndpointImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-SearchEndpoint _$SearchEndpointFromJson(Map<String, dynamic> json) {
-  return _SearchEndpoint.fromJson(json);
-}
-
-/// @nodoc
-mixin _$SearchEndpoint {
-  String? get query => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $SearchEndpointCopyWith<SearchEndpoint> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $SearchEndpointCopyWith<$Res> {
-  factory $SearchEndpointCopyWith(
-          SearchEndpoint value, $Res Function(SearchEndpoint) then) =
-      _$SearchEndpointCopyWithImpl<$Res, SearchEndpoint>;
-  @useResult
-  $Res call({String? query});
-}
-
-/// @nodoc
-class _$SearchEndpointCopyWithImpl<$Res, $Val extends SearchEndpoint>
-    implements $SearchEndpointCopyWith<$Res> {
-  _$SearchEndpointCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? query = freezed,
-  }) {
-    return _then(_value.copyWith(
-      query: freezed == query
-          ? _value.query
-          : query // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  String toString() {
+    return 'NavigationEndpoint(clickTrackingParams: $clickTrackingParams, searchEndpoint: $searchEndpoint)';
   }
 }
 
 /// @nodoc
-abstract class _$$SearchEndpointImplCopyWith<$Res>
-    implements $SearchEndpointCopyWith<$Res> {
-  factory _$$SearchEndpointImplCopyWith(_$SearchEndpointImpl value,
-          $Res Function(_$SearchEndpointImpl) then) =
-      __$$SearchEndpointImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $NavigationEndpointCopyWith<$Res> {
+  factory $NavigationEndpointCopyWith(
+          NavigationEndpoint value, $Res Function(NavigationEndpoint) _then) =
+      _$NavigationEndpointCopyWithImpl;
   @useResult
-  $Res call({String? query});
+  $Res call({String? clickTrackingParams, SearchEndpoint? searchEndpoint});
+
+  $SearchEndpointCopyWith<$Res>? get searchEndpoint;
 }
 
 /// @nodoc
-class __$$SearchEndpointImplCopyWithImpl<$Res>
-    extends _$SearchEndpointCopyWithImpl<$Res, _$SearchEndpointImpl>
-    implements _$$SearchEndpointImplCopyWith<$Res> {
-  __$$SearchEndpointImplCopyWithImpl(
-      _$SearchEndpointImpl _value, $Res Function(_$SearchEndpointImpl) _then)
-      : super(_value, _then);
+class _$NavigationEndpointCopyWithImpl<$Res>
+    implements $NavigationEndpointCopyWith<$Res> {
+  _$NavigationEndpointCopyWithImpl(this._self, this._then);
 
+  final NavigationEndpoint _self;
+  final $Res Function(NavigationEndpoint) _then;
+
+  /// Create a copy of NavigationEndpoint
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? query = freezed,
+    Object? clickTrackingParams = freezed,
+    Object? searchEndpoint = freezed,
   }) {
-    return _then(_$SearchEndpointImpl(
-      query: freezed == query
-          ? _value.query
-          : query // ignore: cast_nullable_to_non_nullable
+    return _then(_self.copyWith(
+      clickTrackingParams: freezed == clickTrackingParams
+          ? _self.clickTrackingParams
+          : clickTrackingParams // ignore: cast_nullable_to_non_nullable
               as String?,
+      searchEndpoint: freezed == searchEndpoint
+          ? _self.searchEndpoint
+          : searchEndpoint // ignore: cast_nullable_to_non_nullable
+              as SearchEndpoint?,
     ));
+  }
+
+  /// Create a copy of NavigationEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SearchEndpointCopyWith<$Res>? get searchEndpoint {
+    if (_self.searchEndpoint == null) {
+      return null;
+    }
+
+    return $SearchEndpointCopyWith<$Res>(_self.searchEndpoint!, (value) {
+      return _then(_self.copyWith(searchEndpoint: value));
+    });
+  }
+}
+
+/// Adds pattern-matching-related methods to [NavigationEndpoint].
+extension NavigationEndpointPatterns on NavigationEndpoint {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_NavigationEndpoint value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _NavigationEndpoint() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_NavigationEndpoint value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _NavigationEndpoint():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_NavigationEndpoint value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _NavigationEndpoint() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(
+            String? clickTrackingParams, SearchEndpoint? searchEndpoint)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _NavigationEndpoint() when $default != null:
+        return $default(_that.clickTrackingParams, _that.searchEndpoint);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(
+            String? clickTrackingParams, SearchEndpoint? searchEndpoint)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _NavigationEndpoint():
+        return $default(_that.clickTrackingParams, _that.searchEndpoint);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(
+            String? clickTrackingParams, SearchEndpoint? searchEndpoint)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _NavigationEndpoint() when $default != null:
+        return $default(_that.clickTrackingParams, _that.searchEndpoint);
+      case _:
+        return null;
+    }
   }
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$SearchEndpointImpl implements _SearchEndpoint {
-  _$SearchEndpointImpl({this.query});
-
-  factory _$SearchEndpointImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SearchEndpointImplFromJson(json);
+class _NavigationEndpoint implements NavigationEndpoint {
+  _NavigationEndpoint({this.clickTrackingParams, this.searchEndpoint});
+  factory _NavigationEndpoint.fromJson(Map<String, dynamic> json) =>
+      _$NavigationEndpointFromJson(json);
 
   @override
-  final String? query;
+  final String? clickTrackingParams;
+  @override
+  final SearchEndpoint? searchEndpoint;
+
+  /// Create a copy of NavigationEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$NavigationEndpointCopyWith<_NavigationEndpoint> get copyWith =>
+      __$NavigationEndpointCopyWithImpl<_NavigationEndpoint>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$NavigationEndpointToJson(
+      this,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _NavigationEndpoint &&
+            (identical(other.clickTrackingParams, clickTrackingParams) ||
+                other.clickTrackingParams == clickTrackingParams) &&
+            (identical(other.searchEndpoint, searchEndpoint) ||
+                other.searchEndpoint == searchEndpoint));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, clickTrackingParams, searchEndpoint);
+
+  @override
+  String toString() {
+    return 'NavigationEndpoint(clickTrackingParams: $clickTrackingParams, searchEndpoint: $searchEndpoint)';
+  }
+}
+
+/// @nodoc
+abstract mixin class _$NavigationEndpointCopyWith<$Res>
+    implements $NavigationEndpointCopyWith<$Res> {
+  factory _$NavigationEndpointCopyWith(
+          _NavigationEndpoint value, $Res Function(_NavigationEndpoint) _then) =
+      __$NavigationEndpointCopyWithImpl;
+  @override
+  @useResult
+  $Res call({String? clickTrackingParams, SearchEndpoint? searchEndpoint});
+
+  @override
+  $SearchEndpointCopyWith<$Res>? get searchEndpoint;
+}
+
+/// @nodoc
+class __$NavigationEndpointCopyWithImpl<$Res>
+    implements _$NavigationEndpointCopyWith<$Res> {
+  __$NavigationEndpointCopyWithImpl(this._self, this._then);
+
+  final _NavigationEndpoint _self;
+  final $Res Function(_NavigationEndpoint) _then;
+
+  /// Create a copy of NavigationEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? clickTrackingParams = freezed,
+    Object? searchEndpoint = freezed,
+  }) {
+    return _then(_NavigationEndpoint(
+      clickTrackingParams: freezed == clickTrackingParams
+          ? _self.clickTrackingParams
+          : clickTrackingParams // ignore: cast_nullable_to_non_nullable
+              as String?,
+      searchEndpoint: freezed == searchEndpoint
+          ? _self.searchEndpoint
+          : searchEndpoint // ignore: cast_nullable_to_non_nullable
+              as SearchEndpoint?,
+    ));
+  }
+
+  /// Create a copy of NavigationEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $SearchEndpointCopyWith<$Res>? get searchEndpoint {
+    if (_self.searchEndpoint == null) {
+      return null;
+    }
+
+    return $SearchEndpointCopyWith<$Res>(_self.searchEndpoint!, (value) {
+      return _then(_self.copyWith(searchEndpoint: value));
+    });
+  }
+}
+
+/// @nodoc
+mixin _$SearchEndpoint {
+  String? get query;
+
+  /// Create a copy of SearchEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $SearchEndpointCopyWith<SearchEndpoint> get copyWith =>
+      _$SearchEndpointCopyWithImpl<SearchEndpoint>(
+          this as SearchEndpoint, _$identity);
+
+  /// Serializes this SearchEndpoint to a JSON map.
+  Map<String, dynamic> toJson();
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is SearchEndpoint &&
+            (identical(other.query, query) || other.query == query));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, query);
 
   @override
   String toString() {
     return 'SearchEndpoint(query: $query)';
   }
+}
+
+/// @nodoc
+abstract mixin class $SearchEndpointCopyWith<$Res> {
+  factory $SearchEndpointCopyWith(
+          SearchEndpoint value, $Res Function(SearchEndpoint) _then) =
+      _$SearchEndpointCopyWithImpl;
+  @useResult
+  $Res call({String? query});
+}
+
+/// @nodoc
+class _$SearchEndpointCopyWithImpl<$Res>
+    implements $SearchEndpointCopyWith<$Res> {
+  _$SearchEndpointCopyWithImpl(this._self, this._then);
+
+  final SearchEndpoint _self;
+  final $Res Function(SearchEndpoint) _then;
+
+  /// Create a copy of SearchEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? query = freezed,
+  }) {
+    return _then(_self.copyWith(
+      query: freezed == query
+          ? _self.query
+          : query // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// Adds pattern-matching-related methods to [SearchEndpoint].
+extension SearchEndpointPatterns on SearchEndpoint {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_SearchEndpoint value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchEndpoint() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_SearchEndpoint value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchEndpoint():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_SearchEndpoint value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchEndpoint() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? query)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _SearchEndpoint() when $default != null:
+        return $default(_that.query);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? query) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchEndpoint():
+        return $default(_that.query);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? query)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _SearchEndpoint() when $default != null:
+        return $default(_that.query);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _SearchEndpoint implements SearchEndpoint {
+  _SearchEndpoint({this.query});
+  factory _SearchEndpoint.fromJson(Map<String, dynamic> json) =>
+      _$SearchEndpointFromJson(json);
+
+  @override
+  final String? query;
+
+  /// Create a copy of SearchEndpoint
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$SearchEndpointCopyWith<_SearchEndpoint> get copyWith =>
+      __$SearchEndpointCopyWithImpl<_SearchEndpoint>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$SearchEndpointToJson(
+      this,
+    );
+  }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SearchEndpointImpl &&
+            other is _SearchEndpoint &&
             (identical(other.query, query) || other.query == query));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, query);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$SearchEndpointImplCopyWith<_$SearchEndpointImpl> get copyWith =>
-      __$$SearchEndpointImplCopyWithImpl<_$SearchEndpointImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$SearchEndpointImplToJson(
-      this,
-    );
-  }
-}
-
-abstract class _SearchEndpoint implements SearchEndpoint {
-  factory _SearchEndpoint({final String? query}) = _$SearchEndpointImpl;
-
-  factory _SearchEndpoint.fromJson(Map<String, dynamic> json) =
-      _$SearchEndpointImpl.fromJson;
-
-  @override
-  String? get query;
-  @override
-  @JsonKey(ignore: true)
-  _$$SearchEndpointImplCopyWith<_$SearchEndpointImpl> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-Iconn _$IconnFromJson(Map<String, dynamic> json) {
-  return _Iconn.fromJson(json);
-}
-
-/// @nodoc
-mixin _$Iconn {
-  String? get iconType => throw _privateConstructorUsedError;
-
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $IconnCopyWith<Iconn> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $IconnCopyWith<$Res> {
-  factory $IconnCopyWith(Iconn value, $Res Function(Iconn) then) =
-      _$IconnCopyWithImpl<$Res, Iconn>;
-  @useResult
-  $Res call({String? iconType});
-}
-
-/// @nodoc
-class _$IconnCopyWithImpl<$Res, $Val extends Iconn>
-    implements $IconnCopyWith<$Res> {
-  _$IconnCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? iconType = freezed,
-  }) {
-    return _then(_value.copyWith(
-      iconType: freezed == iconType
-          ? _value.iconType
-          : iconType // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  String toString() {
+    return 'SearchEndpoint(query: $query)';
   }
 }
 
 /// @nodoc
-abstract class _$$IconnImplCopyWith<$Res> implements $IconnCopyWith<$Res> {
-  factory _$$IconnImplCopyWith(
-          _$IconnImpl value, $Res Function(_$IconnImpl) then) =
-      __$$IconnImplCopyWithImpl<$Res>;
+abstract mixin class _$SearchEndpointCopyWith<$Res>
+    implements $SearchEndpointCopyWith<$Res> {
+  factory _$SearchEndpointCopyWith(
+          _SearchEndpoint value, $Res Function(_SearchEndpoint) _then) =
+      __$SearchEndpointCopyWithImpl;
   @override
   @useResult
-  $Res call({String? iconType});
+  $Res call({String? query});
 }
 
 /// @nodoc
-class __$$IconnImplCopyWithImpl<$Res>
-    extends _$IconnCopyWithImpl<$Res, _$IconnImpl>
-    implements _$$IconnImplCopyWith<$Res> {
-  __$$IconnImplCopyWithImpl(
-      _$IconnImpl _value, $Res Function(_$IconnImpl) _then)
-      : super(_value, _then);
+class __$SearchEndpointCopyWithImpl<$Res>
+    implements _$SearchEndpointCopyWith<$Res> {
+  __$SearchEndpointCopyWithImpl(this._self, this._then);
 
-  @pragma('vm:prefer-inline')
+  final _SearchEndpoint _self;
+  final $Res Function(_SearchEndpoint) _then;
+
+  /// Create a copy of SearchEndpoint
+  /// with the given fields replaced by the non-null parameter values.
   @override
+  @pragma('vm:prefer-inline')
   $Res call({
-    Object? iconType = freezed,
+    Object? query = freezed,
   }) {
-    return _then(_$IconnImpl(
-      iconType: freezed == iconType
-          ? _value.iconType
-          : iconType // ignore: cast_nullable_to_non_nullable
+    return _then(_SearchEndpoint(
+      query: freezed == query
+          ? _self.query
+          : query // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
 }
 
 /// @nodoc
-@JsonSerializable()
-class _$IconnImpl implements _Iconn {
-  _$IconnImpl({this.iconType});
+mixin _$Iconn {
+  String? get iconType;
 
-  factory _$IconnImpl.fromJson(Map<String, dynamic> json) =>
-      _$$IconnImplFromJson(json);
+  /// Create a copy of Iconn
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  $IconnCopyWith<Iconn> get copyWith =>
+      _$IconnCopyWithImpl<Iconn>(this as Iconn, _$identity);
+
+  /// Serializes this Iconn to a JSON map.
+  Map<String, dynamic> toJson();
 
   @override
-  final String? iconType;
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Iconn &&
+            (identical(other.iconType, iconType) ||
+                other.iconType == iconType));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, iconType);
 
   @override
   String toString() {
     return 'Iconn(iconType: $iconType)';
   }
+}
+
+/// @nodoc
+abstract mixin class $IconnCopyWith<$Res> {
+  factory $IconnCopyWith(Iconn value, $Res Function(Iconn) _then) =
+      _$IconnCopyWithImpl;
+  @useResult
+  $Res call({String? iconType});
+}
+
+/// @nodoc
+class _$IconnCopyWithImpl<$Res> implements $IconnCopyWith<$Res> {
+  _$IconnCopyWithImpl(this._self, this._then);
+
+  final Iconn _self;
+  final $Res Function(Iconn) _then;
+
+  /// Create a copy of Iconn
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? iconType = freezed,
+  }) {
+    return _then(_self.copyWith(
+      iconType: freezed == iconType
+          ? _self.iconType
+          : iconType // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+/// Adds pattern-matching-related methods to [Iconn].
+extension IconnPatterns on Iconn {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_Iconn value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Iconn() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_Iconn value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Iconn():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_Iconn value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Iconn() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? iconType)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Iconn() when $default != null:
+        return $default(_that.iconType);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? iconType) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Iconn():
+        return $default(_that.iconType);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? iconType)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Iconn() when $default != null:
+        return $default(_that.iconType);
+      case _:
+        return null;
+    }
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _Iconn implements Iconn {
+  _Iconn({this.iconType});
+  factory _Iconn.fromJson(Map<String, dynamic> json) => _$IconnFromJson(json);
+
+  @override
+  final String? iconType;
+
+  /// Create a copy of Iconn
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$IconnCopyWith<_Iconn> get copyWith =>
+      __$IconnCopyWithImpl<_Iconn>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$IconnToJson(
+      this,
+    );
+  }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$IconnImpl &&
+            other is _Iconn &&
             (identical(other.iconType, iconType) ||
                 other.iconType == iconType));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, iconType);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$IconnImplCopyWith<_$IconnImpl> get copyWith =>
-      __$$IconnImplCopyWithImpl<_$IconnImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$IconnImplToJson(
-      this,
-    );
+  String toString() {
+    return 'Iconn(iconType: $iconType)';
   }
 }
 
-abstract class _Iconn implements Iconn {
-  factory _Iconn({final String? iconType}) = _$IconnImpl;
-
-  factory _Iconn.fromJson(Map<String, dynamic> json) = _$IconnImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$IconnCopyWith<$Res> implements $IconnCopyWith<$Res> {
+  factory _$IconnCopyWith(_Iconn value, $Res Function(_Iconn) _then) =
+      __$IconnCopyWithImpl;
   @override
-  String? get iconType;
-  @override
-  @JsonKey(ignore: true)
-  _$$IconnImplCopyWith<_$IconnImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call({String? iconType});
 }
 
-ResponseContext _$ResponseContextFromJson(Map<String, dynamic> json) {
-  return _ResponseContext.fromJson(json);
+/// @nodoc
+class __$IconnCopyWithImpl<$Res> implements _$IconnCopyWith<$Res> {
+  __$IconnCopyWithImpl(this._self, this._then);
+
+  final _Iconn _self;
+  final $Res Function(_Iconn) _then;
+
+  /// Create a copy of Iconn
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? iconType = freezed,
+  }) {
+    return _then(_Iconn(
+      iconType: freezed == iconType
+          ? _self.iconType
+          : iconType // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
 }
 
 /// @nodoc
 mixin _$ResponseContext {
-  String? get visitorData => throw _privateConstructorUsedError;
-  List<ServiceTrackingParam>? get serviceTrackingParams =>
-      throw _privateConstructorUsedError;
+  String? get visitorData;
+  List<ServiceTrackingParam>? get serviceTrackingParams;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ResponseContextCopyWith<ResponseContext> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ResponseContextCopyWith<$Res> {
-  factory $ResponseContextCopyWith(
-          ResponseContext value, $Res Function(ResponseContext) then) =
-      _$ResponseContextCopyWithImpl<$Res, ResponseContext>;
-  @useResult
-  $Res call(
-      {String? visitorData, List<ServiceTrackingParam>? serviceTrackingParams});
-}
-
-/// @nodoc
-class _$ResponseContextCopyWithImpl<$Res, $Val extends ResponseContext>
-    implements $ResponseContextCopyWith<$Res> {
-  _$ResponseContextCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of ResponseContext
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $ResponseContextCopyWith<ResponseContext> get copyWith =>
+      _$ResponseContextCopyWithImpl<ResponseContext>(
+          this as ResponseContext, _$identity);
+
+  /// Serializes this ResponseContext to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? visitorData = freezed,
-    Object? serviceTrackingParams = freezed,
-  }) {
-    return _then(_value.copyWith(
-      visitorData: freezed == visitorData
-          ? _value.visitorData
-          : visitorData // ignore: cast_nullable_to_non_nullable
-              as String?,
-      serviceTrackingParams: freezed == serviceTrackingParams
-          ? _value.serviceTrackingParams
-          : serviceTrackingParams // ignore: cast_nullable_to_non_nullable
-              as List<ServiceTrackingParam>?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is ResponseContext &&
+            (identical(other.visitorData, visitorData) ||
+                other.visitorData == visitorData) &&
+            const DeepCollectionEquality()
+                .equals(other.serviceTrackingParams, serviceTrackingParams));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, visitorData,
+      const DeepCollectionEquality().hash(serviceTrackingParams));
+
+  @override
+  String toString() {
+    return 'ResponseContext(visitorData: $visitorData, serviceTrackingParams: $serviceTrackingParams)';
   }
 }
 
 /// @nodoc
-abstract class _$$ResponseContextImplCopyWith<$Res>
-    implements $ResponseContextCopyWith<$Res> {
-  factory _$$ResponseContextImplCopyWith(_$ResponseContextImpl value,
-          $Res Function(_$ResponseContextImpl) then) =
-      __$$ResponseContextImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $ResponseContextCopyWith<$Res> {
+  factory $ResponseContextCopyWith(
+          ResponseContext value, $Res Function(ResponseContext) _then) =
+      _$ResponseContextCopyWithImpl;
   @useResult
   $Res call(
       {String? visitorData, List<ServiceTrackingParam>? serviceTrackingParams});
 }
 
 /// @nodoc
-class __$$ResponseContextImplCopyWithImpl<$Res>
-    extends _$ResponseContextCopyWithImpl<$Res, _$ResponseContextImpl>
-    implements _$$ResponseContextImplCopyWith<$Res> {
-  __$$ResponseContextImplCopyWithImpl(
-      _$ResponseContextImpl _value, $Res Function(_$ResponseContextImpl) _then)
-      : super(_value, _then);
+class _$ResponseContextCopyWithImpl<$Res>
+    implements $ResponseContextCopyWith<$Res> {
+  _$ResponseContextCopyWithImpl(this._self, this._then);
 
+  final ResponseContext _self;
+  final $Res Function(ResponseContext) _then;
+
+  /// Create a copy of ResponseContext
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? visitorData = freezed,
     Object? serviceTrackingParams = freezed,
   }) {
-    return _then(_$ResponseContextImpl(
+    return _then(_self.copyWith(
       visitorData: freezed == visitorData
-          ? _value.visitorData
+          ? _self.visitorData
           : visitorData // ignore: cast_nullable_to_non_nullable
               as String?,
       serviceTrackingParams: freezed == serviceTrackingParams
-          ? _value._serviceTrackingParams
+          ? _self.serviceTrackingParams
           : serviceTrackingParams // ignore: cast_nullable_to_non_nullable
               as List<ServiceTrackingParam>?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [ResponseContext].
+extension ResponseContextPatterns on ResponseContext {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_ResponseContext value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _ResponseContext() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_ResponseContext value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ResponseContext():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_ResponseContext value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ResponseContext() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? visitorData,
+            List<ServiceTrackingParam>? serviceTrackingParams)?
+        $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _ResponseContext() when $default != null:
+        return $default(_that.visitorData, _that.serviceTrackingParams);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? visitorData,
+            List<ServiceTrackingParam>? serviceTrackingParams)
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ResponseContext():
+        return $default(_that.visitorData, _that.serviceTrackingParams);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? visitorData,
+            List<ServiceTrackingParam>? serviceTrackingParams)?
+        $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ResponseContext() when $default != null:
+        return $default(_that.visitorData, _that.serviceTrackingParams);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$ResponseContextImpl implements _ResponseContext {
-  _$ResponseContextImpl(
+class _ResponseContext implements ResponseContext {
+  _ResponseContext(
       {this.visitorData,
       final List<ServiceTrackingParam>? serviceTrackingParams})
       : _serviceTrackingParams = serviceTrackingParams;
-
-  factory _$ResponseContextImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ResponseContextImplFromJson(json);
+  factory _ResponseContext.fromJson(Map<String, dynamic> json) =>
+      _$ResponseContextFromJson(json);
 
   @override
   final String? visitorData;
@@ -1844,161 +3761,322 @@ class _$ResponseContextImpl implements _ResponseContext {
     return EqualUnmodifiableListView(value);
   }
 
+  /// Create a copy of ResponseContext
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'ResponseContext(visitorData: $visitorData, serviceTrackingParams: $serviceTrackingParams)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$ResponseContextCopyWith<_ResponseContext> get copyWith =>
+      __$ResponseContextCopyWithImpl<_ResponseContext>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$ResponseContextToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ResponseContextImpl &&
+            other is _ResponseContext &&
             (identical(other.visitorData, visitorData) ||
                 other.visitorData == visitorData) &&
             const DeepCollectionEquality()
                 .equals(other._serviceTrackingParams, _serviceTrackingParams));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, visitorData,
       const DeepCollectionEquality().hash(_serviceTrackingParams));
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$ResponseContextImplCopyWith<_$ResponseContextImpl> get copyWith =>
-      __$$ResponseContextImplCopyWithImpl<_$ResponseContextImpl>(
-          this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ResponseContextImplToJson(
-      this,
-    );
+  String toString() {
+    return 'ResponseContext(visitorData: $visitorData, serviceTrackingParams: $serviceTrackingParams)';
   }
 }
 
-abstract class _ResponseContext implements ResponseContext {
-  factory _ResponseContext(
-          {final String? visitorData,
-          final List<ServiceTrackingParam>? serviceTrackingParams}) =
-      _$ResponseContextImpl;
-
-  factory _ResponseContext.fromJson(Map<String, dynamic> json) =
-      _$ResponseContextImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$ResponseContextCopyWith<$Res>
+    implements $ResponseContextCopyWith<$Res> {
+  factory _$ResponseContextCopyWith(
+          _ResponseContext value, $Res Function(_ResponseContext) _then) =
+      __$ResponseContextCopyWithImpl;
   @override
-  String? get visitorData;
-  @override
-  List<ServiceTrackingParam>? get serviceTrackingParams;
-  @override
-  @JsonKey(ignore: true)
-  _$$ResponseContextImplCopyWith<_$ResponseContextImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call(
+      {String? visitorData, List<ServiceTrackingParam>? serviceTrackingParams});
 }
 
-ServiceTrackingParam _$ServiceTrackingParamFromJson(Map<String, dynamic> json) {
-  return _ServiceTrackingParam.fromJson(json);
+/// @nodoc
+class __$ResponseContextCopyWithImpl<$Res>
+    implements _$ResponseContextCopyWith<$Res> {
+  __$ResponseContextCopyWithImpl(this._self, this._then);
+
+  final _ResponseContext _self;
+  final $Res Function(_ResponseContext) _then;
+
+  /// Create a copy of ResponseContext
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? visitorData = freezed,
+    Object? serviceTrackingParams = freezed,
+  }) {
+    return _then(_ResponseContext(
+      visitorData: freezed == visitorData
+          ? _self.visitorData
+          : visitorData // ignore: cast_nullable_to_non_nullable
+              as String?,
+      serviceTrackingParams: freezed == serviceTrackingParams
+          ? _self._serviceTrackingParams
+          : serviceTrackingParams // ignore: cast_nullable_to_non_nullable
+              as List<ServiceTrackingParam>?,
+    ));
+  }
 }
 
 /// @nodoc
 mixin _$ServiceTrackingParam {
-  String? get service => throw _privateConstructorUsedError;
-  List<Param>? get params => throw _privateConstructorUsedError;
+  String? get service;
+  List<Param>? get params;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ServiceTrackingParamCopyWith<ServiceTrackingParam> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ServiceTrackingParamCopyWith<$Res> {
-  factory $ServiceTrackingParamCopyWith(ServiceTrackingParam value,
-          $Res Function(ServiceTrackingParam) then) =
-      _$ServiceTrackingParamCopyWithImpl<$Res, ServiceTrackingParam>;
-  @useResult
-  $Res call({String? service, List<Param>? params});
-}
-
-/// @nodoc
-class _$ServiceTrackingParamCopyWithImpl<$Res,
-        $Val extends ServiceTrackingParam>
-    implements $ServiceTrackingParamCopyWith<$Res> {
-  _$ServiceTrackingParamCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of ServiceTrackingParam
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $ServiceTrackingParamCopyWith<ServiceTrackingParam> get copyWith =>
+      _$ServiceTrackingParamCopyWithImpl<ServiceTrackingParam>(
+          this as ServiceTrackingParam, _$identity);
+
+  /// Serializes this ServiceTrackingParam to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? service = freezed,
-    Object? params = freezed,
-  }) {
-    return _then(_value.copyWith(
-      service: freezed == service
-          ? _value.service
-          : service // ignore: cast_nullable_to_non_nullable
-              as String?,
-      params: freezed == params
-          ? _value.params
-          : params // ignore: cast_nullable_to_non_nullable
-              as List<Param>?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is ServiceTrackingParam &&
+            (identical(other.service, service) || other.service == service) &&
+            const DeepCollectionEquality().equals(other.params, params));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, service, const DeepCollectionEquality().hash(params));
+
+  @override
+  String toString() {
+    return 'ServiceTrackingParam(service: $service, params: $params)';
   }
 }
 
 /// @nodoc
-abstract class _$$ServiceTrackingParamImplCopyWith<$Res>
-    implements $ServiceTrackingParamCopyWith<$Res> {
-  factory _$$ServiceTrackingParamImplCopyWith(_$ServiceTrackingParamImpl value,
-          $Res Function(_$ServiceTrackingParamImpl) then) =
-      __$$ServiceTrackingParamImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $ServiceTrackingParamCopyWith<$Res> {
+  factory $ServiceTrackingParamCopyWith(ServiceTrackingParam value,
+          $Res Function(ServiceTrackingParam) _then) =
+      _$ServiceTrackingParamCopyWithImpl;
   @useResult
   $Res call({String? service, List<Param>? params});
 }
 
 /// @nodoc
-class __$$ServiceTrackingParamImplCopyWithImpl<$Res>
-    extends _$ServiceTrackingParamCopyWithImpl<$Res, _$ServiceTrackingParamImpl>
-    implements _$$ServiceTrackingParamImplCopyWith<$Res> {
-  __$$ServiceTrackingParamImplCopyWithImpl(_$ServiceTrackingParamImpl _value,
-      $Res Function(_$ServiceTrackingParamImpl) _then)
-      : super(_value, _then);
+class _$ServiceTrackingParamCopyWithImpl<$Res>
+    implements $ServiceTrackingParamCopyWith<$Res> {
+  _$ServiceTrackingParamCopyWithImpl(this._self, this._then);
 
+  final ServiceTrackingParam _self;
+  final $Res Function(ServiceTrackingParam) _then;
+
+  /// Create a copy of ServiceTrackingParam
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? service = freezed,
     Object? params = freezed,
   }) {
-    return _then(_$ServiceTrackingParamImpl(
+    return _then(_self.copyWith(
       service: freezed == service
-          ? _value.service
+          ? _self.service
           : service // ignore: cast_nullable_to_non_nullable
               as String?,
       params: freezed == params
-          ? _value._params
+          ? _self.params
           : params // ignore: cast_nullable_to_non_nullable
               as List<Param>?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [ServiceTrackingParam].
+extension ServiceTrackingParamPatterns on ServiceTrackingParam {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_ServiceTrackingParam value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _ServiceTrackingParam() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_ServiceTrackingParam value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ServiceTrackingParam():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_ServiceTrackingParam value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ServiceTrackingParam() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? service, List<Param>? params)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _ServiceTrackingParam() when $default != null:
+        return $default(_that.service, _that.params);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? service, List<Param>? params) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ServiceTrackingParam():
+        return $default(_that.service, _that.params);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? service, List<Param>? params)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _ServiceTrackingParam() when $default != null:
+        return $default(_that.service, _that.params);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$ServiceTrackingParamImpl implements _ServiceTrackingParam {
-  _$ServiceTrackingParamImpl({this.service, final List<Param>? params})
+class _ServiceTrackingParam implements ServiceTrackingParam {
+  _ServiceTrackingParam({this.service, final List<Param>? params})
       : _params = params;
-
-  factory _$ServiceTrackingParamImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ServiceTrackingParamImplFromJson(json);
+  factory _ServiceTrackingParam.fromJson(Map<String, dynamic> json) =>
+      _$ServiceTrackingParamFromJson(json);
 
   @override
   final String? service;
@@ -2012,203 +4090,389 @@ class _$ServiceTrackingParamImpl implements _ServiceTrackingParam {
     return EqualUnmodifiableListView(value);
   }
 
+  /// Create a copy of ServiceTrackingParam
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'ServiceTrackingParam(service: $service, params: $params)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$ServiceTrackingParamCopyWith<_ServiceTrackingParam> get copyWith =>
+      __$ServiceTrackingParamCopyWithImpl<_ServiceTrackingParam>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$ServiceTrackingParamToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ServiceTrackingParamImpl &&
+            other is _ServiceTrackingParam &&
             (identical(other.service, service) || other.service == service) &&
             const DeepCollectionEquality().equals(other._params, _params));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(
       runtimeType, service, const DeepCollectionEquality().hash(_params));
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$ServiceTrackingParamImplCopyWith<_$ServiceTrackingParamImpl>
-      get copyWith =>
-          __$$ServiceTrackingParamImplCopyWithImpl<_$ServiceTrackingParamImpl>(
-              this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ServiceTrackingParamImplToJson(
-      this,
-    );
+  String toString() {
+    return 'ServiceTrackingParam(service: $service, params: $params)';
   }
 }
 
-abstract class _ServiceTrackingParam implements ServiceTrackingParam {
-  factory _ServiceTrackingParam(
-      {final String? service,
-      final List<Param>? params}) = _$ServiceTrackingParamImpl;
-
-  factory _ServiceTrackingParam.fromJson(Map<String, dynamic> json) =
-      _$ServiceTrackingParamImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$ServiceTrackingParamCopyWith<$Res>
+    implements $ServiceTrackingParamCopyWith<$Res> {
+  factory _$ServiceTrackingParamCopyWith(_ServiceTrackingParam value,
+          $Res Function(_ServiceTrackingParam) _then) =
+      __$ServiceTrackingParamCopyWithImpl;
   @override
-  String? get service;
-  @override
-  List<Param>? get params;
-  @override
-  @JsonKey(ignore: true)
-  _$$ServiceTrackingParamImplCopyWith<_$ServiceTrackingParamImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  @useResult
+  $Res call({String? service, List<Param>? params});
 }
 
-Param _$ParamFromJson(Map<String, dynamic> json) {
-  return _Param.fromJson(json);
+/// @nodoc
+class __$ServiceTrackingParamCopyWithImpl<$Res>
+    implements _$ServiceTrackingParamCopyWith<$Res> {
+  __$ServiceTrackingParamCopyWithImpl(this._self, this._then);
+
+  final _ServiceTrackingParam _self;
+  final $Res Function(_ServiceTrackingParam) _then;
+
+  /// Create a copy of ServiceTrackingParam
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? service = freezed,
+    Object? params = freezed,
+  }) {
+    return _then(_ServiceTrackingParam(
+      service: freezed == service
+          ? _self.service
+          : service // ignore: cast_nullable_to_non_nullable
+              as String?,
+      params: freezed == params
+          ? _self._params
+          : params // ignore: cast_nullable_to_non_nullable
+              as List<Param>?,
+    ));
+  }
 }
 
 /// @nodoc
 mixin _$Param {
-  String? get key => throw _privateConstructorUsedError;
-  String? get value => throw _privateConstructorUsedError;
+  String? get key;
+  String? get value;
 
-  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
-  $ParamCopyWith<Param> get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $ParamCopyWith<$Res> {
-  factory $ParamCopyWith(Param value, $Res Function(Param) then) =
-      _$ParamCopyWithImpl<$Res, Param>;
-  @useResult
-  $Res call({String? key, String? value});
-}
-
-/// @nodoc
-class _$ParamCopyWithImpl<$Res, $Val extends Param>
-    implements $ParamCopyWith<$Res> {
-  _$ParamCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-
+  /// Create a copy of Param
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @pragma('vm:prefer-inline')
+  $ParamCopyWith<Param> get copyWith =>
+      _$ParamCopyWithImpl<Param>(this as Param, _$identity);
+
+  /// Serializes this Param to a JSON map.
+  Map<String, dynamic> toJson();
+
   @override
-  $Res call({
-    Object? key = freezed,
-    Object? value = freezed,
-  }) {
-    return _then(_value.copyWith(
-      key: freezed == key
-          ? _value.key
-          : key // ignore: cast_nullable_to_non_nullable
-              as String?,
-      value: freezed == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as String?,
-    ) as $Val);
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is Param &&
+            (identical(other.key, key) || other.key == key) &&
+            (identical(other.value, value) || other.value == value));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, key, value);
+
+  @override
+  String toString() {
+    return 'Param(key: $key, value: $value)';
   }
 }
 
 /// @nodoc
-abstract class _$$ParamImplCopyWith<$Res> implements $ParamCopyWith<$Res> {
-  factory _$$ParamImplCopyWith(
-          _$ParamImpl value, $Res Function(_$ParamImpl) then) =
-      __$$ParamImplCopyWithImpl<$Res>;
-  @override
+abstract mixin class $ParamCopyWith<$Res> {
+  factory $ParamCopyWith(Param value, $Res Function(Param) _then) =
+      _$ParamCopyWithImpl;
   @useResult
   $Res call({String? key, String? value});
 }
 
 /// @nodoc
-class __$$ParamImplCopyWithImpl<$Res>
-    extends _$ParamCopyWithImpl<$Res, _$ParamImpl>
-    implements _$$ParamImplCopyWith<$Res> {
-  __$$ParamImplCopyWithImpl(
-      _$ParamImpl _value, $Res Function(_$ParamImpl) _then)
-      : super(_value, _then);
+class _$ParamCopyWithImpl<$Res> implements $ParamCopyWith<$Res> {
+  _$ParamCopyWithImpl(this._self, this._then);
 
+  final Param _self;
+  final $Res Function(Param) _then;
+
+  /// Create a copy of Param
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? key = freezed,
     Object? value = freezed,
   }) {
-    return _then(_$ParamImpl(
+    return _then(_self.copyWith(
       key: freezed == key
-          ? _value.key
+          ? _self.key
           : key // ignore: cast_nullable_to_non_nullable
               as String?,
       value: freezed == value
-          ? _value.value
+          ? _self.value
           : value // ignore: cast_nullable_to_non_nullable
               as String?,
     ));
   }
 }
 
+/// Adds pattern-matching-related methods to [Param].
+extension ParamPatterns on Param {
+  /// A variant of `map` that fallback to returning `orElse`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>(
+    TResult Function(_Param value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Param() when $default != null:
+        return $default(_that);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// Callbacks receives the raw object, upcasted.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case final Subclass2 value:
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>(
+    TResult Function(_Param value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Param():
+        return $default(_that);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `map` that fallback to returning `null`.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case final Subclass value:
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>(
+    TResult? Function(_Param value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Param() when $default != null:
+        return $default(_that);
+      case _:
+        return null;
+    }
+  }
+
+  /// A variant of `when` that fallback to an `orElse` callback.
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return orElse();
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>(
+    TResult Function(String? key, String? value)? $default, {
+    required TResult orElse(),
+  }) {
+    final _that = this;
+    switch (_that) {
+      case _Param() when $default != null:
+        return $default(_that.key, _that.value);
+      case _:
+        return orElse();
+    }
+  }
+
+  /// A `switch`-like method, using callbacks.
+  ///
+  /// As opposed to `map`, this offers destructuring.
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case Subclass2(:final field2):
+  ///     return ...;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>(
+    TResult Function(String? key, String? value) $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Param():
+        return $default(_that.key, _that.value);
+      case _:
+        throw StateError('Unexpected subclass');
+    }
+  }
+
+  /// A variant of `when` that fallback to returning `null`
+  ///
+  /// It is equivalent to doing:
+  /// ```dart
+  /// switch (sealedClass) {
+  ///   case Subclass(:final field):
+  ///     return ...;
+  ///   case _:
+  ///     return null;
+  /// }
+  /// ```
+
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>(
+    TResult? Function(String? key, String? value)? $default,
+  ) {
+    final _that = this;
+    switch (_that) {
+      case _Param() when $default != null:
+        return $default(_that.key, _that.value);
+      case _:
+        return null;
+    }
+  }
+}
+
 /// @nodoc
 @JsonSerializable()
-class _$ParamImpl implements _Param {
-  _$ParamImpl({this.key, this.value});
-
-  factory _$ParamImpl.fromJson(Map<String, dynamic> json) =>
-      _$$ParamImplFromJson(json);
+class _Param implements Param {
+  _Param({this.key, this.value});
+  factory _Param.fromJson(Map<String, dynamic> json) => _$ParamFromJson(json);
 
   @override
   final String? key;
   @override
   final String? value;
 
+  /// Create a copy of Param
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  String toString() {
-    return 'Param(key: $key, value: $value)';
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @pragma('vm:prefer-inline')
+  _$ParamCopyWith<_Param> get copyWith =>
+      __$ParamCopyWithImpl<_Param>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$ParamToJson(
+      this,
+    );
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ParamImpl &&
+            other is _Param &&
             (identical(other.key, key) || other.key == key) &&
             (identical(other.value, value) || other.value == value));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, key, value);
 
-  @JsonKey(ignore: true)
   @override
-  @pragma('vm:prefer-inline')
-  _$$ParamImplCopyWith<_$ParamImpl> get copyWith =>
-      __$$ParamImplCopyWithImpl<_$ParamImpl>(this, _$identity);
-
-  @override
-  Map<String, dynamic> toJson() {
-    return _$$ParamImplToJson(
-      this,
-    );
+  String toString() {
+    return 'Param(key: $key, value: $value)';
   }
 }
 
-abstract class _Param implements Param {
-  factory _Param({final String? key, final String? value}) = _$ParamImpl;
-
-  factory _Param.fromJson(Map<String, dynamic> json) = _$ParamImpl.fromJson;
-
+/// @nodoc
+abstract mixin class _$ParamCopyWith<$Res> implements $ParamCopyWith<$Res> {
+  factory _$ParamCopyWith(_Param value, $Res Function(_Param) _then) =
+      __$ParamCopyWithImpl;
   @override
-  String? get key;
-  @override
-  String? get value;
-  @override
-  @JsonKey(ignore: true)
-  _$$ParamImplCopyWith<_$ParamImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+  @useResult
+  $Res call({String? key, String? value});
 }
+
+/// @nodoc
+class __$ParamCopyWithImpl<$Res> implements _$ParamCopyWith<$Res> {
+  __$ParamCopyWithImpl(this._self, this._then);
+
+  final _Param _self;
+  final $Res Function(_Param) _then;
+
+  /// Create a copy of Param
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $Res call({
+    Object? key = freezed,
+    Object? value = freezed,
+  }) {
+    return _then(_Param(
+      key: freezed == key
+          ? _self.key
+          : key // ignore: cast_nullable_to_non_nullable
+              as String?,
+      value: freezed == value
+          ? _self.value
+          : value // ignore: cast_nullable_to_non_nullable
+              as String?,
+    ));
+  }
+}
+
+// dart format on

@@ -6,22 +6,53 @@ part of 'audio_player_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$audioPlayerProviderHash() =>
-    r'99ed225b6e416bda2b8974bbae1c07e8e6c4a24e';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// See also [AudioPlayerProvider].
 @ProviderFor(AudioPlayerProvider)
-final audioPlayerProviderProvider =
-    NotifierProvider<AudioPlayerProvider, AudioPlayer>.internal(
-  AudioPlayerProvider.new,
-  name: r'audioPlayerProviderProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$audioPlayerProviderHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const audioPlayerProviderProvider = AudioPlayerProviderProvider._();
 
-typedef _$AudioPlayerProvider = Notifier<AudioPlayer>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+final class AudioPlayerProviderProvider
+    extends $NotifierProvider<AudioPlayerProvider, AudioPlayer> {
+  const AudioPlayerProviderProvider._()
+      : super(
+          from: null,
+          argument: null,
+          retry: null,
+          name: r'audioPlayerProviderProvider',
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
+        );
+
+  @override
+  String debugGetCreateSourceHash() => _$audioPlayerProviderHash();
+
+  @$internal
+  @override
+  AudioPlayerProvider create() => AudioPlayerProvider();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AudioPlayer value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AudioPlayer>(value),
+    );
+  }
+}
+
+String _$audioPlayerProviderHash() =>
+    r'0129bcb19cf456d41400fb0c1748ac05d4bd927c';
+
+abstract class _$AudioPlayerProvider extends $Notifier<AudioPlayer> {
+  AudioPlayer build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build();
+    final ref = this.ref as $Ref<AudioPlayer, AudioPlayer>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<AudioPlayer, AudioPlayer>, AudioPlayer, Object?, Object?>;
+    element.handleValue(ref, created);
+  }
+}

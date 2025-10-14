@@ -6,9 +6,8 @@ part of 'search_model_request.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$SearModelRequestImpl _$$SearModelRequestImplFromJson(
-        Map<String, dynamic> json) =>
-    _$SearModelRequestImpl(
+_SearModelRequest _$SearModelRequestFromJson(Map<String, dynamic> json) =>
+    _SearModelRequest(
       context: json['context'] == null
           ? null
           : Context.fromJson(json['context'] as Map<String, dynamic>),
@@ -16,27 +15,24 @@ _$SearModelRequestImpl _$$SearModelRequestImplFromJson(
       params: json['params'] as String?,
     );
 
-Map<String, dynamic> _$$SearModelRequestImplToJson(
-        _$SearModelRequestImpl instance) =>
+Map<String, dynamic> _$SearModelRequestToJson(_SearModelRequest instance) =>
     <String, dynamic>{
       'context': instance.context,
       'query': instance.query,
       'params': instance.params,
     };
 
-_$ContextImpl _$$ContextImplFromJson(Map<String, dynamic> json) =>
-    _$ContextImpl(
+_Context _$ContextFromJson(Map<String, dynamic> json) => _Context(
       client: json['client'] == null
           ? null
           : Client.fromJson(json['client'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ContextImplToJson(_$ContextImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ContextToJson(_Context instance) => <String, dynamic>{
       'client': instance.client,
     };
 
-_$ClientImpl _$$ClientImplFromJson(Map<String, dynamic> json) => _$ClientImpl(
+_Client _$ClientFromJson(Map<String, dynamic> json) => _Client(
       clientName: json['clientName'] as String?,
       clientVersion: json['clientVersion'] as String?,
       platform: json['platform'] as String?,
@@ -44,8 +40,7 @@ _$ClientImpl _$$ClientImplFromJson(Map<String, dynamic> json) => _$ClientImpl(
       visitorData: json['visitorData'] as String?,
     );
 
-Map<String, dynamic> _$$ClientImplToJson(_$ClientImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ClientToJson(_Client instance) => <String, dynamic>{
       'clientName': instance.clientName,
       'clientVersion': instance.clientVersion,
       'platform': instance.platform,

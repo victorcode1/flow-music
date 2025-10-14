@@ -1,14 +1,15 @@
 import 'package:flow_music/provider/audio_player_controller.dart';
-import 'package:flow_music/settings/routes/routes.dart';
+import 'package:flow_music/core/routes/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/legacy.dart';
 
 final mainController =
     ChangeNotifierProvider<MainController>((ref) => MainController(ref: ref));
 
 class MainController extends ChangeNotifier {
-  ChangeNotifierProviderRef ref;
+  Ref ref;
 
   MainController({required this.ref}) {
     ref.read(audioPlayerProviderProvider.notifier).initState();

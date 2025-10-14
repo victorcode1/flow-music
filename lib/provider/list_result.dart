@@ -12,7 +12,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'list_result.g.dart';
 
 @riverpod
-FutureOr<SearchResult?> searchData(SearchDataRef ref) async {
+FutureOr<SearchResult?> searchData(Ref ref) async {
   if (ref.watch(searchProvider).isEmpty) return null;
   try {
     String url =

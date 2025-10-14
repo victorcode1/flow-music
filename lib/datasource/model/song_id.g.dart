@@ -6,7 +6,7 @@ part of 'song_id.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ModelImpl _$$ModelImplFromJson(Map<String, dynamic> json) => _$ModelImpl(
+_Model _$ModelFromJson(Map<String, dynamic> json) => _Model(
       context: Context.fromJson(json['context'] as Map<String, dynamic>),
       videoId: json['videoId'] as String,
       playbackContext: PlaybackContext.fromJson(
@@ -15,8 +15,7 @@ _$ModelImpl _$$ModelImplFromJson(Map<String, dynamic> json) => _$ModelImpl(
       contentCheckOk: json['contentCheckOk'] as bool,
     );
 
-Map<String, dynamic> _$$ModelImplToJson(_$ModelImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ModelToJson(_Model instance) => <String, dynamic>{
       'context': instance.context,
       'videoId': instance.videoId,
       'playbackContext': instance.playbackContext,
@@ -24,20 +23,18 @@ Map<String, dynamic> _$$ModelImplToJson(_$ModelImpl instance) =>
       'contentCheckOk': instance.contentCheckOk,
     };
 
-_$ContextImpl _$$ContextImplFromJson(Map<String, dynamic> json) =>
-    _$ContextImpl(
+_Context _$ContextFromJson(Map<String, dynamic> json) => _Context(
       client: Client.fromJson(json['client'] as Map<String, dynamic>),
       thirdParty:
           ThirdParty.fromJson(json['thirdParty'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ContextImplToJson(_$ContextImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ContextToJson(_Context instance) => <String, dynamic>{
       'client': instance.client,
       'thirdParty': instance.thirdParty,
     };
 
-_$ClientImpl _$$ClientImplFromJson(Map<String, dynamic> json) => _$ClientImpl(
+_Client _$ClientFromJson(Map<String, dynamic> json) => _Client(
       hl: json['hl'] as String,
       gl: json['gl'] as String,
       clientName: json['clientName'] as String,
@@ -46,8 +43,7 @@ _$ClientImpl _$$ClientImplFromJson(Map<String, dynamic> json) => _$ClientImpl(
       androidSdkVersion: (json['androidSdkVersion'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$ClientImplToJson(_$ClientImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ClientToJson(_Client instance) => <String, dynamic>{
       'hl': instance.hl,
       'gl': instance.gl,
       'clientName': instance.clientName,
@@ -56,37 +52,34 @@ Map<String, dynamic> _$$ClientImplToJson(_$ClientImpl instance) =>
       'androidSdkVersion': instance.androidSdkVersion,
     };
 
-_$ThirdPartyImpl _$$ThirdPartyImplFromJson(Map<String, dynamic> json) =>
-    _$ThirdPartyImpl(
+_ThirdParty _$ThirdPartyFromJson(Map<String, dynamic> json) => _ThirdParty(
       embedUrl: json['embedUrl'] as String,
     );
 
-Map<String, dynamic> _$$ThirdPartyImplToJson(_$ThirdPartyImpl instance) =>
+Map<String, dynamic> _$ThirdPartyToJson(_ThirdParty instance) =>
     <String, dynamic>{
       'embedUrl': instance.embedUrl,
     };
 
-_$PlaybackContextImpl _$$PlaybackContextImplFromJson(
-        Map<String, dynamic> json) =>
-    _$PlaybackContextImpl(
+_PlaybackContext _$PlaybackContextFromJson(Map<String, dynamic> json) =>
+    _PlaybackContext(
       contentPlaybackContext: ContentPlaybackContext.fromJson(
           json['contentPlaybackContext'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$PlaybackContextImplToJson(
-        _$PlaybackContextImpl instance) =>
+Map<String, dynamic> _$PlaybackContextToJson(_PlaybackContext instance) =>
     <String, dynamic>{
       'contentPlaybackContext': instance.contentPlaybackContext,
     };
 
-_$ContentPlaybackContextImpl _$$ContentPlaybackContextImplFromJson(
+_ContentPlaybackContext _$ContentPlaybackContextFromJson(
         Map<String, dynamic> json) =>
-    _$ContentPlaybackContextImpl(
+    _ContentPlaybackContext(
       signatureTimestamp: (json['signatureTimestamp'] as num).toInt(),
     );
 
-Map<String, dynamic> _$$ContentPlaybackContextImplToJson(
-        _$ContentPlaybackContextImpl instance) =>
+Map<String, dynamic> _$ContentPlaybackContextToJson(
+        _ContentPlaybackContext instance) =>
     <String, dynamic>{
       'signatureTimestamp': instance.signatureTimestamp,
     };

@@ -5,13 +5,14 @@ import 'package:flow_music/provider/audio_player_controller.dart';
 import 'package:flow_music/provider/play_song_id.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/legacy.dart';
 
 final songController = ChangeNotifierProvider<SongController>((ref) {
   return SongController(ref: ref);
 });
 
 class SongController extends ChangeNotifier {
-  ChangeNotifierProviderRef ref;
+  Ref ref;
   late AudioPlayerProvider audio;
   SongController({required this.ref}) {
     audio = ref.read(audioPlayerProviderProvider.notifier);

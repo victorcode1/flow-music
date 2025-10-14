@@ -6,167 +6,92 @@ part of 'play_song_id.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$playSongIdHash() => r'9ddbc14d855f952e6f509105c1f0f0a65ab98f47';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
 
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$PlaySongId extends BuildlessAsyncNotifier<SongIdResponde?> {
-  late final String songId;
-
-  FutureOr<SongIdResponde?> build({
-    required String songId,
-  });
-}
-
-/// See also [PlaySongId].
 @ProviderFor(PlaySongId)
-const playSongIdProvider = PlaySongIdFamily();
+const playSongIdProvider = PlaySongIdFamily._();
 
-/// See also [PlaySongId].
-class PlaySongIdFamily extends Family<AsyncValue<SongIdResponde?>> {
-  /// See also [PlaySongId].
-  const PlaySongIdFamily();
-
-  /// See also [PlaySongId].
-  PlaySongIdProvider call({
-    required String songId,
-  }) {
-    return PlaySongIdProvider(
-      songId: songId,
-    );
-  }
-
-  @override
-  PlaySongIdProvider getProviderOverride(
-    covariant PlaySongIdProvider provider,
-  ) {
-    return call(
-      songId: provider.songId,
-    );
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'playSongIdProvider';
-}
-
-/// See also [PlaySongId].
-class PlaySongIdProvider
-    extends AsyncNotifierProviderImpl<PlaySongId, SongIdResponde?> {
-  /// See also [PlaySongId].
-  PlaySongIdProvider({
-    required String songId,
-  }) : this._internal(
-          () => PlaySongId()..songId = songId,
-          from: playSongIdProvider,
+final class PlaySongIdProvider
+    extends $AsyncNotifierProvider<PlaySongId, SongIdResponde?> {
+  const PlaySongIdProvider._(
+      {required PlaySongIdFamily super.from, required String super.argument})
+      : super(
+          retry: null,
           name: r'playSongIdProvider',
-          debugGetCreateSourceHash:
-              const bool.fromEnvironment('dart.vm.product')
-                  ? null
-                  : _$playSongIdHash,
-          dependencies: PlaySongIdFamily._dependencies,
-          allTransitiveDependencies:
-              PlaySongIdFamily._allTransitiveDependencies,
-          songId: songId,
+          isAutoDispose: false,
+          dependencies: null,
+          $allTransitiveDependencies: null,
         );
 
-  PlaySongIdProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.songId,
-  }) : super.internal();
-
-  final String songId;
+  @override
+  String debugGetCreateSourceHash() => _$playSongIdHash();
 
   @override
-  FutureOr<SongIdResponde?> runNotifierBuild(
-    covariant PlaySongId notifier,
-  ) {
-    return notifier.build(
-      songId: songId,
-    );
+  String toString() {
+    return r'playSongIdProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  Override overrideWith(PlaySongId Function() create) {
-    return ProviderOverride(
-      origin: this,
-      override: PlaySongIdProvider._internal(
-        () => create()..songId = songId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        songId: songId,
-      ),
-    );
-  }
-
-  @override
-  AsyncNotifierProviderElement<PlaySongId, SongIdResponde?> createElement() {
-    return _PlaySongIdProviderElement(this);
-  }
+  PlaySongId create() => PlaySongId();
 
   @override
   bool operator ==(Object other) {
-    return other is PlaySongIdProvider && other.songId == songId;
+    return other is PlaySongIdProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, songId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-mixin PlaySongIdRef on AsyncNotifierProviderRef<SongIdResponde?> {
-  /// The parameter `songId` of this provider.
-  String get songId;
-}
+String _$playSongIdHash() => r'9ddbc14d855f952e6f509105c1f0f0a65ab98f47';
 
-class _PlaySongIdProviderElement
-    extends AsyncNotifierProviderElement<PlaySongId, SongIdResponde?>
-    with PlaySongIdRef {
-  _PlaySongIdProviderElement(super.provider);
+final class PlaySongIdFamily extends $Family
+    with
+        $ClassFamilyOverride<PlaySongId, AsyncValue<SongIdResponde?>,
+            SongIdResponde?, FutureOr<SongIdResponde?>, String> {
+  const PlaySongIdFamily._()
+      : super(
+          retry: null,
+          name: r'playSongIdProvider',
+          dependencies: null,
+          $allTransitiveDependencies: null,
+          isAutoDispose: false,
+        );
+
+  PlaySongIdProvider call({
+    required String songId,
+  }) =>
+      PlaySongIdProvider._(argument: songId, from: this);
 
   @override
-  String get songId => (origin as PlaySongIdProvider).songId;
+  String toString() => r'playSongIdProvider';
 }
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+
+abstract class _$PlaySongId extends $AsyncNotifier<SongIdResponde?> {
+  late final _$args = ref.$arg as String;
+  String get songId => _$args;
+
+  FutureOr<SongIdResponde?> build({
+    required String songId,
+  });
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final created = build(
+      songId: _$args,
+    );
+    final ref = this.ref as $Ref<AsyncValue<SongIdResponde?>, SongIdResponde?>;
+    final element = ref.element as $ClassProviderElement<
+        AnyNotifier<AsyncValue<SongIdResponde?>, SongIdResponde?>,
+        AsyncValue<SongIdResponde?>,
+        Object?,
+        Object?>;
+    element.handleValue(ref, created);
+  }
+}

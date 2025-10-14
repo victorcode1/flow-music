@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'search.dart';
+part of 'routes.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,48 +9,48 @@ part of 'search.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Search)
-const searchProvider = SearchProvider._();
+@ProviderFor(Route)
+const routeProvider = RouteProvider._();
 
-final class SearchProvider extends $NotifierProvider<Search, String> {
-  const SearchProvider._()
+final class RouteProvider extends $NotifierProvider<Route, GoRouter> {
+  const RouteProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'searchProvider',
-          isAutoDispose: true,
+          name: r'routeProvider',
+          isAutoDispose: false,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$searchHash();
+  String debugGetCreateSourceHash() => _$routeHash();
 
   @$internal
   @override
-  Search create() => Search();
+  Route create() => Route();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String value) {
+  Override overrideWithValue(GoRouter value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String>(value),
+      providerOverride: $SyncValueProvider<GoRouter>(value),
     );
   }
 }
 
-String _$searchHash() => r'c63d4e5ade07f9296b00882929adc6807636b31a';
+String _$routeHash() => r'09fa6c67d633e83731d1c671c4a580492ec2ad78';
 
-abstract class _$Search extends $Notifier<String> {
-  String build();
+abstract class _$Route extends $Notifier<GoRouter> {
+  GoRouter build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<String, String>;
+    final ref = this.ref as $Ref<GoRouter, GoRouter>;
     final element = ref.element as $ClassProviderElement<
-        AnyNotifier<String, String>, String, Object?, Object?>;
+        AnyNotifier<GoRouter, GoRouter>, GoRouter, Object?, Object?>;
     element.handleValue(ref, created);
   }
 }

@@ -3,13 +3,14 @@ import 'package:flow_music/provider/list_search_result.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/legacy.dart';
 
 final listSongControllers = ChangeNotifierProvider<ListSongControllers>((ref) {
   return ListSongControllers(ref: ref);
 });
 
 class ListSongControllers extends ChangeNotifier {
-  ChangeNotifierProviderRef ref;
+  Ref ref;
   ListSongControllers({required this.ref});
 
   String imageRes({required ListSearchResult data, required int index}) =>

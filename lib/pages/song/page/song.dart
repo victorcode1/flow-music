@@ -23,7 +23,10 @@ class _PlaySongState extends ConsumerState<SongWidget> {
     String? playListId = widget.data['playListId'];
     final controller = ref.watch(songController)
       ..playListSong(playListId: playListId);
-    return controller.result(data: idSong!).when(
+    if (idSong == null) {
+      return const Center(child: Text('No idSong'));
+    }
+    return controller.result(data: idSong).when(
         data: (data) => ScreenPlay(url: controller.urlSong(data: data)),
         error: (error, stack) => Center(child: Text('Error $error')),
         loading: () => const Center(child: CircularProgressIndicator()));

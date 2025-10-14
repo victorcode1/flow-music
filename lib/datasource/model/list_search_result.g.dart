@@ -6,9 +6,8 @@ part of 'list_search_result.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$ListSearchResultImpl _$$ListSearchResultImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ListSearchResultImpl(
+_ListSearchResult _$ListSearchResultFromJson(Map<String, dynamic> json) =>
+    _ListSearchResult(
       responseContext: json['responseContext'] == null
           ? null
           : ResponseContext.fromJson(
@@ -19,53 +18,49 @@ _$ListSearchResultImpl _$$ListSearchResultImplFromJson(
       trackingParams: json['trackingParams'] as String?,
     );
 
-Map<String, dynamic> _$$ListSearchResultImplToJson(
-        _$ListSearchResultImpl instance) =>
+Map<String, dynamic> _$ListSearchResultToJson(_ListSearchResult instance) =>
     <String, dynamic>{
       'responseContext': instance.responseContext,
       'contents': instance.contents,
       'trackingParams': instance.trackingParams,
     };
 
-_$ContentsImpl _$$ContentsImplFromJson(Map<String, dynamic> json) =>
-    _$ContentsImpl(
+_Contents _$ContentsFromJson(Map<String, dynamic> json) => _Contents(
       tabbedSearchResultsRenderer: json['tabbedSearchResultsRenderer'] == null
           ? null
           : TabbedSearchResultsRenderer.fromJson(
               json['tabbedSearchResultsRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ContentsImplToJson(_$ContentsImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ContentsToJson(_Contents instance) => <String, dynamic>{
       'tabbedSearchResultsRenderer': instance.tabbedSearchResultsRenderer,
     };
 
-_$TabbedSearchResultsRendererImpl _$$TabbedSearchResultsRendererImplFromJson(
+_TabbedSearchResultsRenderer _$TabbedSearchResultsRendererFromJson(
         Map<String, dynamic> json) =>
-    _$TabbedSearchResultsRendererImpl(
+    _TabbedSearchResultsRenderer(
       tabs: (json['tabs'] as List<dynamic>?)
           ?.map((e) => Tab.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$$TabbedSearchResultsRendererImplToJson(
-        _$TabbedSearchResultsRendererImpl instance) =>
+Map<String, dynamic> _$TabbedSearchResultsRendererToJson(
+        _TabbedSearchResultsRenderer instance) =>
     <String, dynamic>{
       'tabs': instance.tabs,
     };
 
-_$TabImpl _$$TabImplFromJson(Map<String, dynamic> json) => _$TabImpl(
+_Tab _$TabFromJson(Map<String, dynamic> json) => _Tab(
       tabRenderer: json['tabRenderer'] == null
           ? null
           : TabRenderer.fromJson(json['tabRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$TabImplToJson(_$TabImpl instance) => <String, dynamic>{
+Map<String, dynamic> _$TabToJson(_Tab instance) => <String, dynamic>{
       'tabRenderer': instance.tabRenderer,
     };
 
-_$TabRendererImpl _$$TabRendererImplFromJson(Map<String, dynamic> json) =>
-    _$TabRendererImpl(
+_TabRenderer _$TabRendererFromJson(Map<String, dynamic> json) => _TabRenderer(
       title: json['title'] as String?,
       selected: json['selected'] as bool?,
       content: json['content'] == null
@@ -76,7 +71,7 @@ _$TabRendererImpl _$$TabRendererImplFromJson(Map<String, dynamic> json) =>
       trackingParams: json['trackingParams'] as String?,
     );
 
-Map<String, dynamic> _$$TabRendererImplToJson(_$TabRendererImpl instance) =>
+Map<String, dynamic> _$TabRendererToJson(_TabRenderer instance) =>
     <String, dynamic>{
       'title': instance.title,
       'selected': instance.selected,
@@ -85,24 +80,21 @@ Map<String, dynamic> _$$TabRendererImplToJson(_$TabRendererImpl instance) =>
       'trackingParams': instance.trackingParams,
     };
 
-_$TabRendererContentImpl _$$TabRendererContentImplFromJson(
-        Map<String, dynamic> json) =>
-    _$TabRendererContentImpl(
+_TabRendererContent _$TabRendererContentFromJson(Map<String, dynamic> json) =>
+    _TabRendererContent(
       sectionListRenderer: json['sectionListRenderer'] == null
           ? null
           : SectionListRenderer.fromJson(
               json['sectionListRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$TabRendererContentImplToJson(
-        _$TabRendererContentImpl instance) =>
+Map<String, dynamic> _$TabRendererContentToJson(_TabRendererContent instance) =>
     <String, dynamic>{
       'sectionListRenderer': instance.sectionListRenderer,
     };
 
-_$SectionListRendererImpl _$$SectionListRendererImplFromJson(
-        Map<String, dynamic> json) =>
-    _$SectionListRendererImpl(
+_SectionListRenderer _$SectionListRendererFromJson(Map<String, dynamic> json) =>
+    _SectionListRenderer(
       contents: (json['contents'] as List<dynamic>?)
           ?.map((e) =>
               SectionListRendererContent.fromJson(e as Map<String, dynamic>))
@@ -113,32 +105,31 @@ _$SectionListRendererImpl _$$SectionListRendererImplFromJson(
           : Header.fromJson(json['header'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$SectionListRendererImplToJson(
-        _$SectionListRendererImpl instance) =>
+Map<String, dynamic> _$SectionListRendererToJson(
+        _SectionListRenderer instance) =>
     <String, dynamic>{
       'contents': instance.contents,
       'trackingParams': instance.trackingParams,
       'header': instance.header,
     };
 
-_$SectionListRendererContentImpl _$$SectionListRendererContentImplFromJson(
+_SectionListRendererContent _$SectionListRendererContentFromJson(
         Map<String, dynamic> json) =>
-    _$SectionListRendererContentImpl(
+    _SectionListRendererContent(
       musicShelfRenderer: json['musicShelfRenderer'] == null
           ? null
           : MusicShelfRenderer.fromJson(
               json['musicShelfRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$SectionListRendererContentImplToJson(
-        _$SectionListRendererContentImpl instance) =>
+Map<String, dynamic> _$SectionListRendererContentToJson(
+        _SectionListRendererContent instance) =>
     <String, dynamic>{
       'musicShelfRenderer': instance.musicShelfRenderer,
     };
 
-_$MusicShelfRendererImpl _$$MusicShelfRendererImplFromJson(
-        Map<String, dynamic> json) =>
-    _$MusicShelfRendererImpl(
+_MusicShelfRenderer _$MusicShelfRendererFromJson(Map<String, dynamic> json) =>
+    _MusicShelfRenderer(
       title: json['title'] == null
           ? null
           : Title.fromJson(json['title'] as Map<String, dynamic>),
@@ -155,8 +146,7 @@ _$MusicShelfRendererImpl _$$MusicShelfRendererImplFromJson(
           : ShelfDivider.fromJson(json['shelfDivider'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$MusicShelfRendererImplToJson(
-        _$MusicShelfRendererImpl instance) =>
+Map<String, dynamic> _$MusicShelfRendererToJson(_MusicShelfRenderer instance) =>
     <String, dynamic>{
       'title': instance.title,
       'contents': instance.contents,
@@ -165,36 +155,36 @@ Map<String, dynamic> _$$MusicShelfRendererImplToJson(
       'shelfDivider': instance.shelfDivider,
     };
 
-_$MusicResponsiveListItemRendererImpl
-    _$$MusicResponsiveListItemRendererImplFromJson(Map<String, dynamic> json) =>
-        _$MusicResponsiveListItemRendererImpl(
-          trackingParams: json['trackingParams'] as String?,
-          thumbnail: json['thumbnail'] == null
-              ? null
-              : MusicResponsiveListItemRendererThumbnail.fromJson(
-                  json['thumbnail'] as Map<String, dynamic>),
-          overlay: json['overlay'] == null
-              ? null
-              : Overlay.fromJson(json['overlay'] as Map<String, dynamic>),
-          flexColumns: (json['flexColumns'] as List<dynamic>?)
-              ?.map((e) => FlexColumn.fromJson(e as Map<String, dynamic>))
-              .toList(),
-          menu: json['menu'] == null
-              ? null
-              : Menu.fromJson(json['menu'] as Map<String, dynamic>),
-          playlistItemData: json['playlistItemData'] == null
-              ? null
-              : PlaylistItemData.fromJson(
-                  json['playlistItemData'] as Map<String, dynamic>),
-          flexColumnDisplayStyle: json['flexColumnDisplayStyle'] as String?,
-          itemHeight: json['itemHeight'] as String?,
-          badges: (json['badges'] as List<dynamic>?)
-              ?.map((e) => Badge.fromJson(e as Map<String, dynamic>))
-              .toList(),
-        );
+_MusicResponsiveListItemRenderer _$MusicResponsiveListItemRendererFromJson(
+        Map<String, dynamic> json) =>
+    _MusicResponsiveListItemRenderer(
+      trackingParams: json['trackingParams'] as String?,
+      thumbnail: json['thumbnail'] == null
+          ? null
+          : MusicResponsiveListItemRendererThumbnail.fromJson(
+              json['thumbnail'] as Map<String, dynamic>),
+      overlay: json['overlay'] == null
+          ? null
+          : Overlay.fromJson(json['overlay'] as Map<String, dynamic>),
+      flexColumns: (json['flexColumns'] as List<dynamic>?)
+          ?.map((e) => FlexColumn.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      menu: json['menu'] == null
+          ? null
+          : Menu.fromJson(json['menu'] as Map<String, dynamic>),
+      playlistItemData: json['playlistItemData'] == null
+          ? null
+          : PlaylistItemData.fromJson(
+              json['playlistItemData'] as Map<String, dynamic>),
+      flexColumnDisplayStyle: json['flexColumnDisplayStyle'] as String?,
+      itemHeight: json['itemHeight'] as String?,
+      badges: (json['badges'] as List<dynamic>?)
+          ?.map((e) => Badge.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
-Map<String, dynamic> _$$MusicResponsiveListItemRendererImplToJson(
-        _$MusicResponsiveListItemRendererImpl instance) =>
+Map<String, dynamic> _$MusicResponsiveListItemRendererToJson(
+        _MusicResponsiveListItemRenderer instance) =>
     <String, dynamic>{
       'trackingParams': instance.trackingParams,
       'thumbnail': instance.thumbnail,
@@ -207,21 +197,20 @@ Map<String, dynamic> _$$MusicResponsiveListItemRendererImplToJson(
       'badges': instance.badges,
     };
 
-_$BadgeImpl _$$BadgeImplFromJson(Map<String, dynamic> json) => _$BadgeImpl(
+_Badge _$BadgeFromJson(Map<String, dynamic> json) => _Badge(
       musicInlineBadgeRenderer: json['musicInlineBadgeRenderer'] == null
           ? null
           : MusicInlineBadgeRenderer.fromJson(
               json['musicInlineBadgeRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$BadgeImplToJson(_$BadgeImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$BadgeToJson(_Badge instance) => <String, dynamic>{
       'musicInlineBadgeRenderer': instance.musicInlineBadgeRenderer,
     };
 
-_$MusicInlineBadgeRendererImpl _$$MusicInlineBadgeRendererImplFromJson(
+_MusicInlineBadgeRenderer _$MusicInlineBadgeRendererFromJson(
         Map<String, dynamic> json) =>
-    _$MusicInlineBadgeRendererImpl(
+    _MusicInlineBadgeRenderer(
       trackingParams: json['trackingParams'] as String?,
       icon: json['icon'] == null
           ? null
@@ -232,50 +221,46 @@ _$MusicInlineBadgeRendererImpl _$$MusicInlineBadgeRendererImplFromJson(
               json['accessibilityData'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$MusicInlineBadgeRendererImplToJson(
-        _$MusicInlineBadgeRendererImpl instance) =>
+Map<String, dynamic> _$MusicInlineBadgeRendererToJson(
+        _MusicInlineBadgeRenderer instance) =>
     <String, dynamic>{
       'trackingParams': instance.trackingParams,
       'icon': instance.icon,
       'accessibilityData': instance.accessibilityData,
     };
 
-_$AccessibilityImpl _$$AccessibilityImplFromJson(Map<String, dynamic> json) =>
-    _$AccessibilityImpl(
+_Accessibility _$AccessibilityFromJson(Map<String, dynamic> json) =>
+    _Accessibility(
       accessibilityData: json['accessibilityData'] == null
           ? null
           : AccessibilityData.fromJson(
               json['accessibilityData'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$AccessibilityImplToJson(_$AccessibilityImpl instance) =>
+Map<String, dynamic> _$AccessibilityToJson(_Accessibility instance) =>
     <String, dynamic>{
       'accessibilityData': instance.accessibilityData,
     };
 
-_$AccessibilityDataImpl _$$AccessibilityDataImplFromJson(
-        Map<String, dynamic> json) =>
-    _$AccessibilityDataImpl(
+_AccessibilityData _$AccessibilityDataFromJson(Map<String, dynamic> json) =>
+    _AccessibilityData(
       label: json['label'] as String?,
     );
 
-Map<String, dynamic> _$$AccessibilityDataImplToJson(
-        _$AccessibilityDataImpl instance) =>
+Map<String, dynamic> _$AccessibilityDataToJson(_AccessibilityData instance) =>
     <String, dynamic>{
       'label': instance.label,
     };
 
-_$IconImpl _$$IconImplFromJson(Map<String, dynamic> json) => _$IconImpl(
+_Icon _$IconFromJson(Map<String, dynamic> json) => _Icon(
       iconType: json['iconType'] as String?,
     );
 
-Map<String, dynamic> _$$IconImplToJson(_$IconImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$IconToJson(_Icon instance) => <String, dynamic>{
       'iconType': instance.iconType,
     };
 
-_$FlexColumnImpl _$$FlexColumnImplFromJson(Map<String, dynamic> json) =>
-    _$FlexColumnImpl(
+_FlexColumn _$FlexColumnFromJson(Map<String, dynamic> json) => _FlexColumn(
       musicResponsiveListItemFlexColumnRenderer:
           json['musicResponsiveListItemFlexColumnRenderer'] == null
               ? null
@@ -284,42 +269,40 @@ _$FlexColumnImpl _$$FlexColumnImplFromJson(Map<String, dynamic> json) =>
                       as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$FlexColumnImplToJson(_$FlexColumnImpl instance) =>
+Map<String, dynamic> _$FlexColumnToJson(_FlexColumn instance) =>
     <String, dynamic>{
       'musicResponsiveListItemFlexColumnRenderer':
           instance.musicResponsiveListItemFlexColumnRenderer,
     };
 
-_$MusicResponsiveListItemFlexColumnRendererImpl
-    _$$MusicResponsiveListItemFlexColumnRendererImplFromJson(
+_MusicResponsiveListItemFlexColumnRenderer
+    _$MusicResponsiveListItemFlexColumnRendererFromJson(
             Map<String, dynamic> json) =>
-        _$MusicResponsiveListItemFlexColumnRendererImpl(
+        _MusicResponsiveListItemFlexColumnRenderer(
           text: json['text'] == null
               ? null
               : Text.fromJson(json['text'] as Map<String, dynamic>),
           displayPriority: json['displayPriority'] as String?,
         );
 
-Map<String, dynamic> _$$MusicResponsiveListItemFlexColumnRendererImplToJson(
-        _$MusicResponsiveListItemFlexColumnRendererImpl instance) =>
+Map<String, dynamic> _$MusicResponsiveListItemFlexColumnRendererToJson(
+        _MusicResponsiveListItemFlexColumnRenderer instance) =>
     <String, dynamic>{
       'text': instance.text,
       'displayPriority': instance.displayPriority,
     };
 
-_$TextImpl _$$TextImplFromJson(Map<String, dynamic> json) => _$TextImpl(
+_Text _$TextFromJson(Map<String, dynamic> json) => _Text(
       runs: (json['runs'] as List<dynamic>?)
           ?.map((e) => PurpleRun.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$$TextImplToJson(_$TextImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$TextToJson(_Text instance) => <String, dynamic>{
       'runs': instance.runs,
     };
 
-_$PurpleRunImpl _$$PurpleRunImplFromJson(Map<String, dynamic> json) =>
-    _$PurpleRunImpl(
+_PurpleRun _$PurpleRunFromJson(Map<String, dynamic> json) => _PurpleRun(
       text: json['text'] as String?,
       navigationEndpoint: json['navigationEndpoint'] == null
           ? null
@@ -327,15 +310,15 @@ _$PurpleRunImpl _$$PurpleRunImplFromJson(Map<String, dynamic> json) =>
               json['navigationEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$PurpleRunImplToJson(_$PurpleRunImpl instance) =>
+Map<String, dynamic> _$PurpleRunToJson(_PurpleRun instance) =>
     <String, dynamic>{
       'text': instance.text,
       'navigationEndpoint': instance.navigationEndpoint,
     };
 
-_$RunNavigationEndpointImpl _$$RunNavigationEndpointImplFromJson(
+_RunNavigationEndpoint _$RunNavigationEndpointFromJson(
         Map<String, dynamic> json) =>
-    _$RunNavigationEndpointImpl(
+    _RunNavigationEndpoint(
       clickTrackingParams: json['clickTrackingParams'] as String?,
       watchEndpoint: json['watchEndpoint'] == null
           ? null
@@ -347,16 +330,16 @@ _$RunNavigationEndpointImpl _$$RunNavigationEndpointImplFromJson(
               json['browseEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$RunNavigationEndpointImplToJson(
-        _$RunNavigationEndpointImpl instance) =>
+Map<String, dynamic> _$RunNavigationEndpointToJson(
+        _RunNavigationEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'watchEndpoint': instance.watchEndpoint,
       'browseEndpoint': instance.browseEndpoint,
     };
 
-_$BrowseEndpointImpl _$$BrowseEndpointImplFromJson(Map<String, dynamic> json) =>
-    _$BrowseEndpointImpl(
+_BrowseEndpoint _$BrowseEndpointFromJson(Map<String, dynamic> json) =>
+    _BrowseEndpoint(
       browseId: json['browseId'] as String?,
       browseEndpointContextSupportedConfigs:
           json['browseEndpointContextSupportedConfigs'] == null
@@ -366,18 +349,17 @@ _$BrowseEndpointImpl _$$BrowseEndpointImplFromJson(Map<String, dynamic> json) =>
                       as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$BrowseEndpointImplToJson(
-        _$BrowseEndpointImpl instance) =>
+Map<String, dynamic> _$BrowseEndpointToJson(_BrowseEndpoint instance) =>
     <String, dynamic>{
       'browseId': instance.browseId,
       'browseEndpointContextSupportedConfigs':
           instance.browseEndpointContextSupportedConfigs,
     };
 
-_$BrowseEndpointContextSupportedConfigsImpl
-    _$$BrowseEndpointContextSupportedConfigsImplFromJson(
+_BrowseEndpointContextSupportedConfigs
+    _$BrowseEndpointContextSupportedConfigsFromJson(
             Map<String, dynamic> json) =>
-        _$BrowseEndpointContextSupportedConfigsImpl(
+        _BrowseEndpointContextSupportedConfigs(
           browseEndpointContextMusicConfig:
               json['browseEndpointContextMusicConfig'] == null
                   ? null
@@ -386,30 +368,28 @@ _$BrowseEndpointContextSupportedConfigsImpl
                           as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$BrowseEndpointContextSupportedConfigsImplToJson(
-        _$BrowseEndpointContextSupportedConfigsImpl instance) =>
+Map<String, dynamic> _$BrowseEndpointContextSupportedConfigsToJson(
+        _BrowseEndpointContextSupportedConfigs instance) =>
     <String, dynamic>{
       'browseEndpointContextMusicConfig':
           instance.browseEndpointContextMusicConfig,
     };
 
-_$BrowseEndpointContextMusicConfigImpl
-    _$$BrowseEndpointContextMusicConfigImplFromJson(
-            Map<String, dynamic> json) =>
-        _$BrowseEndpointContextMusicConfigImpl(
-          pageType: json['pageType'] as String?,
-        );
+_BrowseEndpointContextMusicConfig _$BrowseEndpointContextMusicConfigFromJson(
+        Map<String, dynamic> json) =>
+    _BrowseEndpointContextMusicConfig(
+      pageType: json['pageType'] as String?,
+    );
 
-Map<String, dynamic> _$$BrowseEndpointContextMusicConfigImplToJson(
-        _$BrowseEndpointContextMusicConfigImpl instance) =>
+Map<String, dynamic> _$BrowseEndpointContextMusicConfigToJson(
+        _BrowseEndpointContextMusicConfig instance) =>
     <String, dynamic>{
       'pageType': instance.pageType,
     };
 
-_$PlayNavigationEndpointWatchEndpointImpl
-    _$$PlayNavigationEndpointWatchEndpointImplFromJson(
-            Map<String, dynamic> json) =>
-        _$PlayNavigationEndpointWatchEndpointImpl(
+_PlayNavigationEndpointWatchEndpoint
+    _$PlayNavigationEndpointWatchEndpointFromJson(Map<String, dynamic> json) =>
+        _PlayNavigationEndpointWatchEndpoint(
           videoId: json['videoId'] as String?,
           watchEndpointMusicSupportedConfigs:
               json['watchEndpointMusicSupportedConfigs'] == null
@@ -419,55 +399,53 @@ _$PlayNavigationEndpointWatchEndpointImpl
                           as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$PlayNavigationEndpointWatchEndpointImplToJson(
-        _$PlayNavigationEndpointWatchEndpointImpl instance) =>
+Map<String, dynamic> _$PlayNavigationEndpointWatchEndpointToJson(
+        _PlayNavigationEndpointWatchEndpoint instance) =>
     <String, dynamic>{
       'videoId': instance.videoId,
       'watchEndpointMusicSupportedConfigs':
           instance.watchEndpointMusicSupportedConfigs,
     };
 
-_$WatchEndpointMusicSupportedConfigsImpl
-    _$$WatchEndpointMusicSupportedConfigsImplFromJson(
-            Map<String, dynamic> json) =>
-        _$WatchEndpointMusicSupportedConfigsImpl(
+_WatchEndpointMusicSupportedConfigs
+    _$WatchEndpointMusicSupportedConfigsFromJson(Map<String, dynamic> json) =>
+        _WatchEndpointMusicSupportedConfigs(
           watchEndpointMusicConfig: json['watchEndpointMusicConfig'] == null
               ? null
               : WatchEndpointMusicConfig.fromJson(
                   json['watchEndpointMusicConfig'] as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$WatchEndpointMusicSupportedConfigsImplToJson(
-        _$WatchEndpointMusicSupportedConfigsImpl instance) =>
+Map<String, dynamic> _$WatchEndpointMusicSupportedConfigsToJson(
+        _WatchEndpointMusicSupportedConfigs instance) =>
     <String, dynamic>{
       'watchEndpointMusicConfig': instance.watchEndpointMusicConfig,
     };
 
-_$WatchEndpointMusicConfigImpl _$$WatchEndpointMusicConfigImplFromJson(
+_WatchEndpointMusicConfig _$WatchEndpointMusicConfigFromJson(
         Map<String, dynamic> json) =>
-    _$WatchEndpointMusicConfigImpl(
+    _WatchEndpointMusicConfig(
       musicVideoType: json['musicVideoType'] as String?,
     );
 
-Map<String, dynamic> _$$WatchEndpointMusicConfigImplToJson(
-        _$WatchEndpointMusicConfigImpl instance) =>
+Map<String, dynamic> _$WatchEndpointMusicConfigToJson(
+        _WatchEndpointMusicConfig instance) =>
     <String, dynamic>{
       'musicVideoType': instance.musicVideoType,
     };
 
-_$MenuImpl _$$MenuImplFromJson(Map<String, dynamic> json) => _$MenuImpl(
+_Menu _$MenuFromJson(Map<String, dynamic> json) => _Menu(
       menuRenderer: json['menuRenderer'] == null
           ? null
           : MenuRenderer.fromJson(json['menuRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$MenuImplToJson(_$MenuImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$MenuToJson(_Menu instance) => <String, dynamic>{
       'menuRenderer': instance.menuRenderer,
     };
 
-_$MenuRendererImpl _$$MenuRendererImplFromJson(Map<String, dynamic> json) =>
-    _$MenuRendererImpl(
+_MenuRenderer _$MenuRendererFromJson(Map<String, dynamic> json) =>
+    _MenuRenderer(
       items: (json['items'] as List<dynamic>?)
           ?.map((e) => ItemElement.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -478,15 +456,14 @@ _$MenuRendererImpl _$$MenuRendererImplFromJson(Map<String, dynamic> json) =>
               json['accessibility'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$MenuRendererImplToJson(_$MenuRendererImpl instance) =>
+Map<String, dynamic> _$MenuRendererToJson(_MenuRenderer instance) =>
     <String, dynamic>{
       'items': instance.items,
       'trackingParams': instance.trackingParams,
       'accessibility': instance.accessibility,
     };
 
-_$ItemElementImpl _$$ItemElementImplFromJson(Map<String, dynamic> json) =>
-    _$ItemElementImpl(
+_ItemElement _$ItemElementFromJson(Map<String, dynamic> json) => _ItemElement(
       menuNavigationItemRenderer: json['menuNavigationItemRenderer'] == null
           ? null
           : MenuItemRenderer.fromJson(
@@ -502,16 +479,15 @@ _$ItemElementImpl _$$ItemElementImplFromJson(Map<String, dynamic> json) =>
               json['toggleMenuServiceItemRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ItemElementImplToJson(_$ItemElementImpl instance) =>
+Map<String, dynamic> _$ItemElementToJson(_ItemElement instance) =>
     <String, dynamic>{
       'menuNavigationItemRenderer': instance.menuNavigationItemRenderer,
       'menuServiceItemRenderer': instance.menuServiceItemRenderer,
       'toggleMenuServiceItemRenderer': instance.toggleMenuServiceItemRenderer,
     };
 
-_$MenuItemRendererImpl _$$MenuItemRendererImplFromJson(
-        Map<String, dynamic> json) =>
-    _$MenuItemRendererImpl(
+_MenuItemRenderer _$MenuItemRendererFromJson(Map<String, dynamic> json) =>
+    _MenuItemRenderer(
       text: json['text'] == null
           ? null
           : Title.fromJson(json['text'] as Map<String, dynamic>),
@@ -529,8 +505,7 @@ _$MenuItemRendererImpl _$$MenuItemRendererImplFromJson(
               json['serviceEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$MenuItemRendererImplToJson(
-        _$MenuItemRendererImpl instance) =>
+Map<String, dynamic> _$MenuItemRendererToJson(_MenuItemRenderer instance) =>
     <String, dynamic>{
       'text': instance.text,
       'icon': instance.icon,
@@ -539,10 +514,10 @@ Map<String, dynamic> _$$MenuItemRendererImplToJson(
       'serviceEndpoint': instance.serviceEndpoint,
     };
 
-_$MenuNavigationItemRendererNavigationEndpointImpl
-    _$$MenuNavigationItemRendererNavigationEndpointImplFromJson(
+_MenuNavigationItemRendererNavigationEndpoint
+    _$MenuNavigationItemRendererNavigationEndpointFromJson(
             Map<String, dynamic> json) =>
-        _$MenuNavigationItemRendererNavigationEndpointImpl(
+        _MenuNavigationItemRendererNavigationEndpoint(
           clickTrackingParams: json['clickTrackingParams'] as String?,
           watchEndpoint: json['watchEndpoint'] == null
               ? null
@@ -562,8 +537,8 @@ _$MenuNavigationItemRendererNavigationEndpointImpl
                   json['shareEntityEndpoint'] as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$MenuNavigationItemRendererNavigationEndpointImplToJson(
-        _$MenuNavigationItemRendererNavigationEndpointImpl instance) =>
+Map<String, dynamic> _$MenuNavigationItemRendererNavigationEndpointToJson(
+        _MenuNavigationItemRendererNavigationEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'watchEndpoint': instance.watchEndpoint,
@@ -572,54 +547,50 @@ Map<String, dynamic> _$$MenuNavigationItemRendererNavigationEndpointImplToJson(
       'shareEntityEndpoint': instance.shareEntityEndpoint,
     };
 
-_$TitleImpl _$$TitleImplFromJson(Map<String, dynamic> json) => _$TitleImpl(
+_Title _$TitleFromJson(Map<String, dynamic> json) => _Title(
       runs: (json['runs'] as List<dynamic>?)
           ?.map((e) => TitleRun.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$$TitleImplToJson(_$TitleImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$TitleToJson(_Title instance) => <String, dynamic>{
       'runs': instance.runs,
     };
 
-_$TitleRunImpl _$$TitleRunImplFromJson(Map<String, dynamic> json) =>
-    _$TitleRunImpl(
+_TitleRun _$TitleRunFromJson(Map<String, dynamic> json) => _TitleRun(
       text: json['text'] as String?,
     );
 
-Map<String, dynamic> _$$TitleRunImplToJson(_$TitleRunImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$TitleRunToJson(_TitleRun instance) => <String, dynamic>{
       'text': instance.text,
     };
 
-_$ShareEntityEndpointImpl _$$ShareEntityEndpointImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ShareEntityEndpointImpl(
+_ShareEntityEndpoint _$ShareEntityEndpointFromJson(Map<String, dynamic> json) =>
+    _ShareEntityEndpoint(
       serializedShareEntity: json['serializedShareEntity'] as String?,
       sharePanelType: json['sharePanelType'] as String?,
     );
 
-Map<String, dynamic> _$$ShareEntityEndpointImplToJson(
-        _$ShareEntityEndpointImpl instance) =>
+Map<String, dynamic> _$ShareEntityEndpointToJson(
+        _ShareEntityEndpoint instance) =>
     <String, dynamic>{
       'serializedShareEntity': instance.serializedShareEntity,
       'sharePanelType': instance.sharePanelType,
     };
 
-_$ModalEndpointImpl _$$ModalEndpointImplFromJson(Map<String, dynamic> json) =>
-    _$ModalEndpointImpl(
+_ModalEndpoint _$ModalEndpointFromJson(Map<String, dynamic> json) =>
+    _ModalEndpoint(
       modal: json['modal'] == null
           ? null
           : Modal.fromJson(json['modal'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ModalEndpointImplToJson(_$ModalEndpointImpl instance) =>
+Map<String, dynamic> _$ModalEndpointToJson(_ModalEndpoint instance) =>
     <String, dynamic>{
       'modal': instance.modal,
     };
 
-_$ModalImpl _$$ModalImplFromJson(Map<String, dynamic> json) => _$ModalImpl(
+_Modal _$ModalFromJson(Map<String, dynamic> json) => _Modal(
       modalWithTitleAndButtonRenderer:
           json['modalWithTitleAndButtonRenderer'] == null
               ? null
@@ -628,48 +599,46 @@ _$ModalImpl _$$ModalImplFromJson(Map<String, dynamic> json) => _$ModalImpl(
                       as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ModalImplToJson(_$ModalImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ModalToJson(_Modal instance) => <String, dynamic>{
       'modalWithTitleAndButtonRenderer':
           instance.modalWithTitleAndButtonRenderer,
     };
 
-_$ModalWithTitleAndButtonRendererImpl
-    _$$ModalWithTitleAndButtonRendererImplFromJson(Map<String, dynamic> json) =>
-        _$ModalWithTitleAndButtonRendererImpl(
-          title: json['title'] == null
-              ? null
-              : Title.fromJson(json['title'] as Map<String, dynamic>),
-          content: json['content'] == null
-              ? null
-              : Title.fromJson(json['content'] as Map<String, dynamic>),
-          button: json['button'] == null
-              ? null
-              : Button.fromJson(json['button'] as Map<String, dynamic>),
-        );
+_ModalWithTitleAndButtonRenderer _$ModalWithTitleAndButtonRendererFromJson(
+        Map<String, dynamic> json) =>
+    _ModalWithTitleAndButtonRenderer(
+      title: json['title'] == null
+          ? null
+          : Title.fromJson(json['title'] as Map<String, dynamic>),
+      content: json['content'] == null
+          ? null
+          : Title.fromJson(json['content'] as Map<String, dynamic>),
+      button: json['button'] == null
+          ? null
+          : Button.fromJson(json['button'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$$ModalWithTitleAndButtonRendererImplToJson(
-        _$ModalWithTitleAndButtonRendererImpl instance) =>
+Map<String, dynamic> _$ModalWithTitleAndButtonRendererToJson(
+        _ModalWithTitleAndButtonRenderer instance) =>
     <String, dynamic>{
       'title': instance.title,
       'content': instance.content,
       'button': instance.button,
     };
 
-_$ButtonImpl _$$ButtonImplFromJson(Map<String, dynamic> json) => _$ButtonImpl(
+_Button _$ButtonFromJson(Map<String, dynamic> json) => _Button(
       buttonRenderer: json['buttonRenderer'] == null
           ? null
           : ButtonRenderer.fromJson(
               json['buttonRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ButtonImplToJson(_$ButtonImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ButtonToJson(_Button instance) => <String, dynamic>{
       'buttonRenderer': instance.buttonRenderer,
     };
 
-_$ButtonRendererImpl _$$ButtonRendererImplFromJson(Map<String, dynamic> json) =>
-    _$ButtonRendererImpl(
+_ButtonRenderer _$ButtonRendererFromJson(Map<String, dynamic> json) =>
+    _ButtonRenderer(
       style: json['style'] as String?,
       isDisabled: json['isDisabled'] as bool?,
       text: json['text'] == null
@@ -682,8 +651,7 @@ _$ButtonRendererImpl _$$ButtonRendererImplFromJson(Map<String, dynamic> json) =>
       trackingParams: json['trackingParams'] as String?,
     );
 
-Map<String, dynamic> _$$ButtonRendererImplToJson(
-        _$ButtonRendererImpl instance) =>
+Map<String, dynamic> _$ButtonRendererToJson(_ButtonRenderer instance) =>
     <String, dynamic>{
       'style': instance.style,
       'isDisabled': instance.isDisabled,
@@ -692,38 +660,35 @@ Map<String, dynamic> _$$ButtonRendererImplToJson(
       'trackingParams': instance.trackingParams,
     };
 
-_$ButtonRendererNavigationEndpointImpl
-    _$$ButtonRendererNavigationEndpointImplFromJson(
-            Map<String, dynamic> json) =>
-        _$ButtonRendererNavigationEndpointImpl(
-          clickTrackingParams: json['clickTrackingParams'] as String?,
-          signInEndpoint: json['signInEndpoint'] == null
-              ? null
-              : SignInEndpoint.fromJson(
-                  json['signInEndpoint'] as Map<String, dynamic>),
-        );
+_ButtonRendererNavigationEndpoint _$ButtonRendererNavigationEndpointFromJson(
+        Map<String, dynamic> json) =>
+    _ButtonRendererNavigationEndpoint(
+      clickTrackingParams: json['clickTrackingParams'] as String?,
+      signInEndpoint: json['signInEndpoint'] == null
+          ? null
+          : SignInEndpoint.fromJson(
+              json['signInEndpoint'] as Map<String, dynamic>),
+    );
 
-Map<String, dynamic> _$$ButtonRendererNavigationEndpointImplToJson(
-        _$ButtonRendererNavigationEndpointImpl instance) =>
+Map<String, dynamic> _$ButtonRendererNavigationEndpointToJson(
+        _ButtonRendererNavigationEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'signInEndpoint': instance.signInEndpoint,
     };
 
-_$SignInEndpointImpl _$$SignInEndpointImplFromJson(Map<String, dynamic> json) =>
-    _$SignInEndpointImpl(
+_SignInEndpoint _$SignInEndpointFromJson(Map<String, dynamic> json) =>
+    _SignInEndpoint(
       hack: json['hack'] as bool?,
     );
 
-Map<String, dynamic> _$$SignInEndpointImplToJson(
-        _$SignInEndpointImpl instance) =>
+Map<String, dynamic> _$SignInEndpointToJson(_SignInEndpoint instance) =>
     <String, dynamic>{
       'hack': instance.hack,
     };
 
-_$PurpleWatchEndpointImpl _$$PurpleWatchEndpointImplFromJson(
-        Map<String, dynamic> json) =>
-    _$PurpleWatchEndpointImpl(
+_PurpleWatchEndpoint _$PurpleWatchEndpointFromJson(Map<String, dynamic> json) =>
+    _PurpleWatchEndpoint(
       videoId: json['videoId'] as String?,
       playlistId: json['playlistId'] as String?,
       params: json['params'] as String?,
@@ -739,8 +704,8 @@ _$PurpleWatchEndpointImpl _$$PurpleWatchEndpointImplFromJson(
                       as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$PurpleWatchEndpointImplToJson(
-        _$PurpleWatchEndpointImpl instance) =>
+Map<String, dynamic> _$PurpleWatchEndpointToJson(
+        _PurpleWatchEndpoint instance) =>
     <String, dynamic>{
       'videoId': instance.videoId,
       'playlistId': instance.playlistId,
@@ -750,35 +715,31 @@ Map<String, dynamic> _$$PurpleWatchEndpointImplToJson(
           instance.watchEndpointMusicSupportedConfigs,
     };
 
-_$LoggingContextImpl _$$LoggingContextImplFromJson(Map<String, dynamic> json) =>
-    _$LoggingContextImpl(
+_LoggingContext _$LoggingContextFromJson(Map<String, dynamic> json) =>
+    _LoggingContext(
       vssLoggingContext: json['vssLoggingContext'] == null
           ? null
           : VssLoggingContext.fromJson(
               json['vssLoggingContext'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$LoggingContextImplToJson(
-        _$LoggingContextImpl instance) =>
+Map<String, dynamic> _$LoggingContextToJson(_LoggingContext instance) =>
     <String, dynamic>{
       'vssLoggingContext': instance.vssLoggingContext,
     };
 
-_$VssLoggingContextImpl _$$VssLoggingContextImplFromJson(
-        Map<String, dynamic> json) =>
-    _$VssLoggingContextImpl(
+_VssLoggingContext _$VssLoggingContextFromJson(Map<String, dynamic> json) =>
+    _VssLoggingContext(
       serializedContextData: json['serializedContextData'] as String?,
     );
 
-Map<String, dynamic> _$$VssLoggingContextImplToJson(
-        _$VssLoggingContextImpl instance) =>
+Map<String, dynamic> _$VssLoggingContextToJson(_VssLoggingContext instance) =>
     <String, dynamic>{
       'serializedContextData': instance.serializedContextData,
     };
 
-_$ServiceEndpointImpl _$$ServiceEndpointImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ServiceEndpointImpl(
+_ServiceEndpoint _$ServiceEndpointFromJson(Map<String, dynamic> json) =>
+    _ServiceEndpoint(
       clickTrackingParams: json['clickTrackingParams'] as String?,
       queueAddEndpoint: json['queueAddEndpoint'] == null
           ? null
@@ -786,16 +747,14 @@ _$ServiceEndpointImpl _$$ServiceEndpointImplFromJson(
               json['queueAddEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ServiceEndpointImplToJson(
-        _$ServiceEndpointImpl instance) =>
+Map<String, dynamic> _$ServiceEndpointToJson(_ServiceEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'queueAddEndpoint': instance.queueAddEndpoint,
     };
 
-_$QueueAddEndpointImpl _$$QueueAddEndpointImplFromJson(
-        Map<String, dynamic> json) =>
-    _$QueueAddEndpointImpl(
+_QueueAddEndpoint _$QueueAddEndpointFromJson(Map<String, dynamic> json) =>
+    _QueueAddEndpoint(
       queueTarget: json['queueTarget'] == null
           ? null
           : QueueTarget.fromJson(json['queueTarget'] as Map<String, dynamic>),
@@ -805,16 +764,14 @@ _$QueueAddEndpointImpl _$$QueueAddEndpointImplFromJson(
           .toList(),
     );
 
-Map<String, dynamic> _$$QueueAddEndpointImplToJson(
-        _$QueueAddEndpointImpl instance) =>
+Map<String, dynamic> _$QueueAddEndpointToJson(_QueueAddEndpoint instance) =>
     <String, dynamic>{
       'queueTarget': instance.queueTarget,
       'queueInsertPosition': instance.queueInsertPosition,
       'commands': instance.commands,
     };
 
-_$CommandImpl _$$CommandImplFromJson(Map<String, dynamic> json) =>
-    _$CommandImpl(
+_Command _$CommandFromJson(Map<String, dynamic> json) => _Command(
       clickTrackingParams: json['clickTrackingParams'] as String?,
       addToToastAction: json['addToToastAction'] == null
           ? null
@@ -822,73 +779,69 @@ _$CommandImpl _$$CommandImplFromJson(Map<String, dynamic> json) =>
               json['addToToastAction'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$CommandImplToJson(_$CommandImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$CommandToJson(_Command instance) => <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'addToToastAction': instance.addToToastAction,
     };
 
-_$AddToToastActionImpl _$$AddToToastActionImplFromJson(
-        Map<String, dynamic> json) =>
-    _$AddToToastActionImpl(
+_AddToToastAction _$AddToToastActionFromJson(Map<String, dynamic> json) =>
+    _AddToToastAction(
       item: json['item'] == null
           ? null
           : AddToToastActionItem.fromJson(json['item'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$AddToToastActionImplToJson(
-        _$AddToToastActionImpl instance) =>
+Map<String, dynamic> _$AddToToastActionToJson(_AddToToastAction instance) =>
     <String, dynamic>{
       'item': instance.item,
     };
 
-_$AddToToastActionItemImpl _$$AddToToastActionItemImplFromJson(
+_AddToToastActionItem _$AddToToastActionItemFromJson(
         Map<String, dynamic> json) =>
-    _$AddToToastActionItemImpl(
+    _AddToToastActionItem(
       notificationTextRenderer: json['notificationTextRenderer'] == null
           ? null
           : NotificationTextRenderer.fromJson(
               json['notificationTextRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$AddToToastActionItemImplToJson(
-        _$AddToToastActionItemImpl instance) =>
+Map<String, dynamic> _$AddToToastActionItemToJson(
+        _AddToToastActionItem instance) =>
     <String, dynamic>{
       'notificationTextRenderer': instance.notificationTextRenderer,
     };
 
-_$NotificationTextRendererImpl _$$NotificationTextRendererImplFromJson(
+_NotificationTextRenderer _$NotificationTextRendererFromJson(
         Map<String, dynamic> json) =>
-    _$NotificationTextRendererImpl(
+    _NotificationTextRenderer(
       successResponseText: json['successResponseText'] == null
           ? null
           : Title.fromJson(json['successResponseText'] as Map<String, dynamic>),
       trackingParams: json['trackingParams'] as String?,
     );
 
-Map<String, dynamic> _$$NotificationTextRendererImplToJson(
-        _$NotificationTextRendererImpl instance) =>
+Map<String, dynamic> _$NotificationTextRendererToJson(
+        _NotificationTextRenderer instance) =>
     <String, dynamic>{
       'successResponseText': instance.successResponseText,
       'trackingParams': instance.trackingParams,
     };
 
-_$QueueTargetImpl _$$QueueTargetImplFromJson(Map<String, dynamic> json) =>
-    _$QueueTargetImpl(
+_QueueTarget _$QueueTargetFromJson(Map<String, dynamic> json) => _QueueTarget(
       videoId: json['videoId'] as String?,
       onEmptyQueue: json['onEmptyQueue'] == null
           ? null
           : OnEmptyQueue.fromJson(json['onEmptyQueue'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$QueueTargetImplToJson(_$QueueTargetImpl instance) =>
+Map<String, dynamic> _$QueueTargetToJson(_QueueTarget instance) =>
     <String, dynamic>{
       'videoId': instance.videoId,
       'onEmptyQueue': instance.onEmptyQueue,
     };
 
-_$OnEmptyQueueImpl _$$OnEmptyQueueImplFromJson(Map<String, dynamic> json) =>
-    _$OnEmptyQueueImpl(
+_OnEmptyQueue _$OnEmptyQueueFromJson(Map<String, dynamic> json) =>
+    _OnEmptyQueue(
       clickTrackingParams: json['clickTrackingParams'] as String?,
       watchEndpoint: json['watchEndpoint'] == null
           ? null
@@ -896,48 +849,46 @@ _$OnEmptyQueueImpl _$$OnEmptyQueueImplFromJson(Map<String, dynamic> json) =>
               json['watchEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$OnEmptyQueueImplToJson(_$OnEmptyQueueImpl instance) =>
+Map<String, dynamic> _$OnEmptyQueueToJson(_OnEmptyQueue instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'watchEndpoint': instance.watchEndpoint,
     };
 
-_$PlaylistItemDataImpl _$$PlaylistItemDataImplFromJson(
-        Map<String, dynamic> json) =>
-    _$PlaylistItemDataImpl(
+_PlaylistItemData _$PlaylistItemDataFromJson(Map<String, dynamic> json) =>
+    _PlaylistItemData(
       videoId: json['videoId'] as String?,
     );
 
-Map<String, dynamic> _$$PlaylistItemDataImplToJson(
-        _$PlaylistItemDataImpl instance) =>
+Map<String, dynamic> _$PlaylistItemDataToJson(_PlaylistItemData instance) =>
     <String, dynamic>{
       'videoId': instance.videoId,
     };
 
-_$ToggleMenuServiceItemRendererImpl
-    _$$ToggleMenuServiceItemRendererImplFromJson(Map<String, dynamic> json) =>
-        _$ToggleMenuServiceItemRendererImpl(
-          defaultText: json['defaultText'] == null
-              ? null
-              : Title.fromJson(json['defaultText'] as Map<String, dynamic>),
-          defaultIcon: json['defaultIcon'] == null
-              ? null
-              : Icon.fromJson(json['defaultIcon'] as Map<String, dynamic>),
-          defaultServiceEndpoint: json['defaultServiceEndpoint'] == null
-              ? null
-              : DefaultServiceEndpoint.fromJson(
-                  json['defaultServiceEndpoint'] as Map<String, dynamic>),
-          toggledText: json['toggledText'] == null
-              ? null
-              : Title.fromJson(json['toggledText'] as Map<String, dynamic>),
-          toggledIcon: json['toggledIcon'] == null
-              ? null
-              : Icon.fromJson(json['toggledIcon'] as Map<String, dynamic>),
-          trackingParams: json['trackingParams'] as String?,
-        );
+_ToggleMenuServiceItemRenderer _$ToggleMenuServiceItemRendererFromJson(
+        Map<String, dynamic> json) =>
+    _ToggleMenuServiceItemRenderer(
+      defaultText: json['defaultText'] == null
+          ? null
+          : Title.fromJson(json['defaultText'] as Map<String, dynamic>),
+      defaultIcon: json['defaultIcon'] == null
+          ? null
+          : Icon.fromJson(json['defaultIcon'] as Map<String, dynamic>),
+      defaultServiceEndpoint: json['defaultServiceEndpoint'] == null
+          ? null
+          : DefaultServiceEndpoint.fromJson(
+              json['defaultServiceEndpoint'] as Map<String, dynamic>),
+      toggledText: json['toggledText'] == null
+          ? null
+          : Title.fromJson(json['toggledText'] as Map<String, dynamic>),
+      toggledIcon: json['toggledIcon'] == null
+          ? null
+          : Icon.fromJson(json['toggledIcon'] as Map<String, dynamic>),
+      trackingParams: json['trackingParams'] as String?,
+    );
 
-Map<String, dynamic> _$$ToggleMenuServiceItemRendererImplToJson(
-        _$ToggleMenuServiceItemRendererImpl instance) =>
+Map<String, dynamic> _$ToggleMenuServiceItemRendererToJson(
+        _ToggleMenuServiceItemRenderer instance) =>
     <String, dynamic>{
       'defaultText': instance.defaultText,
       'defaultIcon': instance.defaultIcon,
@@ -947,9 +898,9 @@ Map<String, dynamic> _$$ToggleMenuServiceItemRendererImplToJson(
       'trackingParams': instance.trackingParams,
     };
 
-_$DefaultServiceEndpointImpl _$$DefaultServiceEndpointImplFromJson(
+_DefaultServiceEndpoint _$DefaultServiceEndpointFromJson(
         Map<String, dynamic> json) =>
-    _$DefaultServiceEndpointImpl(
+    _DefaultServiceEndpoint(
       clickTrackingParams: json['clickTrackingParams'] as String?,
       modalEndpoint: json['modalEndpoint'] == null
           ? null
@@ -957,15 +908,14 @@ _$DefaultServiceEndpointImpl _$$DefaultServiceEndpointImplFromJson(
               json['modalEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$DefaultServiceEndpointImplToJson(
-        _$DefaultServiceEndpointImpl instance) =>
+Map<String, dynamic> _$DefaultServiceEndpointToJson(
+        _DefaultServiceEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'modalEndpoint': instance.modalEndpoint,
     };
 
-_$OverlayImpl _$$OverlayImplFromJson(Map<String, dynamic> json) =>
-    _$OverlayImpl(
+_Overlay _$OverlayFromJson(Map<String, dynamic> json) => _Overlay(
       musicItemThumbnailOverlayRenderer:
           json['musicItemThumbnailOverlayRenderer'] == null
               ? null
@@ -974,29 +924,27 @@ _$OverlayImpl _$$OverlayImplFromJson(Map<String, dynamic> json) =>
                       as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$OverlayImplToJson(_$OverlayImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$OverlayToJson(_Overlay instance) => <String, dynamic>{
       'musicItemThumbnailOverlayRenderer':
           instance.musicItemThumbnailOverlayRenderer,
     };
 
-_$MusicItemThumbnailOverlayRendererImpl
-    _$$MusicItemThumbnailOverlayRendererImplFromJson(
-            Map<String, dynamic> json) =>
-        _$MusicItemThumbnailOverlayRendererImpl(
-          background: json['background'] == null
-              ? null
-              : Background.fromJson(json['background'] as Map<String, dynamic>),
-          content: json['content'] == null
-              ? null
-              : MusicItemThumbnailOverlayRendererContent.fromJson(
-                  json['content'] as Map<String, dynamic>),
-          contentPosition: json['contentPosition'] as String?,
-          displayStyle: json['displayStyle'] as String?,
-        );
+_MusicItemThumbnailOverlayRenderer _$MusicItemThumbnailOverlayRendererFromJson(
+        Map<String, dynamic> json) =>
+    _MusicItemThumbnailOverlayRenderer(
+      background: json['background'] == null
+          ? null
+          : Background.fromJson(json['background'] as Map<String, dynamic>),
+      content: json['content'] == null
+          ? null
+          : MusicItemThumbnailOverlayRendererContent.fromJson(
+              json['content'] as Map<String, dynamic>),
+      contentPosition: json['contentPosition'] as String?,
+      displayStyle: json['displayStyle'] as String?,
+    );
 
-Map<String, dynamic> _$$MusicItemThumbnailOverlayRendererImplToJson(
-        _$MusicItemThumbnailOverlayRendererImpl instance) =>
+Map<String, dynamic> _$MusicItemThumbnailOverlayRendererToJson(
+        _MusicItemThumbnailOverlayRenderer instance) =>
     <String, dynamic>{
       'background': instance.background,
       'content': instance.content,
@@ -1004,52 +952,49 @@ Map<String, dynamic> _$$MusicItemThumbnailOverlayRendererImplToJson(
       'displayStyle': instance.displayStyle,
     };
 
-_$BackgroundImpl _$$BackgroundImplFromJson(Map<String, dynamic> json) =>
-    _$BackgroundImpl(
+_Background _$BackgroundFromJson(Map<String, dynamic> json) => _Background(
       verticalGradient: json['verticalGradient'] == null
           ? null
           : VerticalGradient.fromJson(
               json['verticalGradient'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$BackgroundImplToJson(_$BackgroundImpl instance) =>
+Map<String, dynamic> _$BackgroundToJson(_Background instance) =>
     <String, dynamic>{
       'verticalGradient': instance.verticalGradient,
     };
 
-_$VerticalGradientImpl _$$VerticalGradientImplFromJson(
-        Map<String, dynamic> json) =>
-    _$VerticalGradientImpl(
+_VerticalGradient _$VerticalGradientFromJson(Map<String, dynamic> json) =>
+    _VerticalGradient(
       gradientLayerColors: (json['gradientLayerColors'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
     );
 
-Map<String, dynamic> _$$VerticalGradientImplToJson(
-        _$VerticalGradientImpl instance) =>
+Map<String, dynamic> _$VerticalGradientToJson(_VerticalGradient instance) =>
     <String, dynamic>{
       'gradientLayerColors': instance.gradientLayerColors,
     };
 
-_$MusicItemThumbnailOverlayRendererContentImpl
-    _$$MusicItemThumbnailOverlayRendererContentImplFromJson(
+_MusicItemThumbnailOverlayRendererContent
+    _$MusicItemThumbnailOverlayRendererContentFromJson(
             Map<String, dynamic> json) =>
-        _$MusicItemThumbnailOverlayRendererContentImpl(
+        _MusicItemThumbnailOverlayRendererContent(
           musicPlayButtonRenderer: json['musicPlayButtonRenderer'] == null
               ? null
               : MusicPlayButtonRenderer.fromJson(
                   json['musicPlayButtonRenderer'] as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$MusicItemThumbnailOverlayRendererContentImplToJson(
-        _$MusicItemThumbnailOverlayRendererContentImpl instance) =>
+Map<String, dynamic> _$MusicItemThumbnailOverlayRendererContentToJson(
+        _MusicItemThumbnailOverlayRendererContent instance) =>
     <String, dynamic>{
       'musicPlayButtonRenderer': instance.musicPlayButtonRenderer,
     };
 
-_$MusicPlayButtonRendererImpl _$$MusicPlayButtonRendererImplFromJson(
+_MusicPlayButtonRenderer _$MusicPlayButtonRendererFromJson(
         Map<String, dynamic> json) =>
-    _$MusicPlayButtonRendererImpl(
+    _MusicPlayButtonRenderer(
       playNavigationEndpoint: json['playNavigationEndpoint'] == null
           ? null
           : PlayNavigationEndpoint.fromJson(
@@ -1082,8 +1027,8 @@ _$MusicPlayButtonRendererImpl _$$MusicPlayButtonRendererImplFromJson(
               json['accessibilityPauseData'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$MusicPlayButtonRendererImplToJson(
-        _$MusicPlayButtonRendererImpl instance) =>
+Map<String, dynamic> _$MusicPlayButtonRendererToJson(
+        _MusicPlayButtonRenderer instance) =>
     <String, dynamic>{
       'playNavigationEndpoint': instance.playNavigationEndpoint,
       'trackingParams': instance.trackingParams,
@@ -1102,9 +1047,9 @@ Map<String, dynamic> _$$MusicPlayButtonRendererImplToJson(
       'accessibilityPauseData': instance.accessibilityPauseData,
     };
 
-_$PlayNavigationEndpointImpl _$$PlayNavigationEndpointImplFromJson(
+_PlayNavigationEndpoint _$PlayNavigationEndpointFromJson(
         Map<String, dynamic> json) =>
-    _$PlayNavigationEndpointImpl(
+    _PlayNavigationEndpoint(
       clickTrackingParams: json['clickTrackingParams'] as String?,
       watchEndpoint: json['watchEndpoint'] == null
           ? null
@@ -1112,32 +1057,32 @@ _$PlayNavigationEndpointImpl _$$PlayNavigationEndpointImplFromJson(
               json['watchEndpoint'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$PlayNavigationEndpointImplToJson(
-        _$PlayNavigationEndpointImpl instance) =>
+Map<String, dynamic> _$PlayNavigationEndpointToJson(
+        _PlayNavigationEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'watchEndpoint': instance.watchEndpoint,
     };
 
-_$MusicResponsiveListItemRendererThumbnailImpl
-    _$$MusicResponsiveListItemRendererThumbnailImplFromJson(
+_MusicResponsiveListItemRendererThumbnail
+    _$MusicResponsiveListItemRendererThumbnailFromJson(
             Map<String, dynamic> json) =>
-        _$MusicResponsiveListItemRendererThumbnailImpl(
+        _MusicResponsiveListItemRendererThumbnail(
           musicThumbnailRenderer: json['musicThumbnailRenderer'] == null
               ? null
               : MusicThumbnailRenderer.fromJson(
                   json['musicThumbnailRenderer'] as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$MusicResponsiveListItemRendererThumbnailImplToJson(
-        _$MusicResponsiveListItemRendererThumbnailImpl instance) =>
+Map<String, dynamic> _$MusicResponsiveListItemRendererThumbnailToJson(
+        _MusicResponsiveListItemRendererThumbnail instance) =>
     <String, dynamic>{
       'musicThumbnailRenderer': instance.musicThumbnailRenderer,
     };
 
-_$MusicThumbnailRendererImpl _$$MusicThumbnailRendererImplFromJson(
+_MusicThumbnailRenderer _$MusicThumbnailRendererFromJson(
         Map<String, dynamic> json) =>
-    _$MusicThumbnailRendererImpl(
+    _MusicThumbnailRenderer(
       thumbnail: json['thumbnail'] == null
           ? null
           : MusicThumbnailRendererThumbnail.fromJson(
@@ -1147,8 +1092,8 @@ _$MusicThumbnailRendererImpl _$$MusicThumbnailRendererImplFromJson(
       trackingParams: json['trackingParams'] as String?,
     );
 
-Map<String, dynamic> _$$MusicThumbnailRendererImplToJson(
-        _$MusicThumbnailRendererImpl instance) =>
+Map<String, dynamic> _$MusicThumbnailRendererToJson(
+        _MusicThumbnailRenderer instance) =>
     <String, dynamic>{
       'thumbnail': instance.thumbnail,
       'thumbnailCrop': instance.thumbnailCrop,
@@ -1156,103 +1101,99 @@ Map<String, dynamic> _$$MusicThumbnailRendererImplToJson(
       'trackingParams': instance.trackingParams,
     };
 
-_$MusicThumbnailRendererThumbnailImpl
-    _$$MusicThumbnailRendererThumbnailImplFromJson(Map<String, dynamic> json) =>
-        _$MusicThumbnailRendererThumbnailImpl(
-          thumbnails: (json['thumbnails'] as List<dynamic>?)
-              ?.map((e) => ThumbnailElement.fromJson(e as Map<String, dynamic>))
-              .toList(),
-        );
+_MusicThumbnailRendererThumbnail _$MusicThumbnailRendererThumbnailFromJson(
+        Map<String, dynamic> json) =>
+    _MusicThumbnailRendererThumbnail(
+      thumbnails: (json['thumbnails'] as List<dynamic>?)
+          ?.map((e) => ThumbnailElement.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
 
-Map<String, dynamic> _$$MusicThumbnailRendererThumbnailImplToJson(
-        _$MusicThumbnailRendererThumbnailImpl instance) =>
+Map<String, dynamic> _$MusicThumbnailRendererThumbnailToJson(
+        _MusicThumbnailRendererThumbnail instance) =>
     <String, dynamic>{
       'thumbnails': instance.thumbnails,
     };
 
-_$ThumbnailElementImpl _$$ThumbnailElementImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ThumbnailElementImpl(
+_ThumbnailElement _$ThumbnailElementFromJson(Map<String, dynamic> json) =>
+    _ThumbnailElement(
       url: json['url'] as String?,
       width: (json['width'] as num?)?.toInt(),
       height: (json['height'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$$ThumbnailElementImplToJson(
-        _$ThumbnailElementImpl instance) =>
+Map<String, dynamic> _$ThumbnailElementToJson(_ThumbnailElement instance) =>
     <String, dynamic>{
       'url': instance.url,
       'width': instance.width,
       'height': instance.height,
     };
 
-_$ContinuationImpl _$$ContinuationImplFromJson(Map<String, dynamic> json) =>
-    _$ContinuationImpl(
+_Continuation _$ContinuationFromJson(Map<String, dynamic> json) =>
+    _Continuation(
       nextContinuationData: json['nextContinuationData'] == null
           ? null
           : NextContinuationData.fromJson(
               json['nextContinuationData'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ContinuationImplToJson(_$ContinuationImpl instance) =>
+Map<String, dynamic> _$ContinuationToJson(_Continuation instance) =>
     <String, dynamic>{
       'nextContinuationData': instance.nextContinuationData,
     };
 
-_$NextContinuationDataImpl _$$NextContinuationDataImplFromJson(
+_NextContinuationData _$NextContinuationDataFromJson(
         Map<String, dynamic> json) =>
-    _$NextContinuationDataImpl(
+    _NextContinuationData(
       continuation: json['continuation'] as String?,
       clickTrackingParams: json['clickTrackingParams'] as String?,
     );
 
-Map<String, dynamic> _$$NextContinuationDataImplToJson(
-        _$NextContinuationDataImpl instance) =>
+Map<String, dynamic> _$NextContinuationDataToJson(
+        _NextContinuationData instance) =>
     <String, dynamic>{
       'continuation': instance.continuation,
       'clickTrackingParams': instance.clickTrackingParams,
     };
 
-_$ShelfDividerImpl _$$ShelfDividerImplFromJson(Map<String, dynamic> json) =>
-    _$ShelfDividerImpl(
+_ShelfDivider _$ShelfDividerFromJson(Map<String, dynamic> json) =>
+    _ShelfDivider(
       musicShelfDividerRenderer: json['musicShelfDividerRenderer'] == null
           ? null
           : MusicShelfDividerRenderer.fromJson(
               json['musicShelfDividerRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ShelfDividerImplToJson(_$ShelfDividerImpl instance) =>
+Map<String, dynamic> _$ShelfDividerToJson(_ShelfDivider instance) =>
     <String, dynamic>{
       'musicShelfDividerRenderer': instance.musicShelfDividerRenderer,
     };
 
-_$MusicShelfDividerRendererImpl _$$MusicShelfDividerRendererImplFromJson(
+_MusicShelfDividerRenderer _$MusicShelfDividerRendererFromJson(
         Map<String, dynamic> json) =>
-    _$MusicShelfDividerRendererImpl(
+    _MusicShelfDividerRenderer(
       hidden: json['hidden'] as bool?,
     );
 
-Map<String, dynamic> _$$MusicShelfDividerRendererImplToJson(
-        _$MusicShelfDividerRendererImpl instance) =>
+Map<String, dynamic> _$MusicShelfDividerRendererToJson(
+        _MusicShelfDividerRenderer instance) =>
     <String, dynamic>{
       'hidden': instance.hidden,
     };
 
-_$HeaderImpl _$$HeaderImplFromJson(Map<String, dynamic> json) => _$HeaderImpl(
+_Header _$HeaderFromJson(Map<String, dynamic> json) => _Header(
       chipCloudRenderer: json['chipCloudRenderer'] == null
           ? null
           : ChipCloudRenderer.fromJson(
               json['chipCloudRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$HeaderImplToJson(_$HeaderImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$HeaderToJson(_Header instance) => <String, dynamic>{
       'chipCloudRenderer': instance.chipCloudRenderer,
     };
 
-_$ChipCloudRendererImpl _$$ChipCloudRendererImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ChipCloudRendererImpl(
+_ChipCloudRenderer _$ChipCloudRendererFromJson(Map<String, dynamic> json) =>
+    _ChipCloudRenderer(
       chips: (json['chips'] as List<dynamic>?)
           ?.map((e) => Chip.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -1261,8 +1202,7 @@ _$ChipCloudRendererImpl _$$ChipCloudRendererImplFromJson(
       horizontalScrollable: json['horizontalScrollable'] as bool?,
     );
 
-Map<String, dynamic> _$$ChipCloudRendererImplToJson(
-        _$ChipCloudRendererImpl instance) =>
+Map<String, dynamic> _$ChipCloudRendererToJson(_ChipCloudRenderer instance) =>
     <String, dynamic>{
       'chips': instance.chips,
       'collapsedRowCount': instance.collapsedRowCount,
@@ -1270,21 +1210,20 @@ Map<String, dynamic> _$$ChipCloudRendererImplToJson(
       'horizontalScrollable': instance.horizontalScrollable,
     };
 
-_$ChipImpl _$$ChipImplFromJson(Map<String, dynamic> json) => _$ChipImpl(
+_Chip _$ChipFromJson(Map<String, dynamic> json) => _Chip(
       chipCloudChipRenderer: json['chipCloudChipRenderer'] == null
           ? null
           : ChipCloudChipRenderer.fromJson(
               json['chipCloudChipRenderer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$ChipImplToJson(_$ChipImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ChipToJson(_Chip instance) => <String, dynamic>{
       'chipCloudChipRenderer': instance.chipCloudChipRenderer,
     };
 
-_$ChipCloudChipRendererImpl _$$ChipCloudChipRendererImplFromJson(
+_ChipCloudChipRenderer _$ChipCloudChipRendererFromJson(
         Map<String, dynamic> json) =>
-    _$ChipCloudChipRendererImpl(
+    _ChipCloudChipRenderer(
       style: json['style'] == null
           ? null
           : StyleClass.fromJson(json['style'] as Map<String, dynamic>),
@@ -1307,8 +1246,8 @@ _$ChipCloudChipRendererImpl _$$ChipCloudChipRendererImplFromJson(
       uniqueId: json['uniqueId'] as String?,
     );
 
-Map<String, dynamic> _$$ChipCloudChipRendererImplToJson(
-        _$ChipCloudChipRendererImpl instance) =>
+Map<String, dynamic> _$ChipCloudChipRendererToJson(
+        _ChipCloudChipRenderer instance) =>
     <String, dynamic>{
       'style': instance.style,
       'navigationEndpoint': instance.navigationEndpoint,
@@ -1320,10 +1259,10 @@ Map<String, dynamic> _$$ChipCloudChipRendererImplToJson(
       'uniqueId': instance.uniqueId,
     };
 
-_$ChipCloudChipRendererNavigationEndpointImpl
-    _$$ChipCloudChipRendererNavigationEndpointImplFromJson(
+_ChipCloudChipRendererNavigationEndpoint
+    _$ChipCloudChipRendererNavigationEndpointFromJson(
             Map<String, dynamic> json) =>
-        _$ChipCloudChipRendererNavigationEndpointImpl(
+        _ChipCloudChipRendererNavigationEndpoint(
           clickTrackingParams: json['clickTrackingParams'] as String?,
           searchEndpoint: json['searchEndpoint'] == null
               ? null
@@ -1331,39 +1270,36 @@ _$ChipCloudChipRendererNavigationEndpointImpl
                   json['searchEndpoint'] as Map<String, dynamic>),
         );
 
-Map<String, dynamic> _$$ChipCloudChipRendererNavigationEndpointImplToJson(
-        _$ChipCloudChipRendererNavigationEndpointImpl instance) =>
+Map<String, dynamic> _$ChipCloudChipRendererNavigationEndpointToJson(
+        _ChipCloudChipRendererNavigationEndpoint instance) =>
     <String, dynamic>{
       'clickTrackingParams': instance.clickTrackingParams,
       'searchEndpoint': instance.searchEndpoint,
     };
 
-_$SearchEndpointImpl _$$SearchEndpointImplFromJson(Map<String, dynamic> json) =>
-    _$SearchEndpointImpl(
+_SearchEndpoint _$SearchEndpointFromJson(Map<String, dynamic> json) =>
+    _SearchEndpoint(
       query: json['query'] as String?,
       params: json['params'] as String?,
     );
 
-Map<String, dynamic> _$$SearchEndpointImplToJson(
-        _$SearchEndpointImpl instance) =>
+Map<String, dynamic> _$SearchEndpointToJson(_SearchEndpoint instance) =>
     <String, dynamic>{
       'query': instance.query,
       'params': instance.params,
     };
 
-_$StyleClassImpl _$$StyleClassImplFromJson(Map<String, dynamic> json) =>
-    _$StyleClassImpl(
+_StyleClass _$StyleClassFromJson(Map<String, dynamic> json) => _StyleClass(
       styleType: json['styleType'] as String?,
     );
 
-Map<String, dynamic> _$$StyleClassImplToJson(_$StyleClassImpl instance) =>
+Map<String, dynamic> _$StyleClassToJson(_StyleClass instance) =>
     <String, dynamic>{
       'styleType': instance.styleType,
     };
 
-_$ResponseContextImpl _$$ResponseContextImplFromJson(
-        Map<String, dynamic> json) =>
-    _$ResponseContextImpl(
+_ResponseContext _$ResponseContextFromJson(Map<String, dynamic> json) =>
+    _ResponseContext(
       visitorData: json['visitorData'] as String?,
       serviceTrackingParams: (json['serviceTrackingParams'] as List<dynamic>?)
           ?.map((e) => ServiceTrackingParam.fromJson(e as Map<String, dynamic>))
@@ -1371,37 +1307,35 @@ _$ResponseContextImpl _$$ResponseContextImplFromJson(
       maxAgeSeconds: (json['maxAgeSeconds'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$$ResponseContextImplToJson(
-        _$ResponseContextImpl instance) =>
+Map<String, dynamic> _$ResponseContextToJson(_ResponseContext instance) =>
     <String, dynamic>{
       'visitorData': instance.visitorData,
       'serviceTrackingParams': instance.serviceTrackingParams,
       'maxAgeSeconds': instance.maxAgeSeconds,
     };
 
-_$ServiceTrackingParamImpl _$$ServiceTrackingParamImplFromJson(
+_ServiceTrackingParam _$ServiceTrackingParamFromJson(
         Map<String, dynamic> json) =>
-    _$ServiceTrackingParamImpl(
+    _ServiceTrackingParam(
       service: json['service'] as String?,
       params: (json['params'] as List<dynamic>?)
           ?.map((e) => Param.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$$ServiceTrackingParamImplToJson(
-        _$ServiceTrackingParamImpl instance) =>
+Map<String, dynamic> _$ServiceTrackingParamToJson(
+        _ServiceTrackingParam instance) =>
     <String, dynamic>{
       'service': instance.service,
       'params': instance.params,
     };
 
-_$ParamImpl _$$ParamImplFromJson(Map<String, dynamic> json) => _$ParamImpl(
+_Param _$ParamFromJson(Map<String, dynamic> json) => _Param(
       key: json['key'] as String?,
       value: json['value'] as String?,
     );
 
-Map<String, dynamic> _$$ParamImplToJson(_$ParamImpl instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$ParamToJson(_Param instance) => <String, dynamic>{
       'key': instance.key,
       'value': instance.value,
     };
