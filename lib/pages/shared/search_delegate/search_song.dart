@@ -1,4 +1,5 @@
 //search delegate
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
 import 'package:flow_music/pages/song/page/song.dart';
 import 'package:flow_music/provider/list_search_result.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class SearchSong extends SearchDelegate {
   SearchSong()
     : super(
-        searchFieldLabel: 'Buscar música...',
+        searchFieldLabel: 'search_music_label'.tr(),
         searchFieldStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
@@ -52,7 +53,7 @@ class SearchSong extends SearchDelegate {
         IconButton(
           onPressed: () => query = '',
           icon: const Icon(Icons.clear_rounded),
-          tooltip: 'Limpiar',
+          tooltip: 'clear'.tr(),
         ),
     ];
   }
@@ -64,7 +65,7 @@ class SearchSong extends SearchDelegate {
         close(context, null);
       },
       icon: const Icon(Icons.arrow_back_rounded),
-      tooltip: 'Volver',
+      tooltip: 'back'.tr(),
     );
   }
 
@@ -130,7 +131,7 @@ class SearchSong extends SearchDelegate {
             child: Padding(
               padding: const EdgeInsets.all(32),
               child: Text(
-                "Escribe algo para buscar",
+                'type_to_search'.tr(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
