@@ -26,7 +26,7 @@ class Suggested extends ViewState {
   const Suggested({String? data});
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class HomeView extends _$HomeView {
   Timer? _debounce;
 

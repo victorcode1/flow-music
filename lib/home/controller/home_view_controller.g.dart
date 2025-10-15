@@ -19,7 +19,7 @@ final class HomeViewProvider extends $NotifierProvider<HomeView, ViewState> {
         argument: null,
         retry: null,
         name: r'homeViewProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -40,7 +40,7 @@ final class HomeViewProvider extends $NotifierProvider<HomeView, ViewState> {
   }
 }
 
-String _$homeViewHash() => r'b3b776c2a1e3944dd2fe826e86a3a8385a6c24b3';
+String _$homeViewHash() => r'e63ceae90a71265cca323b7544863ff9d6336216';
 
 abstract class _$HomeView extends $Notifier<ViewState> {
   ViewState build();

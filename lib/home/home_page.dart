@@ -28,44 +28,56 @@ class _HomePageState extends ConsumerState<HomePage>
       appBar: AppAbarMain(query: viewCtr.setQuery),
       body: DecoratedBox(
         decoration: BoxDecoration(
-            gradient: Theme.of(context)
-                .extension<FlowThemeExtras>()
-                ?.secondaryGradient),
+          gradient: Theme.of(
+            context,
+          ).extension<FlowThemeExtras>()?.secondaryGradient,
+        ),
         child: SafeArea(
           child: AnimatedSwitcher(
-              transitionBuilder: (child, animation) =>
-                  SizeTransition(sizeFactor: animation, child: child),
-              duration: const Duration(milliseconds: 500),
-              child: switch (viewState) {
-                QuickListSong(:final data) => QuickListSearch(
-                    searchQuery: data, showListSearch: viewCtr.showListSearch),
-                Suggested() => const Center(),
-                ListSong(:final query) => ListSongs(data: query ?? ''),
-              }),
+            transitionBuilder: (child, animation) =>
+                SizeTransition(sizeFactor: animation, child: child),
+            duration: const Duration(milliseconds: 500),
+            child: switch (viewState) {
+              QuickListSong(:final data) => QuickListSearch(
+                searchQuery: data,
+                showListSearch: viewCtr.showListSearch,
+              ),
+              Suggested() => const Center(),
+              ListSong(:final query) => ListSongs(data: query ?? ''),
+            },
+          ),
         ),
       ),
       floatingActionButton: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient:
-              Theme.of(context).extension<FlowThemeExtras>()?.primaryGradient,
+          gradient: Theme.of(
+            context,
+          ).extension<FlowThemeExtras>()?.primaryGradient,
           boxShadow: [
             BoxShadow(
-              color:
-                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.4),
               blurRadius: 20,
               offset: const Offset(0, 8),
             ),
           ],
         ),
         child: FloatingActionButton(
-            heroTag: 'floatingActionButtonSearch',
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            onPressed: () => controller.search(
-                context: context, delegate: SearchSong(ref: ref)),
-            child: const Icon(Icons.search_rounded,
-                size: 28, color: Colors.white)),
+          heroTag: 'floatingActionButtonSearch',
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          onPressed: () => controller.search(
+            context: context,
+            delegate: SearchSong(ref: ref),
+          ),
+          child: const Icon(
+            Icons.search_rounded,
+            size: 28,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

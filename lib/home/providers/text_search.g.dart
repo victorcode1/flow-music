@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'search.dart';
+part of 'text_search.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -12,14 +12,15 @@ part of 'search.dart';
 @ProviderFor(Search)
 const searchProvider = SearchProvider._();
 
-final class SearchProvider extends $NotifierProvider<Search, String?> {
+final class SearchProvider
+    extends $NotifierProvider<Search, Raw<TextEditingController>> {
   const SearchProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
         name: r'searchProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -32,28 +33,33 @@ final class SearchProvider extends $NotifierProvider<Search, String?> {
   Search create() => Search();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(String? value) {
+  Override overrideWithValue(Raw<TextEditingController> value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<String?>(value),
+      providerOverride: $SyncValueProvider<Raw<TextEditingController>>(value),
     );
   }
 }
 
-String _$searchHash() => r'2a97ec182fb2934fe9b35aede321dc48e5baa8a2';
+String _$searchHash() => r'65780cd4fd7bb7b783f40f6c06f24a4a3167c558';
 
-abstract class _$Search extends $Notifier<String?> {
-  String? build();
+abstract class _$Search extends $Notifier<Raw<TextEditingController>> {
+  Raw<TextEditingController> build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<String?, String?>;
+    final ref =
+        this.ref
+            as $Ref<Raw<TextEditingController>, Raw<TextEditingController>>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<String?, String?>,
-              String?,
+              AnyNotifier<
+                Raw<TextEditingController>,
+                Raw<TextEditingController>
+              >,
+              Raw<TextEditingController>,
               Object?,
               Object?
             >;

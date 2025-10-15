@@ -3,6 +3,7 @@ import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/home/providers/text_search.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -19,25 +20,24 @@ class AppAbarMain extends ConsumerStatefulWidget
 }
 
 class _AppAbarMainState extends ConsumerState<AppAbarMain> {
-  late final TextEditingController searchController;
   late final FocusNode focusNode;
 
   @override
   void initState() {
     super.initState();
-    searchController = TextEditingController();
+
     focusNode = FocusNode();
   }
 
   @override
   void dispose() {
-    searchController.dispose();
     focusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final searchController = ref.watch(searchProvider);
     final theme = Theme.of(context);
     final extras = theme.extension<FlowThemeExtras>();
     final route = ref.read(routeProvider);
@@ -57,8 +57,11 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
               color: colorScheme.surfaceContainerHighest,
             ),
             child: IconButton(
-              icon: Icon(Icons.menu_rounded,
-                  color: colorScheme.onSurface, size: 22),
+              icon: Icon(
+                Icons.menu_rounded,
+                color: colorScheme.onSurface,
+                size: 22,
+              ),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text(context.tr('coming_soon'))),
@@ -82,8 +85,11 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
               gradient: extras?.primaryGradient,
             ),
             child: IconButton(
-              icon: const Icon(Icons.person_outline,
-                  color: Colors.white, size: 22),
+              icon: const Icon(
+                Icons.person_outline,
+                color: Colors.white,
+                size: 22,
+              ),
               onPressed: () {},
             ),
           ),
@@ -95,8 +101,11 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
               color: colorScheme.surfaceContainerHighest,
             ),
             child: IconButton(
-              icon: Icon(Icons.settings_rounded,
-                  color: colorScheme.onSurface, size: 22),
+              icon: Icon(
+                Icons.settings_rounded,
+                color: colorScheme.onSurface,
+                size: 22,
+              ),
               onPressed: () => route.go('/settings'),
             ),
           ),
@@ -122,8 +131,11 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: Row(
                 children: [
-                  Icon(Icons.search_rounded,
-                      color: colorScheme.onSurfaceVariant, size: 20),
+                  Icon(
+                    Icons.search_rounded,
+                    color: colorScheme.onSurfaceVariant,
+                    size: 20,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
@@ -139,8 +151,9 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
                         hintStyle: theme.textTheme.bodyMedium?.copyWith(
                           color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                         ),
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
                         isDense: true,
                       ),
                     ),

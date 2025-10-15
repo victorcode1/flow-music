@@ -2,7 +2,7 @@
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
 import 'package:flow_music/pages/song/page/song.dart';
-import 'package:flow_music/home/providers/search.dart';
+import 'package:flow_music/home/providers/text_search.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
