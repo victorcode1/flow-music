@@ -5,14 +5,14 @@ import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/home/providers/search.dart';
 import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
   final IoViewController view;
-  const AppAbarMain({super.key, required this.view});
+  final Function(String)? query;
+  const AppAbarMain({super.key, required this.view, this.query});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -111,15 +111,16 @@ class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
                       focusNode: focusNode,
                       controller: searchController,
                       style: theme.textTheme.bodyMedium,
-                      onChanged: (query) {
-                        if (debounce?.isActive ?? false) debounce?.cancel();
-                        debounce = Timer(const Duration(milliseconds: 600), () {
-                          ref.read(searchProvider.notifier).setValue(query);
-                          if (query.isNotEmpty) {
-                            route.go('/search');
-                          }
-                        });
-                      },
+                      onChanged: query,
+                      // onChanged: (query) {
+                      //   if (debounce?.isActive ?? false) debounce?.cancel();
+                      //   debounce = Timer(const Duration(milliseconds: 600), () {
+                      //     ref.read(searchProvider.notifier).setValue(query);
+                      //     if (query.isNotEmpty) {
+                      //       view.showListSearch(query);
+                      //     }
+                      //   });
+                      // },
                       onTap: () {
                         // Navegar directamente a la página de búsqueda
                         route.go('/search');

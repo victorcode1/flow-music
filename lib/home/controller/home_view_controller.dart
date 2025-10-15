@@ -1,18 +1,35 @@
-import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class HomeViewController {
-  final IoViewController view;
+part 'home_view_controller.g.dart';
 
-  HomeViewController(this.view);
+sealed class ViewState {
+  final String? data;
+  const ViewState(this.data);
+  factory ViewState.listSong({String? data}) = ListSong;
+  factory ViewState.child({String? data}) = Child;
+}
 
-  factory HomeViewController.build({required IoViewController view}) {
-    return HomeViewController(view);
+class ListSong extends ViewState {
+  const ListSong({String? data}) : super(data);
+}
+
+class Child extends ViewState {
+  const Child({String? data}) : super(data);
+}
+
+@riverpod
+class HomeViewController extends _$HomeViewController {
+  @override
+  ViewState build() {
+    return ViewState.listSong();
   }
 
-  Widget? buildView({
-    required Widget Function(String data) view,
-  }) {
-    return view('data');
+  Widget? buildView({required Widget Function(ViewState data) page}) {
+    return page(state);
+  }
+
+  void setQuey(String p1) {
+    state = ViewState.listSong(data: p1);
   }
 }

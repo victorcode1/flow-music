@@ -1,1 +1,3 @@
-abstract interface class IoViewController {}
+abstract interface class IoViewController {
+  void showListSearch(String query);
+}

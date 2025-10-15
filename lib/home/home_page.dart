@@ -17,21 +17,14 @@ class HomePage extends ConsumerStatefulWidget {
 
 class _HomePageState extends ConsumerState<HomePage>
     implements IoViewController {
-  HomeViewController? homeViewController;
-
-  @override
-  void initState() {
-    super.initState();
-    homeViewController = HomeViewController.build(view: this);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final viewCtr =  ref.watch(homeViewControllerProvider.notifier);
     final controller = ref.watch(controllerPageBuilder);
     final theme = Theme.of(context);
     final extras = theme.extension<FlowThemeExtras>();
     return Scaffold(
-      appBar: AppAbarMain(view: this),
+      appBar: AppAbarMain(view: this, query: viewCtr.setQuey),
       body: DecoratedBox(
         decoration: BoxDecoration(gradient: extras?.secondaryGradient),
         child: SafeArea(
@@ -40,10 +33,10 @@ class _HomePageState extends ConsumerState<HomePage>
             duration: const Duration(milliseconds: 300),
             switchInCurve: Curves.easeOut,
             switchOutCurve: Curves.easeIn,
-            child: homeViewController?.buildView(
-              view: (data) => switch (data) {
-                'child' => Center(),
-                _ => Center(child: Text(data)),
+            child: viewCtr.buildView(
+              page: (data) => switch (data) {
+                ListSong() => Text('ListSong: ${data.data}'),
+                Child() => widget.child ?? const SizedBox.shrink(),
               },
             ),
           ),
@@ -72,4 +65,7 @@ class _HomePageState extends ConsumerState<HomePage>
       ),
     );
   }
+
+  @override
+  void showListSearch(String query) {}
 }
