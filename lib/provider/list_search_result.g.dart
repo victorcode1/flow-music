@@ -12,23 +12,26 @@ part of 'list_search_result.dart';
 @ProviderFor(searchResultData)
 const searchResultDataProvider = SearchResultDataFamily._();
 
-final class SearchResultDataProvider extends $FunctionalProvider<
-        AsyncValue<ListSearchResult?>,
-        ListSearchResult?,
-        FutureOr<ListSearchResult?>>
+final class SearchResultDataProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<ListSearchResult?>,
+          ListSearchResult?,
+          FutureOr<ListSearchResult?>
+        >
     with
         $FutureModifier<ListSearchResult?>,
         $FutureProvider<ListSearchResult?> {
-  const SearchResultDataProvider._(
-      {required SearchResultDataFamily super.from,
-      required String super.argument})
-      : super(
-          retry: null,
-          name: r'searchResultDataProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+  const SearchResultDataProvider._({
+    required SearchResultDataFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'searchResultDataProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$searchResultDataHash();
@@ -43,16 +46,13 @@ final class SearchResultDataProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<ListSearchResult?> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<ListSearchResult?> create(Ref ref) {
     final argument = this.argument as String;
-    return searchResultData(
-      ref,
-      argument,
-    );
+    return searchResultData(ref, argument);
   }
 
   @override
@@ -71,17 +71,15 @@ String _$searchResultDataHash() => r'30b3d69a4982f3f79f65e7491aeff078a07288ef';
 final class SearchResultDataFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<ListSearchResult?>, String> {
   const SearchResultDataFamily._()
-      : super(
-          retry: null,
-          name: r'searchResultDataProvider',
-          dependencies: null,
-          $allTransitiveDependencies: null,
-          isAutoDispose: false,
-        );
+    : super(
+        retry: null,
+        name: r'searchResultDataProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
 
-  SearchResultDataProvider call(
-    String search,
-  ) =>
+  SearchResultDataProvider call(String search) =>
       SearchResultDataProvider._(argument: search, from: this);
 
   @override

@@ -15,15 +15,15 @@ const audioPlayerProviderProvider = AudioPlayerProviderProvider._();
 final class AudioPlayerProviderProvider
     extends $NotifierProvider<AudioPlayerProvider, AudioPlayer> {
   const AudioPlayerProviderProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'audioPlayerProviderProvider',
-          isAutoDispose: false,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'audioPlayerProviderProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$audioPlayerProviderHash();
@@ -51,8 +51,14 @@ abstract class _$AudioPlayerProvider extends $Notifier<AudioPlayer> {
   void runBuild() {
     final created = build();
     final ref = this.ref as $Ref<AudioPlayer, AudioPlayer>;
-    final element = ref.element as $ClassProviderElement<
-        AnyNotifier<AudioPlayer, AudioPlayer>, AudioPlayer, Object?, Object?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<AudioPlayer, AudioPlayer>,
+              AudioPlayer,
+              Object?,
+              Object?
+            >;
     element.handleValue(ref, created);
   }
 }

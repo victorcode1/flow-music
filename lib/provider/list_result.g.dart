@@ -12,19 +12,24 @@ part of 'list_result.dart';
 @ProviderFor(searchData)
 const searchDataProvider = SearchDataProvider._();
 
-final class SearchDataProvider extends $FunctionalProvider<
-        AsyncValue<SearchResult?>, SearchResult?, FutureOr<SearchResult?>>
+final class SearchDataProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<SearchResult?>,
+          SearchResult?,
+          FutureOr<SearchResult?>
+        >
     with $FutureModifier<SearchResult?>, $FutureProvider<SearchResult?> {
   const SearchDataProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'searchDataProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'searchDataProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$searchDataHash();
@@ -32,8 +37,8 @@ final class SearchDataProvider extends $FunctionalProvider<
   @$internal
   @override
   $FutureProviderElement<SearchResult?> $createElement(
-          $ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
   FutureOr<SearchResult?> create(Ref ref) {
