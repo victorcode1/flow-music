@@ -9,28 +9,27 @@ part of 'home_view_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(HomeViewController)
-const homeViewControllerProvider = HomeViewControllerProvider._();
+@ProviderFor(HomeView)
+const homeViewProvider = HomeViewProvider._();
 
-final class HomeViewControllerProvider
-    extends $NotifierProvider<HomeViewController, ViewState> {
-  const HomeViewControllerProvider._()
+final class HomeViewProvider extends $NotifierProvider<HomeView, ViewState> {
+  const HomeViewProvider._()
       : super(
           from: null,
           argument: null,
           retry: null,
-          name: r'homeViewControllerProvider',
+          name: r'homeViewProvider',
           isAutoDispose: true,
           dependencies: null,
           $allTransitiveDependencies: null,
         );
 
   @override
-  String debugGetCreateSourceHash() => _$homeViewControllerHash();
+  String debugGetCreateSourceHash() => _$homeViewHash();
 
   @$internal
   @override
-  HomeViewController create() => HomeViewController();
+  HomeView create() => HomeView();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(ViewState value) {
@@ -41,10 +40,9 @@ final class HomeViewControllerProvider
   }
 }
 
-String _$homeViewControllerHash() =>
-    r'7a2a3bc1f0c7b2ef4896a523bfa3f2fb0610d748';
+String _$homeViewHash() => r'b3b776c2a1e3944dd2fe826e86a3a8385a6c24b3';
 
-abstract class _$HomeViewController extends $Notifier<ViewState> {
+abstract class _$HomeView extends $Notifier<ViewState> {
   ViewState build();
   @$mustCallSuper
   @override

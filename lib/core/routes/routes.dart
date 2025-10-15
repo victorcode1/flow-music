@@ -1,6 +1,6 @@
 import 'package:flow_music/home/home_page.dart';
-import 'package:flow_music/pages/settings/settings_page.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
+import 'package:flow_music/pages/settings/settings_page.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
 import 'package:flow_music/pages/song/page/song.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +29,7 @@ class Route extends _$Route {
           routes: [
             GoRoute(
                 path: '/search',
-                builder: (context, state) => const ListSearch()),
+                builder: (context, state) => const QuickListSearch()),
             GoRoute(
                 path: '/songs',
                 builder: (context, state) {

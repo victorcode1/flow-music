@@ -10,11 +10,9 @@ class ListSongs extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(listSongControllers);
-
     final theme = Theme.of(context);
     final extras = theme.extension<FlowThemeExtras>();
     final colors = theme.colorScheme;
-
     return controller.result(data: data).when(
         data: (data) => data == null
             ? const SizedBox.shrink()

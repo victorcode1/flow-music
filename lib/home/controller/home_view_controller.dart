@@ -1,35 +1,56 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_view_controller.g.dart';
 
 sealed class ViewState {
-  final String? data;
-  const ViewState(this.data);
-  factory ViewState.listSong({String? data}) = ListSong;
-  factory ViewState.child({String? data}) = Child;
+  const ViewState();
+
+  factory ViewState.quickListSong({String? data}) = QuickListSong;
+  factory ViewState.listSong({String? query}) = ListSong;
+  factory ViewState.suggested() = Suggested;
 }
 
 class ListSong extends ViewState {
-  const ListSong({String? data}) : super(data);
+  final String? query;
+  const ListSong({this.query});
 }
 
-class Child extends ViewState {
-  const Child({String? data}) : super(data);
+class QuickListSong extends ViewState {
+  final String? data;
+  const QuickListSong({this.data});
+}
+
+class Suggested extends ViewState {
+  const Suggested({String? data});
 }
 
 @riverpod
-class HomeViewController extends _$HomeViewController {
+class HomeView extends _$HomeView {
+  Timer? _debounce;
+
   @override
   ViewState build() {
-    return ViewState.listSong();
+    return ViewState.suggested();
   }
 
-  Widget? buildView({required Widget Function(ViewState data) page}) {
-    return page(state);
+  void setQuery(String p1) {
+    if (p1.isEmpty) {
+      state = ViewState.suggested();
+    } else {
+      if (_debounce?.isActive ?? false) _debounce!.cancel();
+      _debounce = Timer(const Duration(milliseconds: 600), () {
+        if (p1.isNotEmpty) {
+          state = ViewState.quickListSong(data: p1);
+        }
+      });
+    }
   }
 
-  void setQuey(String p1) {
-    state = ViewState.listSong(data: p1);
+  void showListSearch(String p1) {
+    if (p1.isNotEmpty) {
+      state = ViewState.listSong(query: p1);
+    }
   }
 }

@@ -1,24 +1,43 @@
-import 'dart:async';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
-  final IoViewController view;
+class AppAbarMain extends ConsumerStatefulWidget
+    implements PreferredSizeWidget {
   final Function(String)? query;
-  const AppAbarMain({super.key, required this.view, this.query});
+  const AppAbarMain({super.key, this.query});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final searchController = TextEditingController();
-    Timer? debounce;
-    final FocusNode focusNode = FocusNode();
+  ConsumerState<AppAbarMain> createState() => _AppAbarMainState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 92);
+}
+
+class _AppAbarMainState extends ConsumerState<AppAbarMain> {
+  late final TextEditingController searchController;
+  late final FocusNode focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController = TextEditingController();
+    focusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final extras = theme.extension<FlowThemeExtras>();
     final route = ref.read(routeProvider);
@@ -94,7 +113,7 @@ class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
                 color: colorScheme.surfaceContainerHighest,
                 boxShadow: [
                   BoxShadow(
-                    color: colorScheme.primary.withValues(alpha: 0.04),
+                    color: colorScheme.primary.withOpacity(0.04),
                     blurRadius: 12,
                     offset: const Offset(0, 2),
                   ),
@@ -111,28 +130,14 @@ class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
                       focusNode: focusNode,
                       controller: searchController,
                       style: theme.textTheme.bodyMedium,
-                      onChanged: query,
-                      // onChanged: (query) {
-                      //   if (debounce?.isActive ?? false) debounce?.cancel();
-                      //   debounce = Timer(const Duration(milliseconds: 600), () {
-                      //     ref.read(searchProvider.notifier).setValue(query);
-                      //     if (query.isNotEmpty) {
-                      //       view.showListSearch(query);
-                      //     }
-                      //   });
-                      // },
-                      onTap: () {
-                        // Navegar directamente a la página de búsqueda
-                        route.go('/search');
-                      },
+                      onChanged: widget.query,
                       decoration: InputDecoration(
                         hintText: LocaleKeys.search_music.tr(),
                         border: InputBorder.none,
                         enabledBorder: InputBorder.none,
                         focusedBorder: InputBorder.none,
                         hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                          color: colorScheme.onSurfaceVariant
-                              .withValues(alpha: 0.6),
+                          color: colorScheme.onSurfaceVariant.withOpacity(0.6),
                         ),
                         contentPadding:
                             const EdgeInsets.symmetric(vertical: 14),
@@ -148,7 +153,4 @@ class AppAbarMain extends ConsumerWidget implements PreferredSizeWidget {
       ),
     );
   }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 92);
 }

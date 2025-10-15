@@ -18,7 +18,7 @@ class SettingsPage extends ConsumerWidget {
             Icons.arrow_back,
             color: theme.appBarTheme.foregroundColor,
           ),
-          onPressed: () => route.go("/home"),
+          onPressed: () => route.push("/home"),
         ),
         title: Text(LocaleKeys.settings.tr()),
         backgroundColor: theme.appBarTheme.backgroundColor,
