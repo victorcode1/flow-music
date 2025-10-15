@@ -1,13 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 
 class PropertiesWidget extends StatefulWidget {
   final AudioPlayer player;
 
-  const PropertiesWidget({
-    required this.player,
-    super.key,
-  });
+  const PropertiesWidget({required this.player, super.key});
 
   @override
   State<PropertiesWidget> createState() => _PropertiesWidgetState();
@@ -23,11 +22,11 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
     return Column(
       children: [
         ListTile(
-          title: const Text('Properties'),
+          title: Text(LocaleKeys.properties.tr()),
           trailing: ElevatedButton.icon(
             icon: const Icon(Icons.refresh),
             key: const Key('refreshButton'),
-            label: const Text('Refresh'),
+            label: Text(LocaleKeys.refresh.tr()),
             onPressed: refresh,
           ),
         ),
@@ -41,7 +40,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
               );
             },
           ),
-          subtitle: const Text('Duration'),
+          subtitle: Text(LocaleKeys.duration.tr()),
           leading: const Icon(Icons.timelapse),
         ),
         ListTile(
@@ -54,7 +53,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
               );
             },
           ),
-          subtitle: const Text('Position'),
+          subtitle: Text(LocaleKeys.position.tr()),
           leading: const Icon(Icons.timer),
         ),
         ListTile(
@@ -62,7 +61,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
             widget.player.state.toString(),
             key: const Key('playerStateText'),
           ),
-          subtitle: const Text('State'),
+          subtitle: Text(LocaleKeys.state.tr()),
           leading: const Icon(
             Icons.play_arrow,
             //widget.player.state.getIcon()
@@ -73,7 +72,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
             widget.player.source?.toString() ?? '-',
             key: const Key('sourceText'),
           ),
-          subtitle: const Text('Source'),
+          subtitle: Text(LocaleKeys.source.tr()),
           leading: const Icon(Icons.audio_file),
         ),
         ListTile(
@@ -81,7 +80,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
             widget.player.volume.toString(),
             key: const Key('volumeText'),
           ),
-          subtitle: const Text('Volume'),
+          subtitle: Text(LocaleKeys.volume.tr()),
           leading: const Icon(Icons.volume_up),
         ),
         ListTile(
@@ -89,7 +88,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
             widget.player.balance.toString(),
             key: const Key('balanceText'),
           ),
-          subtitle: const Text('Balance'),
+          subtitle: Text(LocaleKeys.balance.tr()),
           leading: const Icon(Icons.balance),
         ),
         ListTile(
@@ -97,7 +96,7 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
             widget.player.playbackRate.toString(),
             key: const Key('playbackRateText'),
           ),
-          subtitle: const Text('Playback Rate'),
+          subtitle: Text(LocaleKeys.playback_rate.tr()),
           leading: const Icon(Icons.speed),
         ),
       ],

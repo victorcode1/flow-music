@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/pages/quick_list_search/data/list_quick_search_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -229,7 +231,7 @@ class SuggestedListSearch extends ConsumerWidget {
               onPressed: () => ref
                   .read(searchDataReqProvider(search: searchQuery).notifier)
                   .reload(),
-              child: const Text('Retry'),
+              child: Text(LocaleKeys.retry.tr()),
             ),
           ],
         ),

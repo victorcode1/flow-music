@@ -5,7 +5,7 @@ import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
 import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -23,7 +23,12 @@ class _HomePageState extends ConsumerState<HomePage>
     final viewState = ref.watch(homeViewProvider);
     final viewCtr = ref.read(homeViewProvider.notifier);
     return Scaffold(
-      appBar: AppAbarMain(query: viewCtr.setQuery),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      appBar: AppAbarMain(
+        query: viewCtr.setQuery,
+        showSearch: () =>
+            showSearch(context: context, delegate: ViewSearchDelegate()),
+      ),
       body: DecoratedBox(
         decoration: BoxDecoration(
           gradient: Theme.of(
@@ -44,35 +49,6 @@ class _HomePageState extends ConsumerState<HomePage>
               Suggested() => const Center(),
               ListSong(:final query) => ListSongs(data: query ?? ''),
             },
-          ),
-        ),
-      ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: Theme.of(
-            context,
-          ).extension<FlowThemeExtras>()?.primaryGradient,
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(
-                context,
-              ).colorScheme.primary.withValues(alpha: 0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
-            ),
-          ],
-        ),
-        child: FloatingActionButton(
-          heroTag: 'floatingActionButtonSearch',
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          onPressed: () => showSearch(context: context, delegate: SearchSong()),
-
-          child: const Icon(
-            Icons.search_rounded,
-            size: 28,
-            color: Colors.white,
           ),
         ),
       ),

@@ -1,15 +1,16 @@
 //search delegate
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
 import 'package:flow_music/pages/song/page/song.dart';
 import 'package:flow_music/provider/list_search_result.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class SearchSong extends SearchDelegate {
-  SearchSong()
+class ViewSearchDelegate extends SearchDelegate {
+  ViewSearchDelegate()
     : super(
-        searchFieldLabel: 'search_music_label'.tr(),
+        searchFieldLabel: LocaleKeys.search_music_label.tr(),
         searchFieldStyle: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w400,
@@ -53,7 +54,7 @@ class SearchSong extends SearchDelegate {
         IconButton(
           onPressed: () => query = '',
           icon: const Icon(Icons.clear_rounded),
-          tooltip: 'clear'.tr(),
+          tooltip: LocaleKeys.clear.tr(),
         ),
     ];
   }
@@ -65,7 +66,7 @@ class SearchSong extends SearchDelegate {
         close(context, null);
       },
       icon: const Icon(Icons.arrow_back_rounded),
-      tooltip: 'back'.tr(),
+      tooltip: LocaleKeys.back.tr(),
     );
   }
 
@@ -131,7 +132,7 @@ class SearchSong extends SearchDelegate {
             child: Padding(
               padding: const EdgeInsets.all(32),
               child: Text(
-                'type_to_search'.tr(),
+                LocaleKeys.type_to_search.tr(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),

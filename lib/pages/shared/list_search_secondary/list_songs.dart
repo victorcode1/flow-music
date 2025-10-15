@@ -1,4 +1,6 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -137,7 +139,7 @@ class ListSongs extends ConsumerWidget {
                   },
                 ),
           error: (error, stack) => Center(
-            child: Text('Error $error $stack', textAlign: TextAlign.center),
+            child: Text(LocaleKeys.error.tr(), textAlign: TextAlign.center),
           ),
           loading: () => const Center(
             child: CircularProgressIndicator.adaptive(strokeWidth: 2),

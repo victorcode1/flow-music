@@ -29,7 +29,10 @@ class SettingsPage extends ConsumerWidget {
           ListTile(
             title: Text(LocaleKeys.settings.tr()),
             subtitle: Text(
-                context.locale.languageCode == 'en' ? 'English' : 'Español'),
+              context.locale.languageCode == 'en'
+                  ? LocaleKeys.english.tr()
+                  : LocaleKeys.spanish.tr(),
+            ),
             trailing: DropdownButton<String>(
               value: context.locale.languageCode,
               onChanged: (String? newValue) {
@@ -38,14 +41,8 @@ class SettingsPage extends ConsumerWidget {
                 }
               },
               items: const [
-                DropdownMenuItem(
-                  value: 'en',
-                  child: Text('English'),
-                ),
-                DropdownMenuItem(
-                  value: 'es',
-                  child: Text('Español'),
-                ),
+                DropdownMenuItem(value: 'en', child: Text('English')),
+                DropdownMenuItem(value: 'es', child: Text('Español')),
               ],
             ),
           ),

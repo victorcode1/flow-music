@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 
 class StreamWidget extends StatefulWidget {
   final AudioPlayer player;
 
-  const StreamWidget({
-    required this.player,
-    super.key,
-  });
+  const StreamWidget({required this.player, super.key});
 
   @override
   State<StreamWidget> createState() => _StreamWidgetState();
@@ -30,16 +29,19 @@ class _StreamWidgetState extends State<StreamWidget> {
     streamState = player.state;
     player.getDuration().then((it) => setState(() => streamDuration = it));
     player.getCurrentPosition().then(
-          (it) => setState(() => streamPosition = it),
-        );
+      (it) => setState(() => streamPosition = it),
+    );
 
     streams = <StreamSubscription>[
-      player.onDurationChanged
-          .listen((it) => setState(() => streamDuration = it)),
-      player.onPlayerStateChanged
-          .listen((it) => setState(() => streamState = it)),
-      player.onPositionChanged
-          .listen((it) => setState(() => streamPosition = it)),
+      player.onDurationChanged.listen(
+        (it) => setState(() => streamDuration = it),
+      ),
+      player.onPlayerStateChanged.listen(
+        (it) => setState(() => streamState = it),
+      ),
+      player.onPositionChanged.listen(
+        (it) => setState(() => streamPosition = it),
+      ),
     ];
   }
 
@@ -64,13 +66,13 @@ class _StreamWidgetState extends State<StreamWidget> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const ListTile(title: Text('Streams')),
+        ListTile(title: Text(LocaleKeys.streams.tr())),
         ListTile(
           title: Text(
             streamDuration?.toString() ?? '-',
             key: const Key('onDurationText'),
           ),
-          subtitle: const Text('Duration Stream'),
+          subtitle: Text(LocaleKeys.duration_stream.tr()),
           leading: const Icon(Icons.timelapse),
         ),
         ListTile(
@@ -78,7 +80,7 @@ class _StreamWidgetState extends State<StreamWidget> {
             streamPosition?.toString() ?? '-',
             key: const Key('onPositionText'),
           ),
-          subtitle: const Text('Position Stream'),
+          subtitle: Text(LocaleKeys.position_stream.tr()),
           leading: const Icon(Icons.timer),
         ),
         ListTile(
@@ -86,10 +88,11 @@ class _StreamWidgetState extends State<StreamWidget> {
             streamState?.toString() ?? '-',
             key: const Key('onStateText'),
           ),
-          subtitle: const Text('State Stream'),
-          leading: const Icon(Icons.play_arrow
-              //streamState?.getIcon() ?? Icons.stop
-              ),
+          subtitle: Text(LocaleKeys.state_stream.tr()),
+          leading: const Icon(
+            Icons.play_arrow,
+            //streamState?.getIcon() ?? Icons.stop
+          ),
         ),
       ],
     );

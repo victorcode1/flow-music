@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/domain/sources.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/pages/song/controller/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -25,12 +27,15 @@ class _PlaySongState extends ConsumerState<SongWidget> {
     final controller = ref.watch(songController)
       ..playListSong(playListId: playListId);
     if (idSong == null) {
-      return const Center(child: Text('No idSong'));
+      return Center(child: Text(LocaleKeys.no_id_song.tr()));
     }
-    return controller.result(data: idSong).when(
-        data: (data) => ScreenPlay(url: controller.urlSong(data: data)),
-        error: (error, stack) => Center(child: Text('Error $error')),
-        loading: () => const Center(child: CircularProgressIndicator()));
+    return controller
+        .result(data: idSong)
+        .when(
+          data: (data) => ScreenPlay(url: controller.urlSong(data: data)),
+          error: (error, stack) => Center(child: Text(LocaleKeys.error.tr())),
+          loading: () => const Center(child: CircularProgressIndicator()),
+        );
   }
 }
 
@@ -113,8 +118,11 @@ class _SourceTile extends StatelessWidget {
                     ),
                     child: const Padding(
                       padding: EdgeInsets.all(16),
-                      child: Icon(Icons.graphic_eq_rounded,
-                          color: Colors.white, size: 28),
+                      child: Icon(
+                        Icons.graphic_eq_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
                     ),
                   ),
                   const SizedBox(width: 18),
@@ -131,10 +139,7 @@ class _SourceTile extends StatelessWidget {
                         ),
                         if (subtitle != null) ...[
                           const SizedBox(height: 6),
-                          Text(
-                            subtitle!,
-                            style: theme.textTheme.bodyMedium,
-                          ),
+                          Text(subtitle!, style: theme.textTheme.bodyMedium),
                         ],
                       ],
                     ),
@@ -149,15 +154,19 @@ class _SourceTile extends StatelessWidget {
                       key: const Key('set_source_button'),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: colors.onSurface,
-                        side:
-                            BorderSide(color: extras?.subtleStroke ?? colors.outline),
+                        side: BorderSide(
+                          color: extras?.subtleStroke ?? colors.outline,
+                        ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 16),
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(22)),
+                          borderRadius: BorderRadius.circular(22),
+                        ),
                       ),
                       icon: const Icon(Icons.cloud_upload_rounded),
-                      label: const Text('Configurar origen'),
+                      label: Text(LocaleKeys.configure_source.tr()),
                       onPressed: setSource,
                     ),
                   ),
@@ -166,10 +175,12 @@ class _SourceTile extends StatelessWidget {
                     child: ElevatedButton.icon(
                       key: const Key('play_button'),
                       icon: const Icon(Icons.play_arrow_rounded, size: 26),
-                      label: const Text('Reproducir'),
+                      label: Text(LocaleKeys.play_button.tr()),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 16),
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(22),
                         ),
