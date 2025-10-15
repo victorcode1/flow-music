@@ -4,10 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class QuickListSearch extends ConsumerWidget {
+class SuggestedListSearch extends ConsumerWidget {
   final void Function(String)? showListSearch;
   final String? searchQuery;
-  const QuickListSearch({super.key, this.searchQuery, this.showListSearch});
+  const SuggestedListSearch({super.key, this.searchQuery, this.showListSearch});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncSearch = ref.watch(searchDataReqProvider(search: searchQuery));

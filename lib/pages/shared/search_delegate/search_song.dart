@@ -1,23 +1,19 @@
 //search delegate
-import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
-import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
+import 'package:flow_music/pages/quick_list_search/list_search.dart';
 import 'package:flow_music/pages/song/page/song.dart';
-import 'package:flow_music/home/providers/text_search.dart';
+import 'package:flow_music/provider/list_search_result.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SearchSong extends SearchDelegate {
-  WidgetRef ref;
-  SearchSong({required this.ref})
-      : super(
-          searchFieldLabel: 'Buscar música...',
-          searchFieldStyle: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-        ) {
-    ref.read(searchProvider.notifier).setValue(query);
-  }
+  SearchSong()
+    : super(
+        searchFieldLabel: 'Buscar música...',
+        searchFieldStyle: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+        ),
+      );
 
   @override
   ThemeData appBarTheme(BuildContext context) {
@@ -29,10 +25,7 @@ class SearchSong extends SearchDelegate {
         backgroundColor: colorScheme.surface,
         elevation: 0,
         toolbarHeight: 70,
-        iconTheme: IconThemeData(
-          color: colorScheme.onSurface,
-          size: 24,
-        ),
+        iconTheme: IconThemeData(color: colorScheme.onSurface, size: 24),
         titleTextStyle: theme.textTheme.bodyLarge?.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
@@ -43,8 +36,10 @@ class SearchSong extends SearchDelegate {
           color: colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w400,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 16,
+        ),
       ),
       scaffoldBackgroundColor: colorScheme.surface,
     );
@@ -75,17 +70,70 @@ class SearchSong extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    final controller = ref.watch(listSongControllers);
     return query.isNotEmpty
-        ? SongWidget(data: controller.extra(data: query))
+        ? Consumer(
+            builder: (context, ref, child) {
+              final res = ref
+                  .watch(searchResultDataProvider(query))
+                  .asData
+                  ?.value;
+              final idSong =
+                  res
+                      ?.contents
+                      ?.tabbedSearchResultsRenderer!
+                      .tabs
+                      ?.first
+                      .tabRenderer
+                      ?.content
+                      ?.sectionListRenderer
+                      ?.contents
+                      ?.first
+                      .musicShelfRenderer
+                      ?.contents
+                      ?.first
+                      .musicResponsiveListItemRenderer!
+                      .overlay
+                      ?.musicItemThumbnailOverlayRenderer!
+                      .content
+                      ?.musicPlayButtonRenderer
+                      ?.playNavigationEndpoint
+                      ?.watchEndpoint
+                      ?.videoId ??
+                  '';
+              final playListId = res
+                  ?.contents
+                  ?.tabbedSearchResultsRenderer!
+                  .tabs
+                  ?.first
+                  .tabRenderer
+                  ?.content
+                  ?.sectionListRenderer
+                  ?.contents
+                  ?.first
+                  .musicShelfRenderer
+                  ?.contents
+                  ?.first
+                  .musicResponsiveListItemRenderer
+                  ?.menu
+                  ?.menuRenderer
+                  ?.items
+                  ?.first
+                  .menuNavigationItemRenderer
+                  ?.navigationEndpoint
+                  ?.watchEndpoint
+                  ?.playlistId;
+              Map<String, String?> extra = {idSong: playListId};
+              return SongWidget(data: extra);
+            },
+          )
         : Center(
             child: Padding(
               padding: const EdgeInsets.all(32),
               child: Text(
                 "Escribe algo para buscar",
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
           );
@@ -93,6 +141,6 @@ class SearchSong extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    return ListSongs(data: query);
+    return SuggestedListSearch(searchQuery: query);
   }
 }

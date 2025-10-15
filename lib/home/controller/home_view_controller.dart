@@ -7,7 +7,7 @@ part 'home_view_controller.g.dart';
 sealed class ViewState {
   const ViewState();
 
-  factory ViewState.quickListSong({String? data}) = QuickListSong;
+  factory ViewState.quickListSong({String? data}) = SuggestedListSearchListSong;
   factory ViewState.listSong({String? query}) = ListSong;
   factory ViewState.suggested() = Suggested;
 }
@@ -17,9 +17,9 @@ class ListSong extends ViewState {
   const ListSong({this.query});
 }
 
-class QuickListSong extends ViewState {
+class SuggestedListSearchListSong extends ViewState {
   final String? data;
-  const QuickListSong({this.data});
+  const SuggestedListSearchListSong({this.data});
 }
 
 class Suggested extends ViewState {
@@ -42,7 +42,9 @@ class HomeView extends _$HomeView {
       if (_debounce?.isActive ?? false) _debounce!.cancel();
       _debounce = Timer(const Duration(milliseconds: 600), () {
         if (p1.isNotEmpty) {
-          state = ViewState.quickListSong(data: p1);
+          // state = ViewState.quickListSong(data: p1);
+          // state = ViewState.quickListSong(data: p1);
+          state = ViewState.listSong(query: p1);
         }
       });
     }

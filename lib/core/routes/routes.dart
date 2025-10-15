@@ -12,37 +12,42 @@ part 'routes.g.dart';
 class Route extends _$Route {
   @override
   GoRouter build() {
-    return GoRouter(initialLocation: '/home', routes: [
-      GoRoute(
+    return GoRouter(
+      initialLocation: '/home',
+      routes: [
+        GoRoute(
           path: '/home',
           builder: (context, state) {
             return HomePage();
-          }),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsPage(),
-      ),
-      ShellRoute(
+          },
+        ),
+        GoRoute(
+          path: '/settings',
+          builder: (context, state) => const SettingsPage(),
+        ),
+        ShellRoute(
           builder: (context, state, child) {
             return HomePage(child: child);
           },
           routes: [
             GoRoute(
-                path: '/search',
-                builder: (context, state) => const QuickListSearch()),
+              path: '/search',
+              builder: (context, state) => const SuggestedListSearch(),
+            ),
             GoRoute(
-                path: '/songs',
-                builder: (context, state) {
-                  final search = state.extra as String;
-                  return ListSongs(data: search);
-                }),
+              path: '/songs',
+              builder: (context, state) {
+                final search = state.extra as String;
+                return ListSongs(data: search);
+              },
+            ),
             GoRoute(
               name: 'playSong',
               path: '/playSong',
               builder: (context, state) {
                 Map<String?, String?> data = {
                   'idSong': state.uri.queryParameters['idSong'],
-                  'playListId': state.uri.queryParameters['playListId']
+                  'playListId': state.uri.queryParameters['playListId'],
                 };
 
                 //if (state.uri.queryParameters['id'] != null) {
@@ -52,7 +57,9 @@ class Route extends _$Route {
                 return SongWidget(data: data);
               },
             ),
-          ]),
-    ]);
+          ],
+        ),
+      ],
+    );
   }
 }

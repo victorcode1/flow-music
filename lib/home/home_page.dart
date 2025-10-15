@@ -1,6 +1,5 @@
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/home/components/app_bar.dart';
-import 'package:flow_music/home/controller/controller_page_builder.dart';
 import 'package:flow_music/home/controller/home_view_controller.dart';
 import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
@@ -23,7 +22,6 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget build(BuildContext context) {
     final viewState = ref.watch(homeViewProvider);
     final viewCtr = ref.read(homeViewProvider.notifier);
-    final controller = ref.watch(controllerPageBuilder);
     return Scaffold(
       appBar: AppAbarMain(query: viewCtr.setQuery),
       body: DecoratedBox(
@@ -33,12 +31,13 @@ class _HomePageState extends ConsumerState<HomePage>
           ).extension<FlowThemeExtras>()?.secondaryGradient,
         ),
         child: SafeArea(
+          bottom: false,
           child: AnimatedSwitcher(
             transitionBuilder: (child, animation) =>
                 SizeTransition(sizeFactor: animation, child: child),
             duration: const Duration(milliseconds: 500),
             child: switch (viewState) {
-              QuickListSong(:final data) => QuickListSearch(
+              SuggestedListSearchListSong(:final data) => SuggestedListSearch(
                 searchQuery: data,
                 showListSearch: viewCtr.showListSearch,
               ),
@@ -68,10 +67,8 @@ class _HomePageState extends ConsumerState<HomePage>
           heroTag: 'floatingActionButtonSearch',
           elevation: 0,
           backgroundColor: Colors.transparent,
-          onPressed: () => controller.search(
-            context: context,
-            delegate: SearchSong(ref: ref),
-          ),
+          onPressed: () => showSearch(context: context, delegate: SearchSong()),
+
           child: const Icon(
             Icons.search_rounded,
             size: 28,
