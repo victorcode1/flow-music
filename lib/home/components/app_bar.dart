@@ -54,17 +54,19 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
             borderRadius: BorderRadius.circular(14),
             color: colorScheme.surfaceContainerHighest,
           ),
-          child: IconButton(
-            icon: Icon(
-              Icons.menu_rounded,
-              color: colorScheme.onSurface,
-              size: 22,
+          child: Builder(
+            // Builder provides a new context that's a descendant of the Scaffold
+            builder: (ctx) => IconButton(
+              icon: Icon(
+                Icons.menu_rounded,
+                color: colorScheme.onSurface,
+                size: 22,
+              ),
+              onPressed: () {
+                // Open the drawer attached to the nearest Scaffold
+                Scaffold.of(ctx).openDrawer();
+              },
             ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(context.tr('coming_soon'))),
-              );
-            },
           ),
         ),
       ),

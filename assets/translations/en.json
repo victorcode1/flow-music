@@ -40,5 +40,7 @@
   "playback_rate": "Playback Rate",
   "first": "First",
   "english": "English",
-  "spanish": "Spanish"
+  "spanish": "Spanish",
+  "info_version": "Version",
+  "build_number": "Build"
 }

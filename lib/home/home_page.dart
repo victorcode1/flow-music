@@ -1,5 +1,6 @@
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/home/components/app_bar.dart';
+import 'package:flow_music/home/components/custom_drawe.dart';
 import 'package:flow_music/home/controller/home_view_controller.dart';
 import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
@@ -23,6 +24,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final viewState = ref.watch(homeViewProvider);
     final viewCtr = ref.read(homeViewProvider.notifier);
     return Scaffold(
+      drawer: CustomDrawe(),
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppAbarMain(
         query: viewCtr.setQuery,

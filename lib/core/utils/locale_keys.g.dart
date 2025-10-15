@@ -45,5 +45,7 @@ abstract class  LocaleKeys {
   static const first = 'first';
   static const english = 'english';
   static const spanish = 'spanish';
+  static const info_version = 'info_version';
+  static const build_number = 'build_number';
 
 }

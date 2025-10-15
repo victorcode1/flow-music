@@ -46,4 +46,4 @@ final class SearchDataProvider
   }
 }
 
-String _$searchDataHash() => r'3c9810d1277870f84bf405e06b0d99220ddfe389';
+String _$searchDataHash() => r'199c44297a207f873fe11e0dd2343b2cb96b846f';

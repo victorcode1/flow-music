@@ -40,5 +40,7 @@
   "playback_rate": "Velocidad de reproducción",
   "first": "Primero",
   "english": "Inglés",
-  "spanish": "Español"
+  "spanish": "Español",
+  "info_version": "Versión",
+  "build_number": "Compilación"
 }

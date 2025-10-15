@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'home_view_controller.dart';
+part of 'info_version.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,51 +9,52 @@ part of 'home_view_controller.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(HomeView)
-const homeViewProvider = HomeViewProvider._();
+@ProviderFor(InfoVersion)
+const infoVersionProvider = InfoVersionProvider._();
 
-final class HomeViewProvider extends $NotifierProvider<HomeView, ViewState> {
-  const HomeViewProvider._()
+final class InfoVersionProvider
+    extends $NotifierProvider<InfoVersion, InfoModel> {
+  const InfoVersionProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'homeViewProvider',
-        isAutoDispose: false,
+        name: r'infoVersionProvider',
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$homeViewHash();
+  String debugGetCreateSourceHash() => _$infoVersionHash();
 
   @$internal
   @override
-  HomeView create() => HomeView();
+  InfoVersion create() => InfoVersion();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ViewState value) {
+  Override overrideWithValue(InfoModel value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ViewState>(value),
+      providerOverride: $SyncValueProvider<InfoModel>(value),
     );
   }
 }
 
-String _$homeViewHash() => r'274bd409dd768806fe716a51c3a708a6c7447ebd';
+String _$infoVersionHash() => r'd2ccd55f43024edaa15e4b68add1c936d06e17c9';
 
-abstract class _$HomeView extends $Notifier<ViewState> {
-  ViewState build();
+abstract class _$InfoVersion extends $Notifier<InfoModel> {
+  InfoModel build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<ViewState, ViewState>;
+    final ref = this.ref as $Ref<InfoModel, InfoModel>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<ViewState, ViewState>,
-              ViewState,
+              AnyNotifier<InfoModel, InfoModel>,
+              InfoModel,
               Object?,
               Object?
             >;
