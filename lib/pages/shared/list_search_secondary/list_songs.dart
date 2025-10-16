@@ -1,4 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/datasource/model/list_search_result.dart'
+    show ListSearchResult;
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/controller/list_song_controller.dart';
@@ -6,8 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ListSongs extends ConsumerWidget {
-  const ListSongs({super.key, required this.data});
+  const ListSongs({super.key, required this.data, required this.listen});
   final String data;
+  final Function(ListSearchResult, int) listen;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,11 +35,12 @@ class ListSongs extends ConsumerWidget {
 
                     return InkWell(
                       borderRadius: BorderRadius.circular(28),
-                      onTap: () => controller.escuchar(
-                        data: data,
-                        context: context,
-                        index: index,
-                      ),
+                      onTap: () => listen(data, index),
+                      // onTap: () => controller.escuchar(
+                      //   data: data,
+                      //   context: context,
+                      //   index: index,
+                      // ),
                       child: Ink(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(28),

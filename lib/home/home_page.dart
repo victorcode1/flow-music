@@ -6,6 +6,7 @@ import 'package:flow_music/home/repo/io_view_controller.dart';
 import 'package:flow_music/pages/quick_list_search/list_search.dart';
 import 'package:flow_music/pages/shared/list_search_secondary/list_songs.dart';
 import 'package:flow_music/pages/shared/search_delegate/search_song.dart';
+import 'package:flow_music/pages/song/page/song.dart';
 import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -49,7 +50,13 @@ class _HomePageState extends ConsumerState<HomePage>
                 showListSearch: viewCtr.showListSearch,
               ),
               Suggested() => const Center(),
-              ListSong(:final query) => ListSongs(data: query ?? ''),
+              ListSong(:final query) => ListSongs(
+                data: query ?? '',
+                listen: viewCtr.listen,
+              ),
+              PlaySong(:final queryParameters) => SongWidget(
+                data: queryParameters ?? {},
+              ),
             },
           ),
         ),

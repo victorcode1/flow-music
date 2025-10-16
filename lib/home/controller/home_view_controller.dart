@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flow_music/core/datasource/model/list_search_result.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'home_view_controller.g.dart';
@@ -10,6 +11,12 @@ sealed class ViewState {
   factory ViewState.quickListSong({String? data}) = SuggestedListSearchListSong;
   factory ViewState.listSong({String? query}) = ListSong;
   factory ViewState.suggested() = Suggested;
+  factory ViewState.playSong({Map<String, String>? queryParameters}) = PlaySong;
+}
+
+class PlaySong extends ViewState {
+  final Map<String, String>? queryParameters;
+  const PlaySong({this.queryParameters});
 }
 
 class ListSong extends ViewState {
@@ -54,5 +61,52 @@ class HomeView extends _$HomeView {
     if (p1.isNotEmpty) {
       state = ViewState.listSong(query: p1);
     }
+  }
+
+  void listen(ListSearchResult data, int index) {
+    final idSong = data
+        .contents
+        ?.tabbedSearchResultsRenderer!
+        .tabs
+        ?.first
+        .tabRenderer
+        ?.content
+        ?.sectionListRenderer
+        ?.contents
+        ?.first
+        .musicShelfRenderer
+        ?.contents?[index]
+        .musicResponsiveListItemRenderer!
+        .overlay
+        ?.musicItemThumbnailOverlayRenderer!
+        .content
+        ?.musicPlayButtonRenderer
+        ?.playNavigationEndpoint
+        ?.watchEndpoint
+        ?.videoId;
+    final playListId = data
+        .contents
+        ?.tabbedSearchResultsRenderer!
+        .tabs
+        ?.first
+        .tabRenderer
+        ?.content
+        ?.sectionListRenderer
+        ?.contents
+        ?.first
+        .musicShelfRenderer
+        ?.contents?[index]
+        .musicResponsiveListItemRenderer
+        ?.menu
+        ?.menuRenderer
+        ?.items
+        ?.first
+        .menuNavigationItemRenderer
+        ?.navigationEndpoint
+        ?.watchEndpoint
+        ?.playlistId;
+    state = ViewState.playSong(
+      queryParameters: {'idSong': idSong ?? '', 'playListId': playListId ?? ''},
+    );
   }
 }

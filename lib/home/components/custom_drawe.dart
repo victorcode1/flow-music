@@ -3,6 +3,7 @@ import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/pages/shared/custom_info_version/custom_info_version.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -26,129 +27,88 @@ class CustomDrawe extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Header with close button
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(gradient: extras?.primaryGradient),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SafeArea(
-                          child: Text(
-                            'StreamBeat',
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
+                    SafeArea(
+                      child: Text(
+                        'StreamBeat',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white),
-                          onPressed: () => Navigator.of(context).maybePop(),
-                          tooltip: MaterialLocalizations.of(
-                            context,
-                          ).closeButtonTooltip,
-                        ),
-                      ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
-                    // User profile section
-                    Row(
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.white.withOpacity(0.2),
-                          ),
-                          child: const Icon(
-                            Icons.person,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Usuario',
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Text(
-                                LocaleKeys.profile.tr(),
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: Colors.white.withOpacity(0.8),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                      tooltip: MaterialLocalizations.of(
+                        context,
+                      ).closeButtonTooltip,
                     ),
                   ],
                 ),
               ),
 
               // Menu items
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  children: [
-                    _DrawerMenuItem(
-                      icon: Icons.home_rounded,
-                      title: LocaleKeys.home.tr(),
-                      onTap: () {
-                        Navigator.pop(context);
-                        route.go('/home');
-                      },
-                    ),
-                    _DrawerMenuItem(
-                      icon: Icons.library_music_rounded,
-                      title: LocaleKeys.library.tr(),
-                      onTap: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(LocaleKeys.coming_soon.tr())),
-                        );
-                      },
-                    ),
-                    _DrawerMenuItem(
-                      icon: Icons.favorite_rounded,
-                      title: LocaleKeys.favorites.tr(),
-                      onTap: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(LocaleKeys.coming_soon.tr())),
-                        );
-                      },
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
+              if (kDebugMode)
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    children: [
+                      _DrawerMenuItem(
+                        icon: Icons.home_rounded,
+                        title: LocaleKeys.home.tr(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          route.go('/home');
+                        },
                       ),
-                      child: Divider(height: 1),
-                    ),
-                    _DrawerMenuItem(
-                      icon: Icons.settings_rounded,
-                      title: LocaleKeys.settings.tr(),
-                      onTap: () {
-                        Navigator.pop(context);
-                        route.go('/settings');
-                      },
-                    ),
-                  ],
+                      _DrawerMenuItem(
+                        icon: Icons.library_music_rounded,
+                        title: LocaleKeys.library.tr(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(LocaleKeys.coming_soon.tr()),
+                            ),
+                          );
+                        },
+                      ),
+                      _DrawerMenuItem(
+                        icon: Icons.favorite_rounded,
+                        title: LocaleKeys.favorites.tr(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(LocaleKeys.coming_soon.tr()),
+                            ),
+                          );
+                        },
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Divider(height: 1),
+                      ),
+                      _DrawerMenuItem(
+                        icon: Icons.settings_rounded,
+                        title: LocaleKeys.settings.tr(),
+                        onTap: () {
+                          Navigator.pop(context);
+                          route.go('/settings');
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
               // Footer
               Container(
