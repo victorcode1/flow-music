@@ -40,7 +40,7 @@ final class HomeViewProvider extends $NotifierProvider<HomeView, ViewState> {
   }
 }
 
-String _$homeViewHash() => r'274bd409dd768806fe716a51c3a708a6c7447ebd';
+String _$homeViewHash() => r'dc3b6841e9d081805dc010cb06372f224d655c5d';
 
 abstract class _$HomeView extends $Notifier<ViewState> {
   ViewState build();

@@ -17,16 +17,17 @@ class AudioPlayerProvider extends _$AudioPlayerProvider {
 
   Future<void> play({required Source source}) async {
     await state.play(source);
-    ref.read(mainController).sendMesage(
-          'Playing...',
-          textKey: const Key('toast-playing'),
-        );
+    ref
+        .read(mainController)
+        .sendMesage('Playing...', textKey: const Key('toast-playing'));
   }
 
   Future<void> setSource({required Source source}) async {
     await state.setSource(source);
 
-    ref.read(mainController).sendMesage(
+    ref
+        .read(mainController)
+        .sendMesage(
           'Completed setting source.',
           textKey: const Key('toast-set-source'),
         );
@@ -34,30 +35,34 @@ class AudioPlayerProvider extends _$AudioPlayerProvider {
 
   void initState() {
     _streams.add(
-      state.onPlayerStateChanged.listen(
-        (it) {
-          switch (it) {
-            case PlayerState.stopped:
-              ref.read(mainController).sendMesage(
-                    'Player stopped!',
-                    textKey: const Key('toast-player-stopped'),
-                  );
-              break;
-            case PlayerState.completed:
-              ref.read(mainController).sendMesage(
-                    'Player complete!',
-                    textKey: const Key('toast-player-complete-'),
-                  );
-              break;
-            default:
-              break;
-          }
-        },
-      ),
+      state.onPlayerStateChanged.listen((it) {
+        switch (it) {
+          case PlayerState.stopped:
+            ref
+                .read(mainController)
+                .sendMesage(
+                  'Player stopped!',
+                  textKey: const Key('toast-player-stopped'),
+                );
+            break;
+          case PlayerState.completed:
+            ref
+                .read(mainController)
+                .sendMesage(
+                  'Player complete!',
+                  textKey: const Key('toast-player-complete-'),
+                );
+            break;
+          default:
+            break;
+        }
+      }),
     );
     _streams.add(
       state.onSeekComplete.listen(
-        (it) => ref.read(mainController).sendMesage(
+        (it) => ref
+            .read(mainController)
+            .sendMesage(
               'Seek complete!',
               textKey: const Key('toast-seek-complete-'),
             ),

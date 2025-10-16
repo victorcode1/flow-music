@@ -38,27 +38,24 @@ class _HomePageState extends ConsumerState<HomePage>
             context,
           ).extension<FlowThemeExtras>()?.secondaryGradient,
         ),
-        child: SafeArea(
-          bottom: false,
-          child: AnimatedSwitcher(
-            transitionBuilder: (child, animation) =>
-                SizeTransition(sizeFactor: animation, child: child),
-            duration: const Duration(milliseconds: 500),
-            child: switch (viewState) {
-              SuggestedListSearchListSong(:final data) => SuggestedListSearch(
-                searchQuery: data,
-                showListSearch: viewCtr.showListSearch,
-              ),
-              Suggested() => const Center(),
-              ListSong(:final query) => ListSongs(
-                data: query ?? '',
-                listen: viewCtr.listen,
-              ),
-              PlaySong(:final queryParameters) => SongWidget(
-                data: queryParameters ?? {},
-              ),
-            },
-          ),
+        child: AnimatedSwitcher(
+          transitionBuilder: (child, animation) =>
+              SizeTransition(sizeFactor: animation, child: child),
+          duration: const Duration(milliseconds: 500),
+          child: switch (viewState) {
+            SuggestedListSearchListSong(:final data) => SuggestedListSearch(
+              searchQuery: data,
+              showListSearch: viewCtr.showListSearch,
+            ),
+            Suggested() => const Center(),
+            ListSong(:final query) => ListSongs(
+              data: query ?? '',
+              listen: viewCtr.listen,
+            ),
+            PlaySong(:final queryParameters) => SongWidget(
+              data: queryParameters ?? {},
+            ),
+          },
         ),
       ),
     );

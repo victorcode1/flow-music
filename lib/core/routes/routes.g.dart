@@ -40,7 +40,7 @@ final class RouteProvider extends $NotifierProvider<Route, GoRouter> {
   }
 }
 
-String _$routeHash() => r'e9ec0ce23279fdb2e96b2c229ee88039886b40a9';
+String _$routeHash() => r'610c6d9532b43f5c1623fbaeeb2aac0eb21ed75a';
 
 abstract class _$Route extends $Notifier<GoRouter> {
   GoRouter build();
