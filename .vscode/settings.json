@@ -1,0 +1,33 @@
+{
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#1f2937",
+    "activityBar.background": "#111827",
+    "activityBar.foreground": "#f3f4f6",
+    "activityBar.inactiveForeground": "#9ca3af",
+    "activityBarBadge.background": "#38bdf8",
+    "activityBarBadge.foreground": "#0f172a",
+    "commandCenter.border": "#374151",
+    "sash.hoverBorder": "#38bdf8",
+    "statusBar.background": "#0f172a",
+    "statusBar.foreground": "#f8fafc",
+    "statusBarItem.hoverBackground": "#1e293b",
+    "statusBarItem.remoteBackground": "#0f172a",
+    "statusBarItem.remoteForeground": "#f8fafc",
+    "titleBar.activeBackground": "#0f172a",
+    "titleBar.activeForeground": "#f8fafc",
+    "titleBar.inactiveBackground": "#111827",
+    "titleBar.inactiveForeground": "#9ca3af"
+  },
+  "peacock.color": "#0f172a",
+  "dart.enableSdkFormatter": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always",
+    "source.fixAll": "always"
+  },
+  "dart.flutterHotReloadOnSave": "all",
+  "dart.previewFlutterUiGuides": true,
+  "dart.previewFlutterUiGuidesCustomTracking": true,
+  "editor.suggestSelection": "first",
+  "dart.enableCompletionCommitCharacters": true
+}

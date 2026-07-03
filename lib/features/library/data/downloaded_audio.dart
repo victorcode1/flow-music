@@ -1,0 +1,59 @@
+enum DownloadedMediaType {
+  audio,
+  video;
+
+  static DownloadedMediaType fromName(String? name) {
+    return DownloadedMediaType.values.firstWhere(
+      (type) => type.name == name,
+      orElse: () => DownloadedMediaType.audio,
+    );
+  }
+}
+
+class DownloadedAudio {
+  const DownloadedAudio({
+    required this.videoId,
+    required this.title,
+    required this.author,
+    required this.thumbnailUrl,
+    required this.filePath,
+    required this.downloadedAt,
+    this.mediaType = DownloadedMediaType.audio,
+  });
+
+  factory DownloadedAudio.fromJson(Map<String, dynamic> json) {
+    return DownloadedAudio(
+      videoId: json['videoId'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      author: json['author'] as String? ?? '',
+      thumbnailUrl: json['thumbnailUrl'] as String? ?? '',
+      filePath: json['filePath'] as String? ?? '',
+      downloadedAt:
+          DateTime.tryParse(json['downloadedAt'] as String? ?? '') ??
+          DateTime.fromMillisecondsSinceEpoch(0),
+      mediaType: DownloadedMediaType.fromName(json['mediaType'] as String?),
+    );
+  }
+
+  final String videoId;
+  final String title;
+  final String author;
+  final String thumbnailUrl;
+  final String filePath;
+  final DateTime downloadedAt;
+  final DownloadedMediaType mediaType;
+
+  bool get isVideo => mediaType == DownloadedMediaType.video;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'videoId': videoId,
+      'title': title,
+      'author': author,
+      'thumbnailUrl': thumbnailUrl,
+      'filePath': filePath,
+      'downloadedAt': downloadedAt.toIso8601String(),
+      'mediaType': mediaType.name,
+    };
+  }
+}
