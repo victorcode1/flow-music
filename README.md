@@ -20,6 +20,7 @@ Las listas de favoritos y playlists se guardan localmente con Hive. La aplicaci√
 
     flutter build appbundle --release
     flutter build ipa --release
+    dart run build_runner watch
 
 ## Aviso de publicaci√≥n
 
