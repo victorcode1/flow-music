@@ -4,7 +4,6 @@ class UserSettings {
     this.themeMode,
     this.locale,
     this.autoplayEnabled,
-    this.smoothTransitions,
     this.updatedAtMs,
   });
 
@@ -13,7 +12,6 @@ class UserSettings {
       themeMode: json['themeMode'] as String?,
       locale: json['locale'] as String?,
       autoplayEnabled: json['autoplayEnabled'] as bool?,
-      smoothTransitions: json['smoothTransitions'] as bool?,
       updatedAtMs: (json['updatedAtMs'] as num?)?.toInt(),
     );
   }
@@ -25,17 +23,13 @@ class UserSettings {
   final String? locale;
 
   final bool? autoplayEnabled;
-  final bool? smoothTransitions;
 
   /// Marca de tiempo en ms desde epoch del momento en que se guardo este
   /// ajuste. Se usa para resolver conflictos remoto/local.
   final int? updatedAtMs;
 
   bool get isEmpty {
-    return themeMode == null &&
-        locale == null &&
-        autoplayEnabled == null &&
-        smoothTransitions == null;
+    return themeMode == null && locale == null && autoplayEnabled == null;
   }
 
   Map<String, dynamic> toJson() {
@@ -43,7 +37,6 @@ class UserSettings {
       if (themeMode != null) 'themeMode': themeMode,
       if (locale != null) 'locale': locale,
       if (autoplayEnabled != null) 'autoplayEnabled': autoplayEnabled,
-      if (smoothTransitions != null) 'smoothTransitions': smoothTransitions,
       'updatedAtMs': updatedAtMs ?? DateTime.now().millisecondsSinceEpoch,
     };
   }
@@ -52,14 +45,12 @@ class UserSettings {
     String? themeMode,
     String? locale,
     bool? autoplayEnabled,
-    bool? smoothTransitions,
     int? updatedAtMs,
   }) {
     return UserSettings(
       themeMode: themeMode ?? this.themeMode,
       locale: locale ?? this.locale,
       autoplayEnabled: autoplayEnabled ?? this.autoplayEnabled,
-      smoothTransitions: smoothTransitions ?? this.smoothTransitions,
       updatedAtMs: updatedAtMs ?? this.updatedAtMs,
     );
   }

@@ -4,7 +4,6 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 
 const _themeModeKey = 'theme_mode';
 const _autoplayKey = 'autoplay_enabled';
-const _smoothTransitionsKey = 'audio_tools_smooth_transitions';
 const _localeKey = 'locale';
 const _updatedAtKey = 'settings_updated_at_ms';
 
@@ -17,14 +16,12 @@ class SettingsLocalDataSource {
   UserSettings read() {
     final themeMode = _box.get(_themeModeKey);
     final autoplay = _box.get(_autoplayKey);
-    final smooth = _box.get(_smoothTransitionsKey);
     final locale = _box.get(_localeKey);
     final updatedAt = _box.get(_updatedAtKey);
     return UserSettings(
       themeMode: themeMode is String ? themeMode : null,
       locale: locale is String ? locale : null,
       autoplayEnabled: autoplay is bool ? autoplay : null,
-      smoothTransitions: smooth is bool ? smooth : null,
       updatedAtMs: updatedAt is int ? updatedAt : null,
     );
   }
@@ -39,7 +36,6 @@ class SettingsLocalDataSource {
     await putIfNotNull(_themeModeKey, settings.themeMode);
     await putIfNotNull(_localeKey, settings.locale);
     await putIfNotNull(_autoplayKey, settings.autoplayEnabled);
-    await putIfNotNull(_smoothTransitionsKey, settings.smoothTransitions);
     await box.put(
       _updatedAtKey,
       settings.updatedAtMs ?? DateTime.now().millisecondsSinceEpoch,
@@ -50,7 +46,6 @@ class SettingsLocalDataSource {
     await _box.delete(_themeModeKey);
     await _box.delete(_localeKey);
     await _box.delete(_autoplayKey);
-    await _box.delete(_smoothTransitionsKey);
     await _box.delete(_updatedAtKey);
   }
 }

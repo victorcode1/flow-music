@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/audio_tools/presentation/controllers/audio_tools_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/settings_page_controller.dart';
@@ -32,12 +31,6 @@ class SettingsDesktopContent extends ConsumerWidget {
     final autoplayEnabled = ref.watch(autoplayEnabledControllerProvider);
     final autoplayController = ref.read(
       autoplayEnabledControllerProvider.notifier,
-    );
-    final smoothTransitions = ref.watch(
-      audioToolsControllerProvider.select((s) => s.smoothTransitions),
-    );
-    final audioToolsController = ref.read(
-      audioToolsControllerProvider.notifier,
     );
 
     final content = SafeArea(
@@ -106,16 +99,6 @@ class SettingsDesktopContent extends ConsumerWidget {
                         trailing: Switch.adaptive(
                           value: autoplayEnabled,
                           onChanged: autoplayController.setEnabled,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      SettingsWebCard(
-                        icon: Icons.blur_on_rounded,
-                        title: LocaleKeys.smooth_transitions.tr(),
-                        subtitle: LocaleKeys.smooth_transitions_subtitle.tr(),
-                        trailing: Switch.adaptive(
-                          value: smoothTransitions,
-                          onChanged: audioToolsController.setSmoothTransitions,
                         ),
                       ),
                       const SizedBox(height: 14),
