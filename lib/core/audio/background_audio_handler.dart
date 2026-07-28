@@ -57,8 +57,8 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     );
     _subscriptions.add(
       player.onDurationChanged.listen((duration) {
-        // Cuando el caller declara una duracion confiable (p.ej. el
-        // metadato canonico de YouTube), ignoramos la duracion reportada
+        // Cuando el caller declara una duracion confiable, ignoramos la
+        // duracion reportada
         // por audioplayers porque a veces excede el audio real por unos
         // segundos. Esto evita el "tail" vacio en la barra de progreso.
         if (_hasTrustedDuration) return;

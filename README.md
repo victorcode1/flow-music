@@ -1,45 +1,26 @@
-# StreamBeat
+# StreamBeat Radio
 
-Aplicación Flutter para descubrir música, reproducir audio y explorar estaciones de radio internacionales.
+Aplicación Flutter centrada exclusivamente en descubrir y escuchar estaciones de radio por Internet.
 
-## Datos y privacidad
+## Alcance de esta rama
 
-La aplicación funciona de forma local:
+- La pantalla inicial muestra estaciones de radio, con búsqueda por nombre, filtros de país y género.
+- Permite reproducir transmisiones en vivo y mantener favoritos o playlists de radio en el dispositivo.
+- No incluye búsqueda, descarga ni reproducción de contenido de YouTube.
+- No usa Firebase, Cloud Functions, autenticación, sincronización en la nube ni rastreo de ubicación.
 
-- No usa Firebase, Cloud Functions, autenticación remota ni sincronización en la nube.
-- Favoritos, playlists y preferencias se guardan solamente en el dispositivo con Hive.
-- La ubicación se solicita solo mientras la app está abierta, para elegir el país de las recomendaciones y centrar el explorador de radio. No se guarda ni se envía a un servidor.
-
-La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
-
-## Requisitos
-
-- Flutter SDK 3.8 o posterior
-- Xcode y CocoaPods para iOS o macOS
-- Android SDK para Android
+Las listas de favoritos y playlists se guardan localmente con Hive. La aplicación consulta Radio Browser únicamente para obtener el catálogo público de emisoras y sus URLs de transmisión.
 
 ## Ejecutar
 
     flutter pub get
     flutter run
 
-Para generar los archivos de Riverpod y Freezed:
-
-    dart run build_runner build --delete-conflicting-outputs
-
 ## Compilación
 
     flutter build appbundle --release
     flutter build ipa --release
 
-## Funcionalidades en main
+## Aviso de publicación
 
-- Búsqueda y reproducción de música
-- Recomendaciones por país
-- Radios internacionales y explorador de radio
-- Reproducción en segundo plano
-- Favoritos, playlists y ajustes locales
-
-## Aviso sobre contenido de terceros
-
-Las marcas, catálogos y emisiones pertenecen a sus respectivos titulares. Antes de publicar una versión en una tienda, confirma que cada fuente de audio y su forma de reproducción cumplen los términos de servicio y las licencias aplicables.
+Antes de publicar, verifica que las emisoras y su reproducción cumplan las licencias, derechos y políticas aplicables de cada tienda.

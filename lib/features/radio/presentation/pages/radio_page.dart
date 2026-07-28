@@ -6,8 +6,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
-import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/models/radio_tag.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
@@ -15,7 +13,6 @@ import 'package:flow_music/features/radio/presentation/controllers/radio_favorit
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
 import 'package:flow_music/features/radio/presentation/widgets/radio_playlist_actions.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final RegExp _countryCodePattern = RegExp(r'^[A-Z]{2}$');
@@ -106,7 +103,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
           }
         });
 
-    _searchController = ref.read(searchProvider);
+    _searchController = TextEditingController();
     _lastSearchText = _searchController.text;
     _searchController.addListener(_onSearchChanged);
 
@@ -122,6 +119,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     _debounce?.cancel();
     _playerStateSubscription?.cancel();
     _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -206,16 +204,6 @@ class _RadioPageState extends ConsumerState<RadioPage> {
         ].join(' · '),
         artUrl: artUrl,
       );
-      await ref
-          .read(playbackHistoryControllerProvider.notifier)
-          .recordRadio(
-            stationId: station.stationUuid.isEmpty
-                ? station.streamUrl
-                : station.stationUuid,
-            name: station.name,
-            country: station.country,
-            artworkUrl: artUrl ?? station.artworkUrl,
-          );
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -267,12 +255,23 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                         ),
                       ),
                     ),
-                    FilledButton.tonalIcon(
-                      onPressed: () => context.go('/radio-map'),
-                      icon: const Icon(Icons.travel_explore_rounded),
-                      label: Text(LocaleKeys.radio_map_explorer_short.tr()),
-                    ),
                   ],
+                ),
+                const SizedBox(height: 14),
+                TextField(
+                  controller: _searchController,
+                  textInputAction: TextInputAction.search,
+                  decoration: InputDecoration(
+                    hintText: LocaleKeys.search.tr(),
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    suffixIcon: _searchController.text.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: LocaleKeys.clear.tr(),
+                            icon: const Icon(Icons.clear_rounded),
+                            onPressed: _clearFilters,
+                          ),
+                  ),
                 ),
                 const SizedBox(height: 14),
                 if (favoriteStations.isNotEmpty) ...[
