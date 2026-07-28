@@ -3,9 +3,8 @@ import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
-import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
-import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Barra superior de la variante desktop con busqueda y accesos rapidos.
@@ -43,7 +42,6 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final searchController = ref.watch(searchProvider);
-    final playlistItem = ref.watch(songController).currentPlaylistItem;
 
     return Container(
       height: 64,
@@ -142,18 +140,11 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (playlistItem != null) ...[
-                      _HomeDesktopTopIconButton(
-                        icon: Icons.playlist_add_rounded,
-                        tooltip: LocaleKeys.add_to_playlist.tr(),
-                        onPressed: () => showAddToPlaylistFlow(
-                          context: context,
-                          ref: ref,
-                          audio: playlistItem,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
+                    _HomeDesktopTopIconButton(
+                      icon: Icons.radio_rounded,
+                      tooltip: 'Explorar emisoras',
+                      onPressed: () => context.go('/radio'),
+                    ),
                   ],
                 ),
               ),

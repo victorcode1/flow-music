@@ -2,14 +2,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/audio_tools/presentation/controllers/audio_tools_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
-import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
-import 'package:flow_music/features/settings/presentation/controllers/default_playback_mode_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/settings_page_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/settings/presentation/widgets/accent_color_palette.dart';
 import 'package:flow_music/features/settings/presentation/widgets/settings_web_card.dart';
-import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -35,16 +32,6 @@ class SettingsDesktopContent extends ConsumerWidget {
     final autoplayEnabled = ref.watch(autoplayEnabledControllerProvider);
     final autoplayController = ref.read(
       autoplayEnabledControllerProvider.notifier,
-    );
-    final defaultPlaybackMode = ref.watch(
-      defaultPlaybackModeControllerProvider,
-    );
-    final defaultPlaybackModeController = ref.read(
-      defaultPlaybackModeControllerProvider.notifier,
-    );
-    final audioQuality = ref.watch(audioDownloadQualityControllerProvider);
-    final audioQualityController = ref.read(
-      audioDownloadQualityControllerProvider.notifier,
     );
     final smoothTransitions = ref.watch(
       audioToolsControllerProvider.select((s) => s.smoothTransitions),
@@ -113,18 +100,6 @@ class SettingsDesktopContent extends ConsumerWidget {
                       ),
                       const SizedBox(height: 14),
                       SettingsWebCard(
-                        icon: Icons.storage_rounded,
-                        title: LocaleKeys.storage_manager.tr(),
-                        subtitle: LocaleKeys.storage_manager_subtitle.tr(),
-                        trailing: OutlinedButton.icon(
-                          onPressed: () =>
-                              pageController.showStorageManager(context, ref),
-                          icon: const Icon(Icons.cleaning_services_rounded),
-                          label: Text(LocaleKeys.open.tr()),
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      SettingsWebCard(
                         icon: Icons.queue_music_rounded,
                         title: LocaleKeys.autoplay_queue.tr(),
                         subtitle: LocaleKeys.autoplay_queue_subtitle.tr(),
@@ -135,66 +110,12 @@ class SettingsDesktopContent extends ConsumerWidget {
                       ),
                       const SizedBox(height: 14),
                       SettingsWebCard(
-                        icon: Icons.play_circle_outline_rounded,
-                        title: LocaleKeys.default_playback_mode.tr(),
-                        subtitle:
-                            '${LocaleKeys.current_default_playback_mode.tr()}: ${pageController.playbackModeLabel(defaultPlaybackMode)}',
-                        trailing: DropdownButton<PlaybackMode>(
-                          value: defaultPlaybackMode,
-                          onChanged: (PlaybackMode? newValue) {
-                            if (newValue != null) {
-                              defaultPlaybackModeController.setMode(newValue);
-                            }
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: PlaybackMode.audio,
-                              child: Text(LocaleKeys.audio.tr()),
-                            ),
-                            DropdownMenuItem(
-                              value: PlaybackMode.video,
-                              child: Text(LocaleKeys.video.tr()),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      SettingsWebCard(
                         icon: Icons.blur_on_rounded,
                         title: LocaleKeys.smooth_transitions.tr(),
                         subtitle: LocaleKeys.smooth_transitions_subtitle.tr(),
                         trailing: Switch.adaptive(
                           value: smoothTransitions,
                           onChanged: audioToolsController.setSmoothTransitions,
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      SettingsWebCard(
-                        icon: Icons.high_quality_rounded,
-                        title: LocaleKeys.audio_download_quality.tr(),
-                        subtitle:
-                            '${LocaleKeys.current_audio_download_quality.tr()}: ${pageController.audioQualityLabel(audioQuality)}',
-                        trailing: DropdownButton<AudioDownloadQuality>(
-                          value: audioQuality,
-                          onChanged: (AudioDownloadQuality? newValue) {
-                            if (newValue != null) {
-                              audioQualityController.setQuality(newValue);
-                            }
-                          },
-                          items: [
-                            DropdownMenuItem(
-                              value: AudioDownloadQuality.high,
-                              child: Text(LocaleKeys.audio_quality_high.tr()),
-                            ),
-                            DropdownMenuItem(
-                              value: AudioDownloadQuality.medium,
-                              child: Text(LocaleKeys.audio_quality_medium.tr()),
-                            ),
-                            DropdownMenuItem(
-                              value: AudioDownloadQuality.low,
-                              child: Text(LocaleKeys.audio_quality_low.tr()),
-                            ),
-                          ],
                         ),
                       ),
                       const SizedBox(height: 14),

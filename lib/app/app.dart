@@ -3,7 +3,6 @@ import 'package:flow_music/app/main_app_controller.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
-import 'package:flow_music/features/autoplay/presentation/controllers/cache_status_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/shared/widgets/flow_ambient_background.dart';
@@ -47,10 +46,6 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     final themeMode = ref.watch(themeModeControllerProvider);
     final accent = ref.watch(accentColorControllerProvider);
 
-    ref.listen<CacheStatus>(
-      cacheStatusControllerProvider,
-      _appController.handleCacheStatusChanged,
-    );
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router,

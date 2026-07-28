@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 const String radioPlaylistsBoxName = 'radio_playlists';
-const String _ownerUidKey = '__owner_uid';
 
 class RadioPlaylistsRepository {
   const RadioPlaylistsRepository();
@@ -25,7 +24,6 @@ class RadioPlaylistsRepository {
   List<RadioPlaylist> readAll() {
     final result = <RadioPlaylist>[];
     for (final key in _box.keys) {
-      if (key == _ownerUidKey) continue;
       final playlist = _decode(_box.get(key));
       if (playlist != null) result.add(playlist);
     }
@@ -52,20 +50,6 @@ class RadioPlaylistsRepository {
     }
     if (entries.isEmpty) return;
     await _box.putAll(entries);
-  }
-
-  String? ownerUid() {
-    final value = _box.get(_ownerUidKey);
-    return value is String && value.isNotEmpty ? value : null;
-  }
-
-  Future<void> markOwner(String uid) async {
-    await _box.put(_ownerUidKey, uid);
-  }
-
-  Future<void> clearForUser(String uid) async {
-    await _box.clear();
-    await markOwner(uid);
   }
 
   RadioPlaylist? _decode(Object? raw) {

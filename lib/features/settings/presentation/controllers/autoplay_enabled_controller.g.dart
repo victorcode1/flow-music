@@ -8,18 +8,18 @@ part of 'autoplay_enabled_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Boolean preference: when true, after a tapped search result finishes the
-/// app auto-advances through the remaining results (prefetched in parallel).
+/// Preferencia para avanzar a la siguiente emisora cuando una lista de radio
+/// tiene más elementos disponibles.
 
 @ProviderFor(AutoplayEnabledController)
 final autoplayEnabledControllerProvider = AutoplayEnabledControllerProvider._();
 
-/// Boolean preference: when true, after a tapped search result finishes the
-/// app auto-advances through the remaining results (prefetched in parallel).
+/// Preferencia para avanzar a la siguiente emisora cuando una lista de radio
+/// tiene más elementos disponibles.
 final class AutoplayEnabledControllerProvider
     extends $NotifierProvider<AutoplayEnabledController, bool> {
-  /// Boolean preference: when true, after a tapped search result finishes the
-  /// app auto-advances through the remaining results (prefetched in parallel).
+  /// Preferencia para avanzar a la siguiente emisora cuando una lista de radio
+  /// tiene más elementos disponibles.
   AutoplayEnabledControllerProvider._()
     : super(
         from: null,
@@ -48,10 +48,10 @@ final class AutoplayEnabledControllerProvider
 }
 
 String _$autoplayEnabledControllerHash() =>
-    r'28b5bbeb5849261a445774a46b15b3a2bfa4f0db';
+    r'725d3641dd1443031bab070a22cc0102e14ed4a9';
 
-/// Boolean preference: when true, after a tapped search result finishes the
-/// app auto-advances through the remaining results (prefetched in parallel).
+/// Preferencia para avanzar a la siguiente emisora cuando una lista de radio
+/// tiene más elementos disponibles.
 
 abstract class _$AutoplayEnabledController extends $Notifier<bool> {
   bool build();

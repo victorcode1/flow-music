@@ -5,7 +5,6 @@ import 'package:flow_music/features/history/presentation/controllers/playback_hi
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
-import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -59,9 +58,6 @@ Future<void> _resolveAndPlay({
   try {
     final streamUrl = await repository.countClickAndResolveUrl(station);
     final artUrl = await repository.resolveArtworkUrl(station);
-    // Tear down any active YouTube video controller first — otherwise its
-    // own audio track keeps playing on top of the radio stream.
-    await ref.read(songController).clearSongPlayback();
     await flowAudioHandler.playUrl(
       url: streamUrl,
       id: station.stationUuid.isEmpty ? streamUrl : station.stationUuid,
@@ -85,8 +81,8 @@ Future<void> _resolveAndPlay({
         );
   } catch (_) {
     if (!context.mounted) return;
-    ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-      SnackBar(content: Text(LocaleKeys.radio_play_error.tr())),
-    );
+    ScaffoldMessenger.maybeOf(
+      context,
+    )?.showSnackBar(SnackBar(content: Text(LocaleKeys.radio_play_error.tr())));
   }
 }

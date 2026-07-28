@@ -1,63 +1,43 @@
-import 'package:easy_localization/easy_localization.dart';
-import 'package:flow_music/features/favorites/data/favorite_song.dart';
-import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
-import 'package:flow_music/features/home/presentation/widgets/app_bar.dart';
-import 'package:flow_music/features/search/presentation/widgets/search_song.dart';
-import 'package:flutter/material.dart' hide SearchDelegate;
-import 'package:flutter/widget_previews.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flow_music/core/consts/enums.dart';
+import 'package:flutter/material.dart';
 
 class HomeMobileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const HomeMobileAppBar({
-    super.key,
-    this.query,
-    required this.showNowPlayingDetails,
-    required this.showMiniPlayer,
-  });
+  const HomeMobileAppBar({super.key, required this.onSearch});
 
-  final Function(String)? query;
-  final bool showNowPlayingDetails;
-  final bool showMiniPlayer;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) {
-    return AppAbarMain(
-      query: query,
-      showSearch: () =>
-          showSearch(context: context, delegate: ViewSearchDelegate()),
-      showNowPlayingDetails: showNowPlayingDetails,
-      showNowPlayingTitle: !showMiniPlayer,
+    final colors = Theme.of(context).colorScheme;
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      title: Text(
+        Variables.name.value,
+        style: Theme.of(
+          context,
+        ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+      ),
+      actions: [
+        Container(
+          width: 44,
+          height: 44,
+          margin: const EdgeInsets.only(right: 16),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: IconButton(
+            tooltip: 'Buscar emisoras',
+            onPressed: onSearch,
+            icon: const Icon(Icons.search_rounded),
+          ),
+        ),
+      ],
     );
   }
 
   @override
-  Size get preferredSize => AppAbarMain(
-    query: query,
-    showSearch: () async {},
-    showNowPlayingDetails: showNowPlayingDetails,
-    showNowPlayingTitle: !showMiniPlayer,
-  ).preferredSize;
-}
-
-@Preview(name: 'Home mobile app bar')
-Widget previewHomeMobileAppBar() {
-  return ProviderScope(
-    overrides: [
-      favoritesControllerProvider.overrideWithValue(const <FavoriteSong>[]),
-    ],
-    child: EasyLocalization(
-      supportedLocales: const [Locale('es')],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('es'),
-      child: MaterialApp(
-        home: Scaffold(
-          appBar: const HomeMobileAppBar(
-            showNowPlayingDetails: false,
-            showMiniPlayer: false,
-          ),
-          body: const SizedBox.expand(),
-        ),
-      ),
-    ),
-  );
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 20);
 }

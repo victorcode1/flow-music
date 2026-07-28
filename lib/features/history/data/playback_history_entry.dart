@@ -1,11 +1,10 @@
 enum PlaybackHistoryKind {
-  song,
   radio;
 
   static PlaybackHistoryKind fromName(String? name) {
     return PlaybackHistoryKind.values.firstWhere(
       (kind) => kind.name == name,
-      orElse: () => PlaybackHistoryKind.song,
+      orElse: () => PlaybackHistoryKind.radio,
     );
   }
 }

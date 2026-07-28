@@ -3,7 +3,6 @@ import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/home/presentation/controllers/home_view_controller.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/shared/custom_info_version/custom_info_version.dart';
 import 'package:flutter/material.dart';
@@ -28,13 +27,8 @@ class CustomDrawer extends ConsumerWidget {
     // consulta anterior. (`_clearSearchOnRouteChange` en HomePage solo
     // cubre rutas anidadas, no los `route.go(...)` top-level del drawer.)
     //
-    // Tambien reseteamos `homeViewProvider` porque es keepAlive y conserva
-    // el ultimo ListSong/PlaySong; sin esto, tocar "Home" desde el drawer
-    // estando ya en /home no recargaba las sugerencias y seguia mostrando
-    // la lista de la busqueda anterior.
     void goTo(String path) {
       ref.read(searchProvider).clear();
-      ref.read(homeViewProvider.notifier).setQuery('');
       FocusManager.instance.primaryFocus?.unfocus();
       Navigator.pop(context);
       route.go(path);

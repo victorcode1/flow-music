@@ -5,9 +5,7 @@ import 'package:flow_music/features/home/presentation/pages/home_page.dart';
 import 'package:flow_music/features/library/presentation/pages/library_page.dart';
 import 'package:flow_music/features/radio/presentation/pages/radio_map_explorer_page.dart';
 import 'package:flow_music/features/radio/presentation/pages/radio_page.dart';
-import 'package:flow_music/features/search/presentation/pages/list_search.dart';
 import 'package:flow_music/features/settings/presentation/pages/settings_page.dart';
-import 'package:flow_music/features/song/presentation/pages/song.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -62,30 +60,6 @@ class Route extends _$Route {
           path: '/favorites',
           pageBuilder: (context, state) =>
               _noTransitionPage(state, const HomePage(child: FavoritesPage())),
-        ),
-        ShellRoute(
-          pageBuilder: (context, state, child) =>
-              _noTransitionPage(state, HomePage(child: child)),
-          routes: [
-            GoRoute(
-              path: '/search',
-              pageBuilder: (context, state) =>
-                  _noTransitionPage(state, const SuggestedListSearch()),
-            ),
-            GoRoute(
-              name: 'playSong',
-              path: '/playSong',
-              pageBuilder: (context, state) {
-                Map<String?, String?> data = {
-                  'idSong': state.uri.queryParameters['idSong'],
-                  'playListId': state.uri.queryParameters['playListId'],
-                  'mediaType': state.uri.queryParameters['mediaType'],
-                  'durationMs': state.uri.queryParameters['durationMs'],
-                };
-                return _noTransitionPage(state, SongWidget(data: data));
-              },
-            ),
-          ],
         ),
       ],
     );

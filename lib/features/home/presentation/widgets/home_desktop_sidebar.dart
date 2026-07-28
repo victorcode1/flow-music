@@ -32,7 +32,7 @@ class HomeDesktopSidebar extends ConsumerWidget {
               _HomeDesktopNavItem(
                 icon: Icons.home_rounded,
                 label: LocaleKeys.home.tr(),
-                selected: currentPath == '/home' || currentPath == '/playSong',
+                selected: currentPath == '/home',
                 onTap: () => route.go('/home'),
               ),
               _HomeDesktopNavItem(
@@ -146,7 +146,9 @@ class _HomeDesktopNavItem extends StatelessWidget {
                   child: Text(
                     label,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      color: selected ? colors.primary : colors.onSurfaceVariant,
+                      color: selected
+                          ? colors.primary
+                          : colors.onSurfaceVariant,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                     ),
                   ),
