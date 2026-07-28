@@ -1,6 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/audio_tools/presentation/controllers/audio_tools_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
@@ -42,12 +41,6 @@ class SettingsMobileContent extends ConsumerWidget {
     final audioQuality = ref.watch(audioDownloadQualityControllerProvider);
     final audioQualityController = ref.read(
       audioDownloadQualityControllerProvider.notifier,
-    );
-    final smoothTransitions = ref.watch(
-      audioToolsControllerProvider.select((s) => s.smoothTransitions),
-    );
-    final audioToolsController = ref.read(
-      audioToolsControllerProvider.notifier,
     );
 
     return Scaffold(
@@ -137,15 +130,6 @@ class SettingsMobileContent extends ConsumerWidget {
                   trailing: Switch.adaptive(
                     value: autoplayEnabled,
                     onChanged: autoplayController.setEnabled,
-                  ),
-                ),
-                const _RowDivider(),
-                _SettingsRow(
-                  icon: Icons.sync_rounded,
-                  title: LocaleKeys.smooth_transitions.tr(),
-                  trailing: Switch.adaptive(
-                    value: smoothTransitions,
-                    onChanged: audioToolsController.setSmoothTransitions,
                   ),
                 ),
               ],

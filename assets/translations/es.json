@@ -76,8 +76,6 @@
   "source": "Origen",
   "volume": "Volumen",
   "normalize_volume": "Normalizar volumen",
-  "smooth_transitions": "Transiciones suaves",
-  "smooth_transitions_subtitle": "Atenúa el final de la canción actual y entra suavemente la siguiente.",
   "audio_tools": "Herramientas de audio",
   "balance": "Balance",
   "playback_rate": "Velocidad de reproducción",

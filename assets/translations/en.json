@@ -76,8 +76,6 @@
   "source": "Source",
   "volume": "Volume",
   "normalize_volume": "Normalize volume",
-  "smooth_transitions": "Smooth transitions",
-  "smooth_transitions_subtitle": "Fade out the current song and fade in the next one for seamless playback.",
   "audio_tools": "Audio tools",
   "balance": "Balance",
   "playback_rate": "Playback Rate",

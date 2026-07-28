@@ -80,8 +80,6 @@ abstract class LocaleKeys {
   static const source = 'source';
   static const volume = 'volume';
   static const normalize_volume = 'normalize_volume';
-  static const smooth_transitions = 'smooth_transitions';
-  static const smooth_transitions_subtitle = 'smooth_transitions_subtitle';
   static const audio_tools = 'audio_tools';
   static const balance = 'balance';
   static const playback_rate = 'playback_rate';

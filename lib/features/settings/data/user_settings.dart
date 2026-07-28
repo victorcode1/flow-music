@@ -7,7 +7,6 @@ class UserSettings {
     this.autoplayEnabled,
     this.defaultPlaybackMode,
     this.repeatEnabled,
-    this.smoothTransitions,
     this.updatedAtMs,
   });
 
@@ -18,7 +17,6 @@ class UserSettings {
       autoplayEnabled: json['autoplayEnabled'] as bool?,
       defaultPlaybackMode: json['defaultPlaybackMode'] as String?,
       repeatEnabled: json['repeatEnabled'] as bool?,
-      smoothTransitions: json['smoothTransitions'] as bool?,
       updatedAtMs: (json['updatedAtMs'] as num?)?.toInt(),
     );
   }
@@ -32,7 +30,6 @@ class UserSettings {
   final bool? autoplayEnabled;
   final String? defaultPlaybackMode;
   final bool? repeatEnabled;
-  final bool? smoothTransitions;
 
   /// Marca de tiempo en ms desde epoch del momento en que se guardo este
   /// ajuste. Se usa para resolver conflictos remoto/local.
@@ -43,8 +40,7 @@ class UserSettings {
         locale == null &&
         autoplayEnabled == null &&
         defaultPlaybackMode == null &&
-        repeatEnabled == null &&
-        smoothTransitions == null;
+        repeatEnabled == null;
   }
 
   Map<String, dynamic> toJson() {
@@ -55,7 +51,6 @@ class UserSettings {
       if (defaultPlaybackMode != null)
         'defaultPlaybackMode': defaultPlaybackMode,
       if (repeatEnabled != null) 'repeatEnabled': repeatEnabled,
-      if (smoothTransitions != null) 'smoothTransitions': smoothTransitions,
       'updatedAtMs': updatedAtMs ?? DateTime.now().millisecondsSinceEpoch,
     };
   }
@@ -66,7 +61,6 @@ class UserSettings {
     bool? autoplayEnabled,
     String? defaultPlaybackMode,
     bool? repeatEnabled,
-    bool? smoothTransitions,
     int? updatedAtMs,
   }) {
     return UserSettings(
@@ -75,7 +69,6 @@ class UserSettings {
       autoplayEnabled: autoplayEnabled ?? this.autoplayEnabled,
       defaultPlaybackMode: defaultPlaybackMode ?? this.defaultPlaybackMode,
       repeatEnabled: repeatEnabled ?? this.repeatEnabled,
-      smoothTransitions: smoothTransitions ?? this.smoothTransitions,
       updatedAtMs: updatedAtMs ?? this.updatedAtMs,
     );
   }

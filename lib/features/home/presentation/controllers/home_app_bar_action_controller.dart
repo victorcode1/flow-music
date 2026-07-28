@@ -429,7 +429,6 @@ Future<void> _showAppBarAudioToolsSheet({
 }) async {
   var rate = state.playbackRate;
   var normalize = state.normalizeVolume;
-  var smooth = state.smoothTransitions;
   await showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
@@ -471,15 +470,6 @@ Future<void> _showAppBarAudioToolsSheet({
                   },
                   title: Text(LocaleKeys.normalize_volume.tr()),
                   secondary: const Icon(Icons.volume_up_rounded),
-                ),
-                SwitchListTile.adaptive(
-                  value: smooth,
-                  onChanged: (value) {
-                    setSheetState(() => smooth = value);
-                    controller.setSmoothTransitions(value);
-                  },
-                  title: Text(LocaleKeys.smooth_transitions.tr()),
-                  secondary: const Icon(Icons.blur_on_rounded),
                 ),
               ],
             ),

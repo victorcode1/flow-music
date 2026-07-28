@@ -41,7 +41,6 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
         _position = _hasTrustedDuration && position > _duration
             ? _duration
             : position;
-        _maybeStartFadeOut(position);
         // audioplayers sigue reproduciendo (silencio o padding) varios
         // segundos despues del fin canonico, asi que `onPlayerComplete`
         // llega tarde y autoplay se queda esperando. En cuanto la posicion
@@ -82,50 +81,7 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   bool _hasTrustedDuration = false;
   bool _completionFired = false;
 
-  static const Duration _fadeOutDuration = Duration(milliseconds: 2500);
-  static const Duration _fadeInDuration = Duration(milliseconds: 700);
-  static const Duration _fadeStep = Duration(milliseconds: 50);
   static const Duration _nativeCleanupTimeout = Duration(seconds: 2);
-  bool _smoothTransitions = true;
-  bool _fadeOutStarted = false;
-  int _fadeGeneration = 0;
-
-  void setSmoothTransitions(bool value) {
-    _smoothTransitions = value;
-    if (!value) {
-      _fadeGeneration++;
-      _fadeOutStarted = false;
-      unawaited(player.setVolume(1));
-    }
-  }
-
-  void _maybeStartFadeOut(Duration position) {
-    if (!_smoothTransitions || _fadeOutStarted) return;
-    if (!_hasTrustedDuration || _duration <= _fadeOutDuration) return;
-    final remaining = _duration - position;
-    if (remaining <= _fadeOutDuration && remaining > Duration.zero) {
-      _fadeOutStarted = true;
-      unawaited(_runFade(from: 1, to: 0, total: remaining));
-    }
-  }
-
-  Future<void> _runFade({
-    required double from,
-    required double to,
-    required Duration total,
-  }) async {
-    final generation = ++_fadeGeneration;
-    final steps = (total.inMilliseconds / _fadeStep.inMilliseconds)
-        .floor()
-        .clamp(1, 1000);
-    await player.setVolume(from);
-    for (var i = 1; i <= steps; i++) {
-      await Future<void>.delayed(_fadeStep);
-      if (generation != _fadeGeneration) return;
-      final volume = (from + (to - from) * (i / steps)).clamp(0.0, 1.0);
-      await player.setVolume(volume);
-    }
-  }
 
   /// Hook fired when the current track finishes naturally. The app wires this
   /// to the autoplay queue so the next prefetched suggestion plays.
@@ -163,7 +119,6 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     );
     try {
       await _playRemoteSource(url: url, mimeType: mimeType);
-      _startFadeIn();
     } catch (error, stack) {
       _handlePlaybackError(error, stack);
     }
@@ -192,7 +147,6 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     );
     try {
       await player.play(DeviceFileSource(filePath));
-      _startFadeIn();
     } catch (error, stack) {
       _handlePlaybackError(error, stack);
     }
@@ -209,9 +163,7 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     _duration = Duration.zero;
     _hasTrustedDuration = false;
     _completionFired = false;
-    _fadeGeneration++;
-    _fadeOutStarted = false;
-    await player.setVolume(_smoothTransitions ? 0 : 1);
+    await player.setVolume(1);
   }
 
   Future<void> _playRemoteSource({
@@ -219,11 +171,6 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     String? mimeType,
   }) async {
     await player.play(UrlSource(url, mimeType: mimeType));
-  }
-
-  void _startFadeIn() {
-    if (!_smoothTransitions) return;
-    unawaited(_runFade(from: 0, to: 1, total: _fadeInDuration));
   }
 
   Future<void> _handleCompletion() async {
@@ -250,12 +197,9 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     // Evita que onPositionChanged dispare un "completion" fantasma sobre una
     // fuente que nunca llego a sonar.
     _completionFired = true;
-    _fadeGeneration++;
     try {
       await player.stop();
     } catch (_) {}
-    // Restauramos volumen para que la proxima fuente no quede en silencio por
-    // el fade-in que no llego a completarse.
     await player.setVolume(1);
     playbackState.add(
       playbackState.value.copyWith(

@@ -43,10 +43,8 @@ class ModernPlayerWidget extends StatefulWidget {
   final VoidCallback? onShuffle;
   final double playbackRate;
   final bool normalizeVolume;
-  final bool smoothTransitions;
   final ValueChanged<double>? onPlaybackRateChanged;
   final ValueChanged<bool>? onNormalizeVolumeChanged;
-  final ValueChanged<bool>? onSmoothTransitionsChanged;
   final bool isFavorite;
   final VoidCallback? onToggleFavorite;
 
@@ -84,10 +82,8 @@ class ModernPlayerWidget extends StatefulWidget {
     this.onShuffle,
     this.playbackRate = 1,
     this.normalizeVolume = false,
-    this.smoothTransitions = false,
     this.onPlaybackRateChanged,
     this.onNormalizeVolumeChanged,
-    this.onSmoothTransitionsChanged,
     this.isFavorite = false,
     this.onToggleFavorite,
     this.sideRail,

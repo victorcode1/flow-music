@@ -6,7 +6,6 @@ const _themeModeKey = 'theme_mode';
 const _autoplayKey = 'autoplay_enabled';
 const _defaultPlaybackModeKey = 'default_playback_mode';
 const _repeatKey = 'repeat_enabled';
-const _smoothTransitionsKey = 'audio_tools_smooth_transitions';
 const _localeKey = 'locale';
 const _updatedAtKey = 'settings_updated_at_ms';
 const _ownerUidKey = 'settings_owner_uid';
@@ -24,7 +23,6 @@ class SettingsLocalDataSource {
     final autoplay = _box.get(_autoplayKey);
     final defaultPlaybackMode = _box.get(_defaultPlaybackModeKey);
     final repeat = _box.get(_repeatKey);
-    final smooth = _box.get(_smoothTransitionsKey);
     final locale = _box.get(_localeKey);
     final updatedAt = _box.get(_updatedAtKey);
     return UserSettings(
@@ -35,7 +33,6 @@ class SettingsLocalDataSource {
           ? defaultPlaybackMode
           : null,
       repeatEnabled: repeat is bool ? repeat : null,
-      smoothTransitions: smooth is bool ? smooth : null,
       updatedAtMs: updatedAt is int ? updatedAt : null,
     );
   }
@@ -52,7 +49,6 @@ class SettingsLocalDataSource {
     await putIfNotNull(_autoplayKey, settings.autoplayEnabled);
     await putIfNotNull(_defaultPlaybackModeKey, settings.defaultPlaybackMode);
     await putIfNotNull(_repeatKey, settings.repeatEnabled);
-    await putIfNotNull(_smoothTransitionsKey, settings.smoothTransitions);
     await box.put(
       _updatedAtKey,
       settings.updatedAtMs ?? DateTime.now().millisecondsSinceEpoch,
@@ -79,7 +75,6 @@ class SettingsLocalDataSource {
     await _box.delete(_autoplayKey);
     await _box.delete(_defaultPlaybackModeKey);
     await _box.delete(_repeatKey);
-    await _box.delete(_smoothTransitionsKey);
     await _box.delete(_updatedAtKey);
     await markOwner(uid);
   }

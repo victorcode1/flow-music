@@ -175,11 +175,8 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                   : null,
               playbackRate: audioTools.playbackRate,
               normalizeVolume: audioTools.normalizeVolume,
-              smoothTransitions: audioTools.smoothTransitions,
               onPlaybackRateChanged: audioToolsNotifier.setPlaybackRate,
               onNormalizeVolumeChanged: audioToolsNotifier.setNormalizeVolume,
-              onSmoothTransitionsChanged:
-                  audioToolsNotifier.setSmoothTransitions,
               // En escritorio el reproductor inmersivo muestra el riel de cola
               // "A continuación / Letra" a la derecha (igual al mockup).
               sourceLabel: isWide ? LocaleKeys.playing.tr() : null,
