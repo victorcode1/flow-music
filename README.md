@@ -6,7 +6,6 @@ Aplicación Flutter para descubrir música, reproducir audio y explorar estacion
 
 La aplicación funciona de forma local:
 
-- No usa Firebase, Cloud Functions, autenticación remota ni sincronización en la nube.
 - Favoritos, playlists y preferencias se guardan solamente en el dispositivo con Hive.
 - La ubicación se solicita solo mientras la app está abierta, para elegir el país de las recomendaciones y centrar el explorador de radio. No se guarda ni se envía a un servidor.
 
