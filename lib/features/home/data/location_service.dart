@@ -42,8 +42,6 @@ class ResolvedLocation {
       LocationAccessStatus.serviceDisabled => 'serviceDisabled',
       LocationAccessStatus.permissionDenied => 'permissionDenied',
       LocationAccessStatus.permissionDeniedForever => 'permissionDeniedForever',
-      LocationAccessStatus.alwaysPermissionRequired =>
-        'alwaysPermissionRequired',
     };
   }
 }
@@ -54,7 +52,6 @@ enum LocationAccessStatus {
   serviceDisabled,
   permissionDenied,
   permissionDeniedForever,
-  alwaysPermissionRequired,
 }
 
 /// Servicio que encapsula el acceso a GPS y reverse-geocoding.
@@ -65,9 +62,15 @@ enum LocationAccessStatus {
 class LocationService {
   const LocationService();
 
-  Future<LocationAccessStatus> locationAccessStatus({
-    bool requireAlwaysPermission = false,
-  }) async {
+  /// Instancia compartida del plugin de geocoding.
+  ///
+  /// Desde `geocoding` 5.0.0 el paquete ya no expone funciones top-level: todo
+  /// pasa por la clase [geocoding.Geocoding]. Se declara `static` para no
+  /// romper el constructor `const` y, al ser un `static final`, Dart la crea de
+  /// forma lazy en el primer uso (nunca antes del registro de plugins).
+  static final _geocoding = geocoding.Geocoding();
+
+  Future<LocationAccessStatus> locationAccessStatus() async {
     try {
       if (kIsWeb) {
         return LocationAccessStatus.webUnsupported;
@@ -79,10 +82,7 @@ class LocationService {
       }
 
       final permission = await Geolocator.checkPermission();
-      return _statusForPermission(
-        permission,
-        requireAlwaysPermission: requireAlwaysPermission,
-      );
+      return _statusForPermission(permission);
     } catch (error, stackTrace) {
       debugPrint('LocationService.locationAccessStatus failed: $error');
       debugPrintStack(stackTrace: stackTrace);
@@ -90,10 +90,7 @@ class LocationService {
     }
   }
 
-  Future<LocationAccessStatus> requestLocationAccess({
-    bool requestAlwaysPermission = false,
-    bool requireAlwaysPermission = false,
-  }) async {
+  Future<LocationAccessStatus> requestLocationAccess() async {
     try {
       if (kIsWeb) {
         return LocationAccessStatus.webUnsupported;
@@ -108,14 +105,7 @@ class LocationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-      if (requestAlwaysPermission &&
-          permission == LocationPermission.whileInUse) {
-        permission = await Geolocator.requestPermission();
-      }
-      return _statusForPermission(
-        permission,
-        requireAlwaysPermission: requireAlwaysPermission,
-      );
+      return _statusForPermission(permission);
     } catch (error, stackTrace) {
       debugPrint('LocationService.requestLocationAccess failed: $error');
       debugPrintStack(stackTrace: stackTrace);
@@ -147,7 +137,7 @@ class LocationService {
       final location = await resolveLocation(timeLimit: timeLimit);
       if (!location.isResolved) return const ResolvedCountry();
 
-      final placemarks = await geocoding.placemarkFromCoordinates(
+      final placemarks = await _geocoding.placemarkFromCoordinates(
         location.latitude!,
         location.longitude!,
       );
@@ -170,19 +160,9 @@ class LocationService {
     Duration timeLimit = const Duration(seconds: 8),
     bool allowLastKnownFallback = true,
     Duration maxLastKnownAge = const Duration(minutes: 30),
-    bool requestPermission = true,
-    bool requestAlwaysPermission = false,
-    bool requireAlwaysPermission = false,
   }) async {
     try {
-      final accessStatus = requestPermission
-          ? await requestLocationAccess(
-              requestAlwaysPermission: requestAlwaysPermission,
-              requireAlwaysPermission: requireAlwaysPermission,
-            )
-          : await locationAccessStatus(
-              requireAlwaysPermission: requireAlwaysPermission,
-            );
+      final accessStatus = await requestLocationAccess();
       if (accessStatus != LocationAccessStatus.available) {
         return ResolvedLocation(
           accessStatus: accessStatus,
@@ -207,7 +187,10 @@ class LocationService {
         if (!_isFreshEnough(lastKnownPosition, maxLastKnownAge)) {
           return const ResolvedLocation(failureReason: 'last-known-stale');
         }
-        return _resolvedLocationFromPosition(lastKnownPosition, isLastKnown: true);
+        return _resolvedLocationFromPosition(
+          lastKnownPosition,
+          isLastKnown: true,
+        );
       }
     } catch (error, stackTrace) {
       debugPrint('LocationService.resolveLocation failed: $error');
@@ -242,19 +225,10 @@ class LocationService {
       LocationAccessStatus.permissionDenied => 'permission-denied',
       LocationAccessStatus.permissionDeniedForever =>
         'permission-denied-forever',
-      LocationAccessStatus.alwaysPermissionRequired =>
-        'always-permission-required',
     };
   }
 
-  LocationAccessStatus _statusForPermission(
-    LocationPermission permission, {
-    bool requireAlwaysPermission = false,
-  }) {
-    if (requireAlwaysPermission &&
-        permission == LocationPermission.whileInUse) {
-      return LocationAccessStatus.alwaysPermissionRequired;
-    }
+  LocationAccessStatus _statusForPermission(LocationPermission permission) {
     return switch (permission) {
       LocationPermission.always ||
       LocationPermission.whileInUse => LocationAccessStatus.available,

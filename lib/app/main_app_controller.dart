@@ -3,24 +3,17 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/routes/app_navigator_key.dart';
-import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
-import 'package:flow_music/features/auth/presentation/notifiers/auth_notifier.dart';
 import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
     if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/cache_status_controller.dart';
 import 'package:flow_music/features/home/data/location_service.dart';
-import 'package:flow_music/features/location_tracking/data/user_location_providers.dart';
-import 'package:flow_music/features/location_tracking/data/user_location_tracker.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
-import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/repeat_mode_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
-import 'package:flow_music/features/user_presence/data/user_presence_tracker.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final mainAppControllerProvider = Provider<MainAppController>(
@@ -33,40 +26,16 @@ class MainAppController {
   final Ref ref;
   DateTime? _lastLocationPromptAt;
 
-  /// Clave en la caja `settings` con la marca de tiempo del ultimo recordatorio
-  /// de registro mostrado a un invitado.
-  static const String _guestSignUpPromptKey =
-      'guest_signup_prompt_last_shown_ms';
-
-  /// Tiempo minimo entre recordatorios de registro para no resultar invasivos.
-  static const Duration _guestSignUpCooldown = Duration(hours: 6);
-
-  /// Cada cuanto reevaluamos si toca mostrar el recordatorio durante una sesion
-  /// larga (ademas de al iniciar la app y al volver del segundo plano).
-  static const Duration _guestSignUpCheckInterval = Duration(minutes: 20);
-
-  Timer? _guestSignUpTimer;
-  bool _guestSignUpPromptVisible = false;
-
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
     flowAudioHandler.onSkipToNext = handleSkipToNext;
     flowAudioHandler.onSkipToPrevious = handleSkipToPrevious;
-    ref.read(userPresenceTrackerProvider);
-    ref.read(userLocationTrackerProvider);
-    unawaited(ref.read(authProvider.notifier).ensureAnonymousSession());
-    _guestSignUpTimer = Timer.periodic(_guestSignUpCheckInterval, (_) {
-      unawaited(_promptGuestSignUpIfNeeded());
-    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_promptTrackingLocationAccessIfNeeded());
-      unawaited(_promptGuestSignUpIfNeeded());
+      unawaited(_promptCountryLocationAccessIfNeeded());
     });
   }
 
   void dispose() {
-    _guestSignUpTimer?.cancel();
-    _guestSignUpTimer = null;
     if (flowAudioHandler.onTrackComplete == handleTrackComplete) {
       flowAudioHandler.onTrackComplete = null;
     }
@@ -110,16 +79,13 @@ class MainAppController {
   }
 
   void handleAppLifecycleState(AppLifecycleState state) {
-    ref.read(userPresenceTrackerProvider.notifier).handleLifecycleState(state);
-    ref.read(userLocationTrackerProvider.notifier).handleLifecycleState(state);
     switch (state) {
       case AppLifecycleState.detached:
         ref.read(mainController).setAudioStateDetached();
         unawaited(clearAudioCache());
       case AppLifecycleState.resumed:
         ref.read(mainController).setAudioStateResumed();
-        unawaited(_promptTrackingLocationAccessIfNeeded());
-        unawaited(_promptGuestSignUpIfNeeded());
+        unawaited(_promptCountryLocationAccessIfNeeded());
         break;
       case AppLifecycleState.inactive:
         ref.read(mainController).setAudioStateInactive();
@@ -177,20 +143,17 @@ class MainAppController {
     );
   }
 
-  Future<void> _promptTrackingLocationAccessIfNeeded() async {
-    final user = ref.read(authProvider).asData?.value;
-    if (user == null || user.isAnonymous) return;
-
+  // Location is used only while the app is open to choose country-based
+  // recommendations. Coordinates are never stored or sent to a backend.
+  Future<void> _promptCountryLocationAccessIfNeeded() async {
     final lastPromptAt = _lastLocationPromptAt;
     if (lastPromptAt != null &&
         DateTime.now().difference(lastPromptAt) < const Duration(minutes: 10)) {
       return;
     }
 
-    final locationService = ref.read(locationServiceProvider);
-    final status = await locationService.locationAccessStatus(
-      requireAlwaysPermission: true,
-    );
+    const locationService = LocationService();
+    final status = await locationService.locationAccessStatus();
     if (status == LocationAccessStatus.available ||
         status == LocationAccessStatus.webUnsupported) {
       return;
@@ -202,13 +165,11 @@ class MainAppController {
 
     final message = switch (status) {
       LocationAccessStatus.serviceDisabled =>
-        'Activa la ubicacion para actualizar tu posicion.',
+        'Activa la ubicacion para sugerirte musica popular de tu pais.',
       LocationAccessStatus.permissionDenied =>
-        'Permite la ubicacion para actualizar tu posicion.',
+        'Permite la ubicacion para sugerirte musica popular de tu pais.',
       LocationAccessStatus.permissionDeniedForever =>
-        'Habilita la ubicacion desde ajustes para actualizar tu posicion.',
-      LocationAccessStatus.alwaysPermissionRequired =>
-        'Activa el permiso siempre para actualizar tu posicion en segundo plano.',
+        'Habilita la ubicacion desde ajustes para sugerirte musica por pais.',
       LocationAccessStatus.available ||
       LocationAccessStatus.webUnsupported => '',
     };
@@ -225,15 +186,8 @@ class MainAppController {
                 case LocationAccessStatus.serviceDisabled:
                   unawaited(locationService.openDeviceLocationSettings());
                 case LocationAccessStatus.permissionDenied:
-                  unawaited(
-                    locationService.requestLocationAccess(
-                      requestAlwaysPermission: true,
-                      requireAlwaysPermission: true,
-                    ),
-                  );
+                  unawaited(locationService.requestLocationAccess());
                 case LocationAccessStatus.permissionDeniedForever:
-                  unawaited(locationService.openAppLocationSettings());
-                case LocationAccessStatus.alwaysPermissionRequired:
                   unawaited(locationService.openAppLocationSettings());
                 case LocationAccessStatus.available:
                 case LocationAccessStatus.webUnsupported:
@@ -243,61 +197,6 @@ class MainAppController {
           ),
         ),
       );
-  }
-
-  /// Invita periodicamente a los invitados (sin sesion o con sesion anonima) a
-  /// crear una cuenta o iniciar sesion para no perder favoritos, playlists y
-  /// preferencias. Respeta un periodo de espera persistido para no ser invasivo.
-  Future<void> _promptGuestSignUpIfNeeded() async {
-    if (_guestSignUpPromptVisible) return;
-
-    final user = ref.read(authProvider).asData?.value;
-    final isGuest = user == null || user.isAnonymous;
-    if (!isGuest) return;
-
-    final box = Hive.box(settingsBoxName);
-    final lastShownMs = box.get(_guestSignUpPromptKey) as int?;
-    if (lastShownMs != null) {
-      final lastShownAt = DateTime.fromMillisecondsSinceEpoch(lastShownMs);
-      if (DateTime.now().difference(lastShownAt) < _guestSignUpCooldown) {
-        return;
-      }
-    }
-
-    await box.put(_guestSignUpPromptKey, DateTime.now().millisecondsSinceEpoch);
-
-    _showGuestSignUpDialog();
-  }
-
-  void _showGuestSignUpDialog() {
-    final dialogContext = _navigatorDialogContext;
-    if (dialogContext == null) return;
-
-    _guestSignUpPromptVisible = true;
-    final result = showDialog<void>(
-      context: dialogContext,
-      builder: (dialogContext) {
-        return AlertDialog(
-          icon: const Icon(Icons.account_circle_outlined),
-          title: Text(LocaleKeys.guest_signup_prompt_title.tr()),
-          content: Text(LocaleKeys.guest_signup_prompt_message.tr()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(LocaleKeys.guest_signup_prompt_later.tr()),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-                ref.read(routeProvider).go('/login');
-              },
-              child: Text(LocaleKeys.guest_signup_prompt_action.tr()),
-            ),
-          ],
-        );
-      },
-    );
-    unawaited(result.whenComplete(() => _guestSignUpPromptVisible = false));
   }
 
   BuildContext? get _navigatorDialogContext {

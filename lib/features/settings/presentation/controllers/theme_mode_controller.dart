@@ -1,5 +1,3 @@
-import 'package:flow_music/core/sync/cloud_sync_controller.dart';
-import 'package:flow_music/features/settings/data/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,11 +19,6 @@ const String _settingsUpdatedAtKey = 'settings_updated_at_ms';
 class ThemeModeController extends _$ThemeModeController {
   @override
   ThemeMode build() {
-    ref.listen<CloudSyncState>(cloudSyncControllerProvider, (prev, next) {
-      if (next is CloudSyncDone) {
-        state = _decode(Hive.box(settingsBoxName).get(_themeModeKey));
-      }
-    });
     final box = Hive.box(settingsBoxName);
     final stored = box.get(_themeModeKey);
     return _decode(stored);
@@ -37,9 +30,6 @@ class ThemeModeController extends _$ThemeModeController {
     await box.put(_themeModeKey, _encode(mode));
     await box.put(_settingsUpdatedAtKey, DateTime.now().millisecondsSinceEpoch);
     state = mode;
-    ref
-        .read(cloudSyncControllerProvider.notifier)
-        .pushOne(ref.read(settingsSyncProvider));
   }
 
   ThemeMode _decode(Object? raw) {

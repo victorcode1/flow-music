@@ -1,7 +1,5 @@
-import 'package:flow_music/core/sync/cloud_sync_controller.dart';
 import 'package:flow_music/features/library/data/downloaded_audio.dart';
 import 'package:flow_music/features/playlists/data/playlist.dart';
-import 'package:flow_music/features/playlists/data/playlists_providers.dart';
 import 'package:flow_music/features/playlists/data/playlists_repository.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -10,18 +8,12 @@ final playlistsControllerProvider =
       PlaylistsController.new,
     );
 
+// Playlists stay on this device until an explicit sync service is introduced.
 class PlaylistsController extends Notifier<List<Playlist>> {
   final PlaylistsRepository _repository = const PlaylistsRepository();
 
   @override
-  List<Playlist> build() {
-    ref.listen<CloudSyncState>(cloudSyncControllerProvider, (prev, next) {
-      if (next is CloudSyncDone) {
-        state = _repository.readAll();
-      }
-    });
-    return _repository.readAll();
-  }
+  List<Playlist> build() => _repository.readAll();
 
   Future<Playlist> create(String rawName) async {
     final name = rawName.trim();
@@ -39,7 +31,6 @@ class PlaylistsController extends Notifier<List<Playlist>> {
     );
     await _repository.save(playlist);
     state = [playlist, ...state];
-    _pushRemote();
     return playlist;
   }
 
@@ -61,7 +52,6 @@ class PlaylistsController extends Notifier<List<Playlist>> {
       updated,
       ...state.where((candidate) => candidate.id != updated.id),
     ];
-    _pushRemote();
     return updated;
   }
 
@@ -76,14 +66,12 @@ class PlaylistsController extends Notifier<List<Playlist>> {
     );
     await _repository.save(imported);
     state = [imported, ...state];
-    _pushRemote();
     return imported;
   }
 
   Future<void> delete(String playlistId) async {
     await _repository.delete(playlistId);
     state = state.where((playlist) => playlist.id != playlistId).toList();
-    _pushRemote();
   }
 
   Future<void> addItem(String playlistId, DownloadedAudio audio) async {
@@ -102,7 +90,6 @@ class PlaylistsController extends Notifier<List<Playlist>> {
       updated,
       ...state.where((candidate) => candidate.id != playlistId),
     ];
-    _pushRemote();
   }
 
   Future<void> removeItem(String playlistId, DownloadedAudio audio) async {
@@ -121,7 +108,6 @@ class PlaylistsController extends Notifier<List<Playlist>> {
       updated,
       ...state.where((candidate) => candidate.id != playlistId),
     ];
-    _pushRemote();
   }
 
   Playlist? _findById(String playlistId) {
@@ -129,10 +115,5 @@ class PlaylistsController extends Notifier<List<Playlist>> {
       if (playlist.id == playlistId) return playlist;
     }
     return null;
-  }
-
-  void _pushRemote() {
-    final sync = ref.read(playlistsSyncProvider);
-    ref.read(cloudSyncControllerProvider.notifier).pushOne(sync);
   }
 }

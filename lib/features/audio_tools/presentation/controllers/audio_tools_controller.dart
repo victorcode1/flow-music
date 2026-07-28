@@ -1,6 +1,4 @@
 import 'package:flow_music/core/audio/background_audio_handler.dart';
-import 'package:flow_music/core/sync/cloud_sync_controller.dart';
-import 'package:flow_music/features/settings/data/settings_providers.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -54,9 +52,6 @@ class AudioToolsController extends Notifier<AudioToolsState> {
 
   @override
   AudioToolsState build() {
-    ref.listen<CloudSyncState>(cloudSyncControllerProvider, (prev, next) {
-      if (next is CloudSyncDone) state = _readFromStorage();
-    });
     return _readFromStorage();
   }
 
@@ -79,8 +74,5 @@ class AudioToolsController extends Notifier<AudioToolsState> {
     );
     flowAudioHandler.setSmoothTransitions(value);
     state = state.copyWith(smoothTransitions: value);
-    ref
-        .read(cloudSyncControllerProvider.notifier)
-        .pushOne(ref.read(settingsSyncProvider));
   }
 }

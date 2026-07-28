@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/now_playing_provider.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/auth/presentation/widgets/profile_avatar.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_app_bar_action_controller.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_app_bar_view_state.dart';
@@ -145,11 +144,7 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
             ),
           ),
           const SizedBox(width: 10),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: ProfileAvatar(size: 40),
-          ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 12),
         ],
       ],
     );

@@ -1,7 +1,4 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flow_music/features/auth/data/providers/auth_providers.dart';
-import 'package:flow_music/features/auth/domain/entities/auth_user.dart';
-import 'package:flow_music/features/auth/domain/repositories/auth_repository.dart';
 import 'package:flow_music/features/favorites/data/favorite_song.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:flow_music/features/home/presentation/widgets/app_bar.dart';
@@ -46,7 +43,6 @@ class HomeMobileAppBar extends StatelessWidget implements PreferredSizeWidget {
 Widget previewHomeMobileAppBar() {
   return ProviderScope(
     overrides: [
-      authRepositoryProvider.overrideWithValue(const _PreviewAuthRepository()),
       favoritesControllerProvider.overrideWithValue(const <FavoriteSong>[]),
     ],
     child: EasyLocalization(
@@ -64,45 +60,4 @@ Widget previewHomeMobileAppBar() {
       ),
     ),
   );
-}
-
-class _PreviewAuthRepository implements AuthRepository {
-  const _PreviewAuthRepository();
-
-  @override
-  AuthUser? get currentUser => null;
-
-  @override
-  Stream<AuthUser?> get authStateChanges => Stream.value(null);
-
-  @override
-  Future<AuthUser?> refreshCurrentUser() async => null;
-
-  @override
-  Future<AuthUser?> registerWithEmail({
-    required String email,
-    required String password,
-    required String displayName,
-  }) async => null;
-
-  @override
-  Future<void> sendPasswordResetEmail(String email) async {}
-
-  @override
-  Future<AuthUser?> signInAnonymously() async => null;
-
-  @override
-  Future<AuthUser?> signInWithEmail({
-    required String email,
-    required String password,
-  }) async => null;
-
-  @override
-  Future<AuthUser?> signInWithGoogle() async => null;
-
-  @override
-  Future<AuthUser?> signInWithGoogleIdToken(String googleIdToken) async => null;
-
-  @override
-  Future<void> signOut() async {}
 }

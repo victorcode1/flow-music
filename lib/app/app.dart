@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/app/main_app_controller.dart';
 import 'package:flow_music/core/routes/routes.dart';
-import 'package:flow_music/core/sync/cloud_sync_watcher.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/cache_status_controller.dart';
@@ -65,7 +64,7 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
         return FlowAmbientBackground(
           child: ScaffoldMessenger(
             key: controller.scaffoldMessage,
-            child: CloudSyncWatcher(child: child ?? const SizedBox()),
+            child: child ?? const SizedBox(),
           ),
         );
       },

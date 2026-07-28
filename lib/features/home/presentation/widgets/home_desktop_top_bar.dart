@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/auth/presentation/widgets/profile_avatar.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
@@ -155,7 +154,6 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                       ),
                       const SizedBox(width: 10),
                     ],
-                    const ProfileAvatar(size: 36),
                   ],
                 ),
               ),

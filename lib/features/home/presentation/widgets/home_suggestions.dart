@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/core/utils/adaptive_layout.dart';
-import 'package:flow_music/features/auth/presentation/notifiers/auth_notifier.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
 import 'package:flow_music/features/history/data/playback_history_entry.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
@@ -34,10 +33,6 @@ class HomeSuggestions extends ConsumerWidget {
         .take(10)
         .toList();
     final viewCtr = ref.read(homeViewProvider.notifier);
-    final user = ref.watch(authProvider).asData?.value;
-    final userName = (user != null && !user.isAnonymous)
-        ? user.displayName?.trim().split(' ').first
-        : null;
 
     return asyncSuggestions.when(
       data: (result) {
@@ -56,9 +51,7 @@ class HomeSuggestions extends ConsumerWidget {
           final index = items.indexWhere(
             (s) => s.videoId == suggestion.videoId,
           );
-          final notifier = ref.read(
-            autoplayQueueControllerProvider.notifier,
-          );
+          final notifier = ref.read(autoplayQueueControllerProvider.notifier);
           if (ref.read(autoplayEnabledControllerProvider) && index >= 0) {
             notifier.enqueue(items, index);
           } else {
@@ -83,7 +76,7 @@ class HomeSuggestions extends ConsumerWidget {
         return _SuggestionsGrid(
           items: result.suggestions,
           history: history,
-          userName: userName,
+          userName: null,
           onCategory: onCategory,
           onTap: onSuggestionTap,
           onHistoryTap: (entry) {

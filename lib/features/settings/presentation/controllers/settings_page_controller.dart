@@ -1,9 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flow_music/core/sync/cloud_sync_controller.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/auth/presentation/notifiers/auth_notifier.dart';
 import 'package:flow_music/features/settings/data/settings_local_data_source.dart';
-import 'package:flow_music/features/settings/data/settings_providers.dart';
 import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flow_music/features/storage/presentation/controllers/storage_usage_controller.dart';
@@ -65,11 +62,6 @@ class SettingsPageController {
         updatedAtMs: DateTime.now().millisecondsSinceEpoch,
       ),
     );
-    final user = ref.read(authProvider).asData?.value;
-    if (user == null) return;
-    ref
-        .read(cloudSyncControllerProvider.notifier)
-        .pushOne(ref.read(settingsSyncProvider));
   }
 
   Future<void> showStorageManager(BuildContext context, WidgetRef ref) async {

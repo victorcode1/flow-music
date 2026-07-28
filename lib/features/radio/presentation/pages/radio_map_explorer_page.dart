@@ -199,12 +199,6 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
             'El permiso de ubicación está bloqueado para StreamBeat. Puedes habilitarlo desde los ajustes de la app.',
         action: 'Abrir ajustes',
       ),
-      LocationAccessStatus.alwaysPermissionRequired => (
-        title: 'Permiso en segundo plano',
-        message:
-            'Para actualizar tu ubicación en segundo plano, habilita el permiso de ubicación siempre activo desde los ajustes.',
-        action: 'Abrir ajustes',
-      ),
       LocationAccessStatus.available || LocationAccessStatus.webUnsupported => (
         title: '',
         message: '',
@@ -248,8 +242,6 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
           );
         }
       case LocationAccessStatus.permissionDeniedForever:
-        await _locationService.openAppLocationSettings();
-      case LocationAccessStatus.alwaysPermissionRequired:
         await _locationService.openAppLocationSettings();
       case LocationAccessStatus.serviceDisabled:
         await _locationService.openDeviceLocationSettings();

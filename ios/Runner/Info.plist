@@ -4,17 +4,6 @@
 <dict>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.387031162675-9k2k34p0h19a0ldni8gj55b5u5j42lq0</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -44,14 +33,6 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>StreamBeat usa tu ubicacion solo para sugerirte musica popular en tu pais.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>StreamBeat usa tu ubicacion en segundo plano para mantener actualizado el dashboard de ubicaciones.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>StreamBeat usa tu ubicacion en segundo plano para mantener actualizado el dashboard de ubicaciones.</string>
-	<key>BGTaskSchedulerPermittedIdentifiers</key>
-	<array>
-		<string>com.streambeat.location.refresh</string>
-	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -78,9 +59,6 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
-		<string>fetch</string>
-		<string>location</string>
-		<string>processing</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

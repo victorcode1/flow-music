@@ -1,5 +1,3 @@
-import 'package:flow_music/core/sync/cloud_sync_controller.dart';
-import 'package:flow_music/features/settings/data/settings_providers.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -18,9 +16,6 @@ class DefaultPlaybackModeController extends Notifier<PlaybackMode> {
 
   @override
   PlaybackMode build() {
-    ref.listen<CloudSyncState>(cloudSyncControllerProvider, (prev, next) {
-      if (next is CloudSyncDone) state = _read();
-    });
     return _read();
   }
 
@@ -31,9 +26,6 @@ class DefaultPlaybackModeController extends Notifier<PlaybackMode> {
       DateTime.now().millisecondsSinceEpoch,
     );
     state = mode;
-    ref
-        .read(cloudSyncControllerProvider.notifier)
-        .pushOne(ref.read(settingsSyncProvider));
   }
 
   PlaybackMode _read() {

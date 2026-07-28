@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/audio_tools/presentation/controllers/audio_tools_controller.dart';
-import 'package:flow_music/features/auth/presentation/notifiers/auth_notifier.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
@@ -202,26 +201,6 @@ class SettingsMobileContent extends ConsumerWidget {
                 ),
               ],
             ),
-          ),
-          Builder(
-            builder: (context) {
-              final user = ref.watch(authProvider).asData?.value;
-              if (user == null || user.isAnonymous) {
-                return const SizedBox.shrink();
-              }
-              return Padding(
-                padding: const EdgeInsets.only(top: 16),
-                child: _SettingsCard(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: _SettingsRow(
-                    icon: Icons.logout_rounded,
-                    title: LocaleKeys.auth_sign_out.tr(),
-                    subtitle: user.email ?? user.displayName ?? user.id,
-                    onTap: () => ref.read(authProvider.notifier).signOut(),
-                  ),
-                ),
-              );
-            },
           ),
         ],
       ),

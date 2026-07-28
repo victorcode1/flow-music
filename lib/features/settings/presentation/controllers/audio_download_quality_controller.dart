@@ -1,5 +1,3 @@
-import 'package:flow_music/core/sync/cloud_sync_controller.dart';
-import 'package:flow_music/features/settings/data/settings_providers.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -17,13 +15,6 @@ enum AudioDownloadQuality { high, medium, low }
 class AudioDownloadQualityController extends _$AudioDownloadQualityController {
   @override
   AudioDownloadQuality build() {
-    ref.listen<CloudSyncState>(cloudSyncControllerProvider, (prev, next) {
-      if (next is CloudSyncDone) {
-        state = _decode(
-          Hive.box(settingsBoxName).get(_audioDownloadQualityKey),
-        );
-      }
-    });
     final box = Hive.box(settingsBoxName);
     return _decode(box.get(_audioDownloadQualityKey));
   }
@@ -33,9 +24,6 @@ class AudioDownloadQualityController extends _$AudioDownloadQualityController {
     await box.put(_audioDownloadQualityKey, _encode(quality));
     await box.put(_settingsUpdatedAtKey, DateTime.now().millisecondsSinceEpoch);
     state = quality;
-    ref
-        .read(cloudSyncControllerProvider.notifier)
-        .pushOne(ref.read(settingsSyncProvider));
   }
 
   AudioDownloadQuality _decode(Object? raw) {

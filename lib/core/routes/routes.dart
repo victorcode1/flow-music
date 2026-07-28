@@ -1,15 +1,8 @@
-import 'dart:async';
-
 import 'package:flow_music/core/routes/app_navigator_key.dart';
 import 'package:flow_music/core/utils/adaptive_layout.dart';
-import 'package:flow_music/features/auth/data/providers/auth_providers.dart';
-import 'package:flow_music/features/auth/domain/entities/auth_user.dart';
-import 'package:flow_music/features/auth/presentation/notifiers/auth_notifier.dart';
-import 'package:flow_music/features/auth/presentation/pages/login_page.dart';
 import 'package:flow_music/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flow_music/features/home/presentation/pages/home_page.dart';
 import 'package:flow_music/features/library/presentation/pages/library_page.dart';
-import 'package:flow_music/features/location_tracking/presentation/pages/admin_location_dashboard_page.dart';
 import 'package:flow_music/features/radio/presentation/pages/radio_map_explorer_page.dart';
 import 'package:flow_music/features/radio/presentation/pages/radio_page.dart';
 import 'package:flow_music/features/search/presentation/pages/list_search.dart';
@@ -25,43 +18,12 @@ part 'routes.g.dart';
 class Route extends _$Route {
   @override
   GoRouter build() {
-    final authRepository = ref.read(authRepositoryProvider);
-    final refreshListenable = _AuthRefreshNotifier(
-      authRepository.authStateChanges,
-    );
     final navigatorKey = ref.read(appNavigatorKeyProvider);
-    ref.onDispose(refreshListenable.dispose);
 
     return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/home',
-      refreshListenable: refreshListenable,
-      // El login es opcional: los invitados tienen sesion anonima para poder
-      // persistir telemetria basica, pero siguen pudiendo entrar a /login.
-      redirect: (context, state) {
-        final repositoryUser = authRepository.currentUser;
-        final authState = ref.read(authProvider);
-        final authUser = authState.asData?.value ?? repositoryUser;
-        final isLoggedIn =
-            repositoryUser != null && !repositoryUser.isAnonymous;
-        final isAdmin = authUser?.canAccessLocationDashboard == true;
-        final goingToLogin = state.matchedLocation == '/login';
-        if (isLoggedIn && goingToLogin) return '/home';
-        if (state.matchedLocation == '/admin/locations' &&
-            authState.isLoading) {
-          return null;
-        }
-        if (state.matchedLocation == '/admin/locations' && !isAdmin) {
-          return '/home';
-        }
-        return null;
-      },
       routes: [
-        GoRoute(
-          path: '/login',
-          pageBuilder: (context, state) =>
-              _noTransitionPage(state, const LoginPage()),
-        ),
         GoRoute(
           path: '/home',
           pageBuilder: (context, state) =>
@@ -94,13 +56,6 @@ class Route extends _$Route {
           pageBuilder: (context, state) => _noTransitionPage(
             state,
             const HomePage(child: RadioMapExplorerPage()),
-          ),
-        ),
-        GoRoute(
-          path: '/admin/locations',
-          pageBuilder: (context, state) => _noTransitionPage(
-            state,
-            const HomePage(child: AdminLocationDashboardPage()),
           ),
         ),
         GoRoute(
@@ -143,16 +98,3 @@ Page<void> _noTransitionPage(GoRouterState state, Widget child) {
 
 /// Adapta el stream del usuario autenticado a un `Listenable`, que es lo que
 /// go_router consume para reevaluar `redirect` cuando cambia la sesion.
-class _AuthRefreshNotifier extends ChangeNotifier {
-  _AuthRefreshNotifier(Stream<AuthUser?> stream) {
-    _subscription = stream.listen((_) => notifyListeners());
-  }
-
-  late final StreamSubscription<AuthUser?> _subscription;
-
-  @override
-  void dispose() {
-    _subscription.cancel();
-    super.dispose();
-  }
-}
