@@ -9,6 +9,7 @@ import 'package:flow_music/features/settings/presentation/pages/settings_page.da
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 part 'routes.g.dart';
 
@@ -21,6 +22,7 @@ class Route extends _$Route {
     return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/home',
+      observers: [SentryNavigatorObserver()],
       routes: [
         GoRoute(
           path: '/home',
@@ -67,7 +69,11 @@ class Route extends _$Route {
 }
 
 Page<void> _noTransitionPage(GoRouterState state, Widget child) {
-  return NoTransitionPage<void>(key: state.pageKey, child: child);
+  return NoTransitionPage<void>(
+    key: state.pageKey,
+    name: state.uri.path,
+    child: child,
+  );
 }
 
 /// Adapta el stream del usuario autenticado a un `Listenable`, que es lo que

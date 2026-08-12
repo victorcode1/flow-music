@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/app/app.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
+import 'package:flow_music/core/monitoring/sentry_config.dart';
 import 'package:flow_music/features/history/data/playback_history_repository.dart';
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
@@ -12,7 +13,11 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-void main() async {
+Future<void> main() {
+  return SentryConfig.initialize(appRunner: _bootstrap);
+}
+
+Future<void> _bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await initializeDateFormatting();
