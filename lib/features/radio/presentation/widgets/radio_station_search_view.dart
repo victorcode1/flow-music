@@ -167,6 +167,7 @@ class _RadioStationSearchViewState
               }
 
               return ListView.separated(
+                clipBehavior: Clip.hardEdge,
                 keyboardDismissBehavior:
                     ScrollViewKeyboardDismissBehavior.onDrag,
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
