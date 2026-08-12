@@ -12,7 +12,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class RadioStationSearchView extends ConsumerStatefulWidget {
-  const RadioStationSearchView({super.key});
+  const RadioStationSearchView({super.key, this.repository});
+
+  final RadioBrowserRepository? repository;
 
   @override
   ConsumerState<RadioStationSearchView> createState() =>
@@ -39,7 +41,7 @@ class _RadioStationSearchViewState
     'PY': 'PY',
   };
 
-  final RadioBrowserRepository _repository = RadioBrowserRepository();
+  late final RadioBrowserRepository _repository;
   late final TextEditingController _searchController;
   late Future<List<RadioStation>> _stationsFuture;
   Timer? _debounce;
@@ -49,6 +51,7 @@ class _RadioStationSearchViewState
   @override
   void initState() {
     super.initState();
+    _repository = widget.repository ?? RadioBrowserRepository();
     _searchController = ref.read(searchProvider);
     _query = _searchController.text.trim();
     _searchController.addListener(_onQueryChanged);
@@ -85,7 +88,10 @@ class _RadioStationSearchViewState
 
   void _reload() {
     if (!mounted) return;
-    setState(() => _stationsFuture = _fetchStations());
+    final stationsFuture = _fetchStations();
+    setState(() {
+      _stationsFuture = stationsFuture;
+    });
   }
 
   void _selectCountry(String countryCode) {
