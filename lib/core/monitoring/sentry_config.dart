@@ -24,13 +24,10 @@ abstract final class SentryConfig {
     return SentryFlutter.init((options) {
       options
         ..dsn = _dsn
+        ..environment = _environment.isEmpty ? 'production' : _environment
         ..tracesSampleRate = _resolveTracesSampleRate()
         ..sendDefaultPii = false
         ..debug = _debug;
-
-      if (_environment.isNotEmpty) {
-        options.environment = _environment;
-      }
     }, appRunner: appRunner);
   }
 

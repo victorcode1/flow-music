@@ -23,9 +23,10 @@ La rama main conserva las funciones de búsqueda y reproducción basadas en YouT
     flutter pub get
     flutter run
 
-Sentry ya está conectado al proyecto `flutter` y solo se inicializa en
+Sentry ya está conectado al proyecto `streambeat` y solo se inicializa en
 compilaciones `release`. `flutter run` y las compilaciones profile no envían
-errores, trazas ni eventos. Para cambiar el proyecto o el entorno de una
+errores, trazas ni eventos. Las compilaciones release usan el entorno
+`production` por defecto. Para cambiar el proyecto o el entorno de una
 compilación release:
 
     flutter build ipa --release \
