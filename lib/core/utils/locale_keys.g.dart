@@ -135,6 +135,7 @@ abstract class LocaleKeys {
   static const player_complete = 'player_complete';
   static const seek_complete = 'seek_complete';
   static const search_radio = 'search_radio';
+  static const filter_by_country = 'filter_by_country';
   static const radio_error = 'radio_error';
   static const radio_play_error = 'radio_play_error';
   static const no_radio_results = 'no_radio_results';

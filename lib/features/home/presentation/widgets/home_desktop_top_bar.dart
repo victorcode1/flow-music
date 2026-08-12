@@ -9,14 +9,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Barra superior de la variante desktop con busqueda y accesos rapidos.
 class HomeDesktopTopBar extends ConsumerStatefulWidget {
-  const HomeDesktopTopBar({
-    super.key,
-    required this.query,
-    required this.showSearch,
-  });
+  const HomeDesktopTopBar({super.key, required this.query});
 
   final ValueChanged<String> query;
-  final Future<void> Function() showSearch;
 
   @override
   ConsumerState<HomeDesktopTopBar> createState() => _HomeDesktopTopBarState();
@@ -117,7 +112,7 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                         style: theme.textTheme.bodyMedium,
                         onChanged: widget.query,
                         decoration: InputDecoration(
-                          hintText: LocaleKeys.search_music.tr(),
+                          hintText: LocaleKeys.search_radio.tr(),
                           filled: false,
                           border: InputBorder.none,
                           isDense: true,

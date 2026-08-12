@@ -131,6 +131,7 @@
   "player_complete": "Reproducción completada.",
   "seek_complete": "Búsqueda completada.",
   "search_radio": "Buscar emisoras...",
+  "filter_by_country": "Filtrar por país",
   "radio_error": "No se pudieron cargar las radios.",
   "radio_play_error": "No se pudo reproducir esta emisora.",
   "no_radio_results": "No se encontraron emisoras.",

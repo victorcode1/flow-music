@@ -1,10 +1,12 @@
 import 'package:flow_music/core/audio/radio_mini_player.dart';
 import 'package:flow_music/core/utils/adaptive_layout.dart';
+import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/home/presentation/widgets/home_desktop_sidebar.dart';
 import 'package:flow_music/features/home/presentation/widgets/home_desktop_top_bar.dart';
 import 'package:flow_music/features/home/presentation/widgets/home_mobile_app_bar.dart';
 import 'package:flow_music/features/home/presentation/widgets/home_mobile_bottom_bar.dart';
 import 'package:flow_music/features/home/presentation/widgets/home_page_content.dart';
+import 'package:flow_music/features/radio/presentation/widgets/radio_station_search_view.dart';
 import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -19,9 +21,31 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
+  bool _isSearching = false;
+
+  void _openSearch() {
+    setState(() => _isSearching = true);
+  }
+
+  void _closeSearch() {
+    ref.read(searchProvider).clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+    setState(() => _isSearching = false);
+  }
+
+  void _handleDesktopSearch(String value) {
+    final shouldShowSearch = value.trim().isNotEmpty;
+    if (_isSearching == shouldShowSearch) return;
+    setState(() => _isSearching = shouldShowSearch);
+  }
+
   @override
   Widget build(BuildContext context) {
     final currentPath = GoRouterState.of(context).uri.path;
+    final searchController = ref.read(searchProvider);
+    final pageContent = _isSearching
+        ? const RadioStationSearchView()
+        : widget.child;
 
     if (supportsFlowDesktopShell && useFlowWideLayout(context)) {
       final colors = Theme.of(context).colorScheme;
@@ -34,10 +58,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
-            HomeDesktopTopBar(
-              query: (_) {},
-              showSearch: () async => context.go('/radio'),
-            ),
+            HomeDesktopTopBar(query: _handleDesktopSearch),
             Expanded(
               child: Row(
                 children: [
@@ -45,7 +66,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   Expanded(
                     child: ColoredBox(
                       color: colors.surface,
-                      child: HomePageContent(child: widget.child),
+                      child: HomePageContent(child: pageContent),
                     ),
                   ),
                 ],
@@ -59,8 +80,13 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: HomeMobileAppBar(onSearch: () => context.go('/radio')),
-      body: HomePageContent(child: widget.child),
+      appBar: HomeMobileAppBar(
+        onSearch: _openSearch,
+        isSearching: _isSearching,
+        searchController: searchController,
+        onCloseSearch: _closeSearch,
+      ),
+      body: HomePageContent(child: pageContent),
       bottomNavigationBar: HomeMobileBottomBar(currentPath: currentPath),
     );
   }

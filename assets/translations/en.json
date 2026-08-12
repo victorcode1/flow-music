@@ -131,6 +131,7 @@
   "player_complete": "Player complete!",
   "seek_complete": "Seek complete!",
   "search_radio": "Search stations...",
+  "filter_by_country": "Filter by country",
   "radio_error": "Radio stations could not be loaded.",
   "radio_play_error": "This station could not be played.",
   "no_radio_results": "No radio stations found.",

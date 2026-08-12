@@ -21,6 +21,36 @@ void main() {
 
     expect(tapped, isTrue);
   });
+
+  testWidgets('shows an editable station field without navigating', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    var closed = false;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          appBar: HomeMobileAppBar(
+            onSearch: _noop,
+            isSearching: true,
+            searchController: controller,
+            onCloseSearch: () => closed = true,
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(
+      find.byKey(const Key('station-search-field')),
+      'Radio Panamá',
+    );
+    expect(controller.text, 'Radio Panamá');
+
+    await tester.tap(find.byIcon(Icons.close_rounded));
+    expect(closed, isTrue);
+  });
 }
 
 void _noop() {}
