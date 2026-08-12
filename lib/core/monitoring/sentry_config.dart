@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract final class SentryConfig {
+  static const enabled = kReleaseMode;
+
   // Sentry DSNs are public client keys. Auth tokens must never be added here.
   static const _dsn = String.fromEnvironment(
     'SENTRY_DSN',
@@ -15,6 +17,10 @@ abstract final class SentryConfig {
   static const _debug = bool.fromEnvironment('SENTRY_DEBUG');
 
   static Future<void> initialize({required AppRunner appRunner}) {
+    if (!enabled) {
+      return Future<void>.sync(appRunner);
+    }
+
     return SentryFlutter.init((options) {
       options
         ..dsn = _dsn
@@ -34,6 +40,6 @@ abstract final class SentryConfig {
       return configuredRate;
     }
 
-    return kReleaseMode ? 0.1 : 1.0;
+    return 0.1;
   }
 }

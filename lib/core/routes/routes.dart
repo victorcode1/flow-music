@@ -1,4 +1,5 @@
 import 'package:flow_music/core/routes/app_navigator_key.dart';
+import 'package:flow_music/core/monitoring/sentry_config.dart';
 import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/features/favorites/presentation/pages/favorites_page.dart';
 import 'package:flow_music/features/home/presentation/pages/home_page.dart';
@@ -22,7 +23,7 @@ class Route extends _$Route {
     return GoRouter(
       navigatorKey: navigatorKey,
       initialLocation: '/home',
-      observers: [SentryNavigatorObserver()],
+      observers: [if (SentryConfig.enabled) SentryNavigatorObserver()],
       routes: [
         GoRoute(
           path: '/home',
