@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 const String radioFavoritesBoxName = 'radio_favorites';
+const String _legacyOwnerUidKey = '__owner_uid';
 const String _addedAtKey = '__favorited_at';
 
 /// Persistencia local de las emisoras marcadas como favoritas.
@@ -19,6 +20,10 @@ class RadioFavoritesRepository {
   List<RadioStation> readAll() {
     final stations = <RadioStation>[];
     for (final key in _box.keys) {
+      // Older releases stored the authenticated owner's UID in this box.
+      // It is metadata, not malformed station JSON, so keep it for backward
+      // compatibility and skip it silently while reading favorites.
+      if (key == _legacyOwnerUidKey) continue;
       final station = _decode(_box.get(key));
       if (station != null) stations.add(station);
     }

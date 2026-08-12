@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
+import 'package:flow_music/shared/widgets/optimized_network_image.dart';
 import 'package:flutter/material.dart';
 
 /// Fila reutilizable para mostrar una emisora. Se usa en favoritos y en las
@@ -51,8 +52,9 @@ class RadioStationTile extends StatelessWidget {
                   dimension: 58,
                   child: artwork.isEmpty
                       ? _Placeholder(colors: colors)
-                      : Image.network(
-                          artwork,
+                      : OptimizedNetworkImage(
+                          url: artwork,
+                          displaySize: 58,
                           fit: BoxFit.cover,
                           errorBuilder: (_, _, _) =>
                               _Placeholder(colors: colors),

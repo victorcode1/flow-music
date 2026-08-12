@@ -1,3 +1,5 @@
+import 'package:flow_music/core/utils/search_text_normalizer.dart';
+
 class RadioCountry {
   const RadioCountry({
     required this.code,
@@ -825,17 +827,26 @@ RadioCountry? findRadioCountry(String query) {
   final normalized = _normalize(query);
   if (normalized.isEmpty) return null;
 
+  final exactMatch = findRadioCountryExact(query);
+  if (exactMatch != null) return exactMatch;
+
+  for (final country in radioCountries) {
+    if (_normalize(country.name).contains(normalized)) return country;
+  }
+
+  return null;
+}
+
+RadioCountry? findRadioCountryExact(String query) {
+  final normalized = _normalize(query);
+  if (normalized.isEmpty) return null;
+
   for (final country in radioCountries) {
     if (_normalize(country.code) == normalized ||
         _normalize(country.name) == normalized) {
       return country;
     }
   }
-
-  for (final country in radioCountries) {
-    if (_normalize(country.name).contains(normalized)) return country;
-  }
-
   return null;
 }
 
@@ -848,5 +859,5 @@ RadioCountry? findRadioCountryByCode(String code) {
 }
 
 String _normalize(String value) {
-  return value.trim().toLowerCase();
+  return normalizeSearchText(value);
 }

@@ -26,6 +26,8 @@ class HomeSuggestionsRepository {
   final RadioBrowserRepository _radioRepository;
   final LocationService _locationService;
 
+  void close() => _radioRepository.close();
+
   Future<HomeRadioSuggestions> load() async {
     final country = await _locationService.resolveCountry();
     if (country.isResolved) {

@@ -1,6 +1,7 @@
 import 'package:flow_music/features/home/presentation/providers/home_suggestions_provider.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
+import 'package:flow_music/shared/widgets/optimized_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -470,8 +471,9 @@ class _StationArt extends StatelessWidget {
     );
     final image = station.artworkUrl.isEmpty
         ? placeholder
-        : Image.network(
-            station.artworkUrl,
+        : OptimizedNetworkImage(
+            url: station.artworkUrl,
+            displaySize: size,
             fit: BoxFit.cover,
             errorBuilder: (_, _, _) => placeholder,
           );

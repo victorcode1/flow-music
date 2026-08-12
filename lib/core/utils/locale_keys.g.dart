@@ -138,6 +138,8 @@ abstract class LocaleKeys {
   static const filter_by_country = 'filter_by_country';
   static const radio_error = 'radio_error';
   static const radio_play_error = 'radio_play_error';
+  static const radio_play_retrying = 'radio_play_retrying';
+  static const radio_play_retry_failed = 'radio_play_retry_failed';
   static const no_radio_results = 'no_radio_results';
   static const radio_map_explorer = 'radio_map_explorer';
   static const radio_map_explorer_short = 'radio_map_explorer_short';

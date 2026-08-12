@@ -16,27 +16,20 @@ class MainApp extends ConsumerStatefulWidget {
   ConsumerState<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
+class _MainAppState extends ConsumerState<MainApp> {
   late final MainAppController _appController;
 
   @override
   void initState() {
     super.initState();
     _appController = ref.read(mainAppControllerProvider);
-    WidgetsBinding.instance.addObserver(this);
     _appController.initialize();
   }
 
   @override
   void dispose() {
     _appController.dispose();
-    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    _appController.handleAppLifecycleState(state);
   }
 
   @override

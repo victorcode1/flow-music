@@ -34,6 +34,8 @@ class _ParticlesFlyState extends State<ParticlesFly>
   final List<Offset> _directions = [];
   final List<double> _sizes = [];
   Size _lastSize = Size.zero;
+  Duration? _lastElapsed;
+  int _particleGeneration = 0;
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _ParticlesFlyState extends State<ParticlesFly>
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 16),
-    )..addListener(_tick);
+    )..addListener(_advanceParticles);
 
     if (!widget.paused) _controller.repeat();
   }
@@ -54,6 +56,7 @@ class _ParticlesFlyState extends State<ParticlesFly>
     }
 
     if (oldWidget.paused != widget.paused) {
+      _lastElapsed = null;
       if (widget.paused) {
         _controller.stop();
       } else if (!_controller.isAnimating) {
@@ -65,7 +68,7 @@ class _ParticlesFlyState extends State<ParticlesFly>
   @override
   void dispose() {
     _controller
-      ..removeListener(_tick)
+      ..removeListener(_advanceParticles)
       ..dispose();
     super.dispose();
   }
@@ -74,6 +77,8 @@ class _ParticlesFlyState extends State<ParticlesFly>
     _offsets.clear();
     _directions.clear();
     _sizes.clear();
+    _lastElapsed = null;
+    _particleGeneration++;
 
     if (size.isEmpty) return;
 
@@ -91,11 +96,21 @@ class _ParticlesFlyState extends State<ParticlesFly>
     }
   }
 
-  void _tick() {
+  void _advanceParticles() {
     if (_lastSize.isEmpty || _offsets.isEmpty) return;
 
+    final elapsed = _controller.lastElapsedDuration;
+    final previousElapsed = _lastElapsed;
+    _lastElapsed = elapsed;
+    if (elapsed == null || previousElapsed == null) return;
+
+    // Match the original speed at 60 fps while keeping movement consistent on
+    // 90/120 Hz displays. Clamping avoids a large jump after the app resumes.
+    final frameScale = ((elapsed - previousElapsed).inMicroseconds / 16666.67)
+        .clamp(0.0, 2.0);
+
     for (var i = 0; i < _offsets.length; i++) {
-      final direction = _directions[i] * widget.speedOfParticles;
+      final direction = _directions[i] * widget.speedOfParticles * frameScale;
       var next = _offsets[i] + direction;
       var nextDirection = _directions[i];
 
@@ -112,8 +127,6 @@ class _ParticlesFlyState extends State<ParticlesFly>
       _offsets[i] = next;
       _directions[i] = nextDirection;
     }
-
-    setState(() {});
   }
 
   @override
@@ -121,6 +134,20 @@ class _ParticlesFlyState extends State<ParticlesFly>
     final colors = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final intensity = widget.intensity.clamp(0.4, 2.2);
+    double alpha(double value) => (value * intensity).clamp(0.0, 1.0);
+
+    final particleColor = isDark
+        ? colors.primary.withValues(alpha: alpha(0.62))
+        : colors.primary.withValues(alpha: alpha(0.54));
+    final accentColor = isDark
+        ? colors.tertiary.withValues(alpha: alpha(0.36))
+        : colors.secondary.withValues(alpha: alpha(0.28));
+    final lineColor = colors.primary.withValues(
+      alpha: alpha(isDark ? 0.16 : 0.12),
+    );
+    final starColor = isDark
+        ? colors.onSurface.withValues(alpha: alpha(0.16))
+        : colors.primary.withValues(alpha: alpha(0.14));
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -133,27 +160,30 @@ class _ParticlesFlyState extends State<ParticlesFly>
         return Stack(
           fit: StackFit.expand,
           children: [
-            CustomPaint(
-              painter: _ParticlesPainter(
-                offsets: _offsets,
-                sizes: _sizes,
-                maxParticleSize: widget.maxParticleSize,
-                connectDots: widget.connectDots,
-                particleColor: isDark
-                    ? colors.primary.withValues(alpha: 0.62 * intensity)
-                    : colors.primary.withValues(alpha: 0.54 * intensity),
-                accentColor: isDark
-                    ? colors.tertiary.withValues(alpha: 0.36 * intensity)
-                    : colors.secondary.withValues(alpha: 0.28 * intensity),
-                lineColor: colors.primary.withValues(
-                  alpha: (isDark ? 0.16 : 0.12) * intensity,
-                ),
-                starColor: isDark
-                    ? colors.onSurface.withValues(alpha: 0.16 * intensity)
-                    : colors.primary.withValues(alpha: 0.14 * intensity),
+            RepaintBoundary(
+              child: CustomPaint(
+                isComplex: true,
+                painter: _StarsPainter(color: starColor),
               ),
             ),
-            widget.child,
+            RepaintBoundary(
+              child: CustomPaint(
+                isComplex: true,
+                willChange: !widget.paused,
+                painter: _ParticlesPainter(
+                  repaint: _controller,
+                  offsets: _offsets,
+                  sizes: _sizes,
+                  particleGeneration: _particleGeneration,
+                  maxParticleSize: widget.maxParticleSize,
+                  connectDots: widget.connectDots,
+                  particleColor: particleColor,
+                  accentColor: accentColor,
+                  lineColor: lineColor,
+                ),
+              ),
+            ),
+            RepaintBoundary(child: widget.child),
           ],
         );
       },
@@ -161,31 +191,15 @@ class _ParticlesFlyState extends State<ParticlesFly>
   }
 }
 
-class _ParticlesPainter extends CustomPainter {
-  const _ParticlesPainter({
-    required this.offsets,
-    required this.sizes,
-    required this.maxParticleSize,
-    required this.connectDots,
-    required this.particleColor,
-    required this.accentColor,
-    required this.lineColor,
-    required this.starColor,
-  });
+class _StarsPainter extends CustomPainter {
+  const _StarsPainter({required this.color});
 
-  final List<Offset> offsets;
-  final List<double> sizes;
-  final double maxParticleSize;
-  final bool connectDots;
-  final Color particleColor;
-  final Color accentColor;
-  final Color lineColor;
-  final Color starColor;
+  final Color color;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final starPaint = Paint()
-      ..color = starColor
+    final paint = Paint()
+      ..color = color
       ..isAntiAlias = true;
     final random = Random(7);
     final starCount = (size.width * size.height * 0.00005)
@@ -199,60 +213,87 @@ class _ParticlesPainter extends CustomPainter {
           random.nextDouble() * size.height,
         ),
         0.35 + random.nextDouble() * 0.85,
-        starPaint,
+        paint,
       );
     }
+  }
 
-    if (connectDots) {
-      _drawLines(canvas);
-    }
+  @override
+  bool shouldRepaint(covariant _StarsPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+class _ParticlesPainter extends CustomPainter {
+  _ParticlesPainter({
+    required Listenable repaint,
+    required this.offsets,
+    required this.sizes,
+    required this.particleGeneration,
+    required this.maxParticleSize,
+    required this.connectDots,
+    required this.particleColor,
+    required this.accentColor,
+    required this.lineColor,
+  }) : _primaryPaints = _GlowPaints(particleColor),
+       _accentPaints = _GlowPaints(accentColor),
+       _linePaint = (Paint()
+         ..strokeWidth = 0.55
+         ..strokeCap = StrokeCap.round
+         ..isAntiAlias = true),
+       super(repaint: repaint);
+
+  final List<Offset> offsets;
+  final List<double> sizes;
+  final int particleGeneration;
+  final double maxParticleSize;
+  final bool connectDots;
+  final Color particleColor;
+  final Color accentColor;
+  final Color lineColor;
+  final _GlowPaints _primaryPaints;
+  final _GlowPaints _accentPaints;
+  final Paint _linePaint;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (connectDots) _drawLines(canvas);
 
     for (var i = 0; i < offsets.length; i++) {
       final radius = maxParticleSize * sizes[i];
-      final color = i.isEven ? particleColor : accentColor;
-      final glowPaint = Paint()
-        ..color = color.withValues(alpha: 0.18)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 7)
-        ..isAntiAlias = true;
-      final particlePaint = Paint()
-        ..shader =
-            RadialGradient(
-              center: const Alignment(-0.45, -0.45),
-              colors: [
-                Colors.white.withValues(alpha: 0.72),
-                color,
-                color.withValues(alpha: 0.08),
-              ],
-              stops: const [0.0, 0.34, 1.0],
-            ).createShader(
-              Rect.fromCircle(center: offsets[i], radius: radius * 2.2),
-            )
-        ..isAntiAlias = true;
+      final paints = i.isEven ? _primaryPaints : _accentPaints;
+      final center = offsets[i];
 
-      canvas.drawCircle(offsets[i], radius * 2.3, glowPaint);
-      canvas.drawCircle(offsets[i], radius, particlePaint);
+      // Several inexpensive translucent circles retain the soft luminous
+      // appearance without allocating a blur and radial shader per particle.
+      canvas.drawCircle(center, radius * 2.3, paints.outerGlow);
+      canvas.drawCircle(center, radius * 1.45, paints.innerGlow);
+      canvas.drawCircle(center, radius, paints.core);
+      canvas.drawCircle(
+        center.translate(-radius * 0.26, -radius * 0.26),
+        max(0.28, radius * 0.3),
+        paints.highlight,
+      );
     }
   }
 
   void _drawLines(Canvas canvas) {
     const maxDistance = 74.0;
+    const maxDistanceSquared = maxDistance * maxDistance;
 
     for (var i = 0; i < offsets.length; i++) {
       for (var j = i + 1; j < offsets.length; j++) {
-        final distance = (offsets[i] - offsets[j]).distance;
-        if (distance > maxDistance) continue;
+        final delta = offsets[i] - offsets[j];
+        final distanceSquared = delta.dx * delta.dx + delta.dy * delta.dy;
+        if (distanceSquared > maxDistanceSquared) continue;
 
+        final distance = sqrt(distanceSquared);
         final opacity = ((maxDistance - distance) / maxDistance).clamp(
           0.0,
           1.0,
         );
-        final paint = Paint()
-          ..color = lineColor.withValues(alpha: lineColor.a * opacity)
-          ..strokeWidth = 0.55
-          ..strokeCap = StrokeCap.round
-          ..isAntiAlias = true;
-
-        canvas.drawLine(offsets[i], offsets[j], paint);
+        _linePaint.color = lineColor.withValues(alpha: lineColor.a * opacity);
+        canvas.drawLine(offsets[i], offsets[j], _linePaint);
       }
     }
   }
@@ -261,9 +302,34 @@ class _ParticlesPainter extends CustomPainter {
   bool shouldRepaint(covariant _ParticlesPainter oldDelegate) {
     return oldDelegate.offsets != offsets ||
         oldDelegate.sizes != sizes ||
+        oldDelegate.particleGeneration != particleGeneration ||
+        oldDelegate.maxParticleSize != maxParticleSize ||
+        oldDelegate.connectDots != connectDots ||
         oldDelegate.particleColor != particleColor ||
         oldDelegate.accentColor != accentColor ||
-        oldDelegate.lineColor != lineColor ||
-        oldDelegate.starColor != starColor;
+        oldDelegate.lineColor != lineColor;
   }
+}
+
+class _GlowPaints {
+  _GlowPaints(Color color)
+    : outerGlow = Paint()
+        ..color = color.withValues(alpha: color.a * 0.14)
+        ..isAntiAlias = true,
+      innerGlow = Paint()
+        ..color = color.withValues(alpha: color.a * 0.34)
+        ..isAntiAlias = true,
+      core = Paint()
+        ..color = color
+        ..isAntiAlias = true,
+      highlight = Paint()
+        ..color = Colors.white.withValues(
+          alpha: (0.38 + color.a * 0.34).clamp(0.0, 0.72),
+        )
+        ..isAntiAlias = true;
+
+  final Paint outerGlow;
+  final Paint innerGlow;
+  final Paint core;
+  final Paint highlight;
 }

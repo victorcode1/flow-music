@@ -42,6 +42,7 @@ class _RadioStationSearchViewState
   };
 
   late final RadioBrowserRepository _repository;
+  late final bool _ownsRepository;
   late final TextEditingController _searchController;
   late Future<List<RadioStation>> _stationsFuture;
   Timer? _debounce;
@@ -51,6 +52,7 @@ class _RadioStationSearchViewState
   @override
   void initState() {
     super.initState();
+    _ownsRepository = widget.repository == null;
     _repository = widget.repository ?? RadioBrowserRepository();
     _searchController = ref.read(searchProvider);
     _query = _searchController.text.trim();
@@ -62,6 +64,7 @@ class _RadioStationSearchViewState
   void dispose() {
     _debounce?.cancel();
     _searchController.removeListener(_onQueryChanged);
+    if (_ownsRepository) _repository.close();
     super.dispose();
   }
 

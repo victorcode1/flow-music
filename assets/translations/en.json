@@ -134,6 +134,8 @@
   "filter_by_country": "Filter by country",
   "radio_error": "Radio stations could not be loaded.",
   "radio_play_error": "This station could not be played.",
+  "radio_play_retrying": "The station did not start. Retrying automatically…",
+  "radio_play_retry_failed": "We could not play it after two attempts. Would you like to try again?",
   "no_radio_results": "No radio stations found.",
   "radio_map_explorer": "Explore by map",
   "radio_map_explorer_short": "Map",

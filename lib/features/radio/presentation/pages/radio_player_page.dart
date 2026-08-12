@@ -8,6 +8,7 @@ import 'package:flow_music/features/radio/presentation/controllers/radio_favorit
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
 import 'package:flow_music/features/radio/presentation/widgets/radio_playlist_actions.dart';
+import 'package:flow_music/shared/widgets/optimized_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -172,8 +173,8 @@ class _Artwork extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           child: artUri.isEmpty
               ? _Placeholder(colors: colors)
-              : Image.network(
-                  artUri,
+              : OptimizedNetworkImage(
+                  url: artUri,
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => _Placeholder(colors: colors),
                 ),

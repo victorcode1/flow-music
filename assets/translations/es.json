@@ -134,6 +134,8 @@
   "filter_by_country": "Filtrar por país",
   "radio_error": "No se pudieron cargar las radios.",
   "radio_play_error": "No se pudo reproducir esta emisora.",
+  "radio_play_retrying": "No se pudo iniciar la emisora. Reintentando automáticamente…",
+  "radio_play_retry_failed": "No pudimos reproducirla después de dos intentos. ¿Quieres volver a intentarlo?",
   "no_radio_results": "No se encontraron emisoras.",
   "radio_map_explorer": "Explorar por mapa",
   "radio_map_explorer_short": "Mapa",

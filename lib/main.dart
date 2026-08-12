@@ -5,6 +5,7 @@ import 'package:flow_music/core/monitoring/sentry_config.dart';
 import 'package:flow_music/features/history/data/playback_history_repository.dart';
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
+import 'package:flow_music/features/radio/data/radio_station_health_repository.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/shared/custom_info_version/provider/info_version.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ Future<void> _bootstrap() async {
   await Hive.openBox(playbackHistoryBoxName);
   await Hive.openBox(radioFavoritesBoxName);
   await Hive.openBox(radioPlaylistsBoxName);
+  await Hive.openBox(radioStationHealthBoxName);
   await initFlowAudioHandler();
   final packageInfo = await PackageInfo.fromPlatform();
 

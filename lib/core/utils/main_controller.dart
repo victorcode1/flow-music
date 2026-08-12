@@ -1,19 +1,11 @@
-import 'package:flow_music/core/audio/audio_player_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:hooks_riverpod/legacy.dart';
 
 final mainController = ChangeNotifierProvider<MainController>(
-  (ref) => MainController(ref: ref),
+  (_) => MainController(),
 );
 
 class MainController extends ChangeNotifier {
-  Ref ref;
-
-  MainController({required this.ref}) {
-    ref.read(audioPlayerProviderProvider.notifier).initState();
-  }
-
   GlobalKey<ScaffoldMessengerState> scaffoldMessage =
       GlobalKey<ScaffoldMessengerState>();
 
@@ -33,25 +25,5 @@ class MainController extends ChangeNotifier {
         duration: Duration(milliseconds: s.length * 25),
       ),
     );
-  }
-
-  void setAudioStateDetached() {
-    ref.read(audioPlayerProviderProvider.notifier).dispose();
-  }
-
-  void setAudioStateResumed() {
-    ref.read(audioPlayerProviderProvider.notifier).resume();
-  }
-
-  void setAudioStateInactive() {
-    ref.read(audioPlayerProviderProvider.notifier).pause();
-  }
-
-  void setAudioStatePaused() {
-    ref.read(audioPlayerProviderProvider.notifier).pause();
-  }
-
-  void setAudioStateHidden() {
-    ref.read(audioPlayerProviderProvider.notifier).pause();
   }
 }

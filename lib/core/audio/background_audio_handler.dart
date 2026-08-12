@@ -17,6 +17,8 @@ Future<FlowAudioHandler> initFlowAudioHandler() async {
       androidNotificationOngoing: true,
       androidStopForegroundOnPause: true,
       androidNotificationClickStartsActivity: true,
+      artDownscaleWidth: 1024,
+      artDownscaleHeight: 1024,
       rewindInterval: Duration(seconds: 10),
       fastForwardInterval: Duration(seconds: 10),
     ),
@@ -80,8 +82,11 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   Duration _duration = Duration.zero;
   bool _hasTrustedDuration = false;
   bool _completionFired = false;
+  bool _isPreparingSource = false;
 
   static const Duration _nativeCleanupTimeout = Duration(seconds: 2);
+  static const Duration _sourceStartTimeout = Duration(seconds: 20);
+  static const Duration _playbackConfirmationTimeout = Duration(seconds: 8);
 
   /// Hook fired when the current track finishes naturally. The app wires this
   /// to the autoplay queue so the next prefetched suggestion plays.
@@ -104,23 +109,22 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     String? mimeType,
     Duration? canonicalDuration,
   }) async {
-    await _resetForNewSource();
-    if (canonicalDuration != null && canonicalDuration > Duration.zero) {
-      _applyDuration(canonicalDuration, trusted: true);
-    }
-    _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
-    playbackState.add(
-      playbackState.value.copyWith(
-        processingState: AudioProcessingState.loading,
-        playing: true,
-        updatePosition: Duration.zero,
-        bufferedPosition: Duration.zero,
-      ),
-    );
+    _isPreparingSource = true;
+    _emitLoadingState();
     try {
+      await _resetForNewSource();
+      if (canonicalDuration != null && canonicalDuration > Duration.zero) {
+        _applyDuration(canonicalDuration, trusted: true);
+      }
+      _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
+      _emitLoadingState();
       await _playRemoteSource(url: url, mimeType: mimeType);
+      _isPreparingSource = false;
+      _playerState = player.state;
+      _broadcastPlaybackState();
     } catch (error, stack) {
-      _handlePlaybackError(error, stack);
+      await _handlePlaybackError(error, stack);
+      Error.throwWithStackTrace(error, stack);
     }
   }
 
@@ -132,23 +136,25 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     String? artUrl,
     Duration? canonicalDuration,
   }) async {
-    await _resetForNewSource();
-    if (canonicalDuration != null && canonicalDuration > Duration.zero) {
-      _applyDuration(canonicalDuration, trusted: true);
-    }
-    _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
-    playbackState.add(
-      playbackState.value.copyWith(
-        processingState: AudioProcessingState.loading,
-        playing: true,
-        updatePosition: Duration.zero,
-        bufferedPosition: Duration.zero,
-      ),
-    );
+    _isPreparingSource = true;
+    _emitLoadingState();
     try {
-      await player.play(DeviceFileSource(filePath));
+      await _resetForNewSource();
+      if (canonicalDuration != null && canonicalDuration > Duration.zero) {
+        _applyDuration(canonicalDuration, trusted: true);
+      }
+      _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
+      _emitLoadingState();
+      await player
+          .play(DeviceFileSource(filePath))
+          .timeout(_sourceStartTimeout);
+      await _confirmPlaybackStarted();
+      _isPreparingSource = false;
+      _playerState = player.state;
+      _broadcastPlaybackState();
     } catch (error, stack) {
-      _handlePlaybackError(error, stack);
+      await _handlePlaybackError(error, stack);
+      Error.throwWithStackTrace(error, stack);
     }
   }
 
@@ -170,7 +176,27 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     required String url,
     String? mimeType,
   }) async {
-    await player.play(UrlSource(url, mimeType: mimeType));
+    await player
+        .play(UrlSource(url, mimeType: mimeType))
+        .timeout(_sourceStartTimeout);
+    await _confirmPlaybackStarted();
+  }
+
+  Future<void> _confirmPlaybackStarted() async {
+    if (player.state == PlayerState.playing) return;
+
+    final state = await player.onPlayerStateChanged
+        .firstWhere(
+          (state) =>
+              state == PlayerState.playing ||
+              state == PlayerState.stopped ||
+              state == PlayerState.completed,
+        )
+        .timeout(_playbackConfirmationTimeout, onTimeout: () => player.state);
+
+    if (state != PlayerState.playing) {
+      throw PlaybackStartException(state);
+    }
   }
 
   Future<void> _handleCompletion() async {
@@ -199,8 +225,9 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     _completionFired = true;
     try {
       await player.stop();
+      await player.setVolume(1);
     } catch (_) {}
-    await player.setVolume(1);
+    _isPreparingSource = false;
     playbackState.add(
       playbackState.value.copyWith(
         processingState: AudioProcessingState.error,
@@ -232,6 +259,7 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
+    _isPreparingSource = false;
     await player.stop();
     _position = Duration.zero;
     playbackState.add(
@@ -306,6 +334,49 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     );
   }
 
+  /// Publishes the selected station immediately, before its final stream URL
+  /// has been resolved. This lets every player surface loading feedback from
+  /// the user's tap instead of waiting on the radio directory request first.
+  void beginMediaPreparation({
+    required String id,
+    required String title,
+    required String artist,
+    String? artUrl,
+  }) {
+    _isPreparingSource = true;
+    _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
+    _emitLoadingState();
+  }
+
+  /// Keeps loading visible between a failed attempt and its automatic retry.
+  void continueMediaPreparation() {
+    _isPreparingSource = true;
+    _emitLoadingState();
+  }
+
+  /// Completes preparation when resolving a source fails before playback.
+  void failMediaPreparation(Object error) {
+    _isPreparingSource = false;
+    playbackState.add(
+      playbackState.value.copyWith(
+        processingState: AudioProcessingState.error,
+        playing: false,
+        errorMessage: error.toString(),
+      ),
+    );
+  }
+
+  void _emitLoadingState() {
+    playbackState.add(
+      playbackState.value.copyWith(
+        processingState: AudioProcessingState.loading,
+        playing: false,
+        updatePosition: Duration.zero,
+        bufferedPosition: Duration.zero,
+      ),
+    );
+  }
+
   Duration _boundedPosition(Duration position) {
     if (position < Duration.zero) return Duration.zero;
     if (_duration > Duration.zero && position > _duration) return _duration;
@@ -313,6 +384,11 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void _broadcastPlaybackState() {
+    if (_isPreparingSource) {
+      _emitLoadingState();
+      return;
+    }
+
     final playing = _playerState == PlayerState.playing;
     final processingState = switch (_playerState) {
       PlayerState.stopped => AudioProcessingState.idle,
@@ -340,4 +416,13 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
 
     debugPrint('Background audio state: $_playerState');
   }
+}
+
+class PlaybackStartException implements Exception {
+  const PlaybackStartException(this.state);
+
+  final PlayerState state;
+
+  @override
+  String toString() => 'Playback did not start (state: $state)';
 }

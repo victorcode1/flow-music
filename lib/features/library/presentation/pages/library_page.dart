@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/core/utils/search_text_normalizer.dart';
 import 'package:flow_music/features/favorites/presentation/pages/radio_playlist_detail_page.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/library/presentation/widgets/library_empty_card.dart';
@@ -31,7 +32,7 @@ class LibraryPage extends ConsumerWidget {
     return ListenableBuilder(
       listenable: searchController,
       builder: (context, _) {
-        final query = searchController.text.trim().toLowerCase();
+        final query = normalizeSearchText(searchController.text);
         final visibleFavorites = _filterStations(favorites, query);
         final visiblePlaylists = _filterPlaylists(playlists, query);
 
@@ -143,9 +144,9 @@ class LibraryPage extends ConsumerWidget {
     return stations
         .where(
           (station) =>
-              station.name.toLowerCase().contains(query) ||
-              station.country.toLowerCase().contains(query) ||
-              station.tags.toLowerCase().contains(query),
+              searchTextContains(station.name, query) ||
+              searchTextContains(station.country, query) ||
+              searchTextContains(station.tags, query),
         )
         .toList();
   }
@@ -156,7 +157,7 @@ class LibraryPage extends ConsumerWidget {
   ) {
     if (query.isEmpty) return playlists;
     return playlists
-        .where((playlist) => playlist.name.toLowerCase().contains(query))
+        .where((playlist) => searchTextContains(playlist.name, query))
         .toList();
   }
 

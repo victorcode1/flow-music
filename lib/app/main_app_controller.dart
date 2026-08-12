@@ -6,7 +6,10 @@ import 'package:flow_music/features/history/presentation/controllers/playback_hi
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
+import 'package:flow_music/features/radio/presentation/utils/playback_retry.dart';
+import 'package:flow_music/features/radio/presentation/utils/playback_retry_feedback.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -18,6 +21,7 @@ class MainAppController {
   MainAppController(this.ref);
 
   final Ref ref;
+  int _queuePlaybackRequest = 0;
 
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
@@ -59,39 +63,87 @@ class MainAppController {
     await _playQueuedStation(previous);
   }
 
-  void handleAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.detached:
-        ref.read(mainController).setAudioStateDetached();
-      case AppLifecycleState.resumed:
-        ref.read(mainController).setAudioStateResumed();
-        break;
-      case AppLifecycleState.inactive:
-        ref.read(mainController).setAudioStateInactive();
-        break;
-      case AppLifecycleState.paused:
-        ref.read(mainController).setAudioStatePaused();
-        break;
-      case AppLifecycleState.hidden:
-        ref.read(mainController).setAudioStateHidden();
-        break;
-    }
-  }
-
   Future<void> _playQueuedStation(RadioStation? station) async {
     if (station == null || !station.isPlayable) return;
 
+    final requestId = ++_queuePlaybackRequest;
+    final repository = RadioBrowserRepository();
+    final stationId = station.stationUuid.isEmpty
+        ? station.streamUrl
+        : station.stationUuid;
+    final artUrl = station.artworkUrl.isEmpty ? null : station.artworkUrl;
+    ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
+    automaticRetryNotice;
+    bool isCurrentRequest() => requestId == _queuePlaybackRequest;
+
     try {
-      final repository = RadioBrowserRepository();
-      final streamUrl = await repository.countClickAndResolveUrl(station);
-      final artUrl = await repository.resolveArtworkUrl(station);
-      await flowAudioHandler.playUrl(
-        url: streamUrl,
-        id: station.stationUuid.isEmpty ? streamUrl : station.stationUuid,
+      flowAudioHandler.beginMediaPreparation(
+        id: stationId,
         title: station.name,
         artist: station.country,
         artUrl: artUrl,
       );
+      var streamUrl = await repository.countClickAndResolveUrl(station);
+      if (!isCurrentRequest()) return;
+      _debugLogQueuedRadioStream(station, streamUrl);
+      final messenger = ref.read(mainController).scaffoldMessage.currentState;
+      Object? finalPlaybackFailure;
+
+      Future<void> playResolvedStream() {
+        return flowAudioHandler.playUrl(
+          url: streamUrl,
+          id: stationId,
+          title: station.name,
+          artist: station.country,
+          artUrl: artUrl,
+        );
+      }
+
+      final succeeded = await runPlaybackWithAutomaticRetry(
+        shouldContinue: isCurrentRequest,
+        attempt: playResolvedStream,
+        retryAttempt: () async {
+          if (!isCurrentRequest()) return;
+          streamUrl = await repository.refreshResolvedUrl(
+            station,
+            fallbackUrl: streamUrl,
+          );
+          if (!isCurrentRequest()) return;
+          _debugLogQueuedRadioStream(station, streamUrl, isRetry: true);
+          await playResolvedStream();
+        },
+        onAutomaticRetry: (error) {
+          debugPrint('Queued radio playback failed; retrying: $error');
+          flowAudioHandler.continueMediaPreparation();
+          automaticRetryNotice = showAutomaticPlaybackRetryNotice(messenger);
+        },
+        onFinalFailure: (error) {
+          finalPlaybackFailure = error;
+          debugPrint('Queued radio retry failed: $error');
+          automaticRetryNotice?.close();
+        },
+      );
+
+      if (!succeeded || !isCurrentRequest()) {
+        if (isCurrentRequest() && finalPlaybackFailure != null) {
+          await repository.healthRepository.recordFailure(
+            station,
+            finalPlaybackFailure,
+          );
+          final next = ref.read(radioQueueControllerProvider.notifier).next();
+          if (next != null) {
+            await _playQueuedStation(next);
+          } else {
+            showFinalPlaybackFailureNotice(
+              messenger,
+              onRetry: () => unawaited(_playQueuedStation(station)),
+            );
+          }
+        }
+        return;
+      }
+      automaticRetryNotice?.close();
+      await repository.healthRepository.recordSuccess(station);
       await ref
           .read(playbackHistoryControllerProvider.notifier)
           .recordRadio(
@@ -104,6 +156,23 @@ class MainAppController {
           );
     } catch (error) {
       debugPrint('Unable to advance the radio queue: $error');
+      if (isCurrentRequest()) {
+        await repository.healthRepository.recordFailure(station, error);
+        flowAudioHandler.failMediaPreparation(error);
+      }
+    } finally {
+      automaticRetryNotice?.close();
+      repository.close();
     }
   }
+}
+
+void _debugLogQueuedRadioStream(
+  RadioStation station,
+  String streamUrl, {
+  bool isRetry = false,
+}) {
+  if (!kDebugMode) return;
+  final phase = isRetry ? 'retry' : 'selected';
+  debugPrint('[Radio queue][$phase] ${station.name}: $streamUrl');
 }
