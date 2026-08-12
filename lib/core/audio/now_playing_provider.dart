@@ -2,7 +2,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// Streams the title of the currently-playing media (song, video, radio).
+/// Streams the title of the currently-playing radio station.
 /// Returns `null` when nothing meaningful is loaded so callers can fall back
 /// to a default label.
 final nowPlayingTitleProvider = StreamProvider<String?>((ref) {

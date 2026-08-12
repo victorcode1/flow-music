@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/favorites/data/favorite_song.dart';
+import 'package:flow_music/core/utils/search_text_normalizer.dart';
 import 'package:flow_music/features/radio/data/models/radio_playlist.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_favorites_controller.dart';
@@ -12,33 +12,18 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class FavoritesPageController {
   const FavoritesPageController();
 
-  List<FavoriteSong> filterSongs(
-    List<FavoriteSong> favorites,
-    String rawQuery,
-  ) {
-    final query = _normalizeQuery(rawQuery);
-    if (query.isEmpty) return favorites;
-    return favorites
-        .where(
-          (favorite) =>
-              favorite.title.toLowerCase().contains(query) ||
-              favorite.author.toLowerCase().contains(query),
-        )
-        .toList();
-  }
-
   List<RadioStation> filterStations(
     List<RadioStation> stations,
     String rawQuery,
   ) {
-    final query = _normalizeQuery(rawQuery);
+    final query = normalizeSearchText(rawQuery);
     if (query.isEmpty) return stations;
     return stations
         .where(
           (station) =>
-              station.name.toLowerCase().contains(query) ||
-              station.country.toLowerCase().contains(query) ||
-              station.tags.toLowerCase().contains(query),
+              searchTextContains(station.name, query) ||
+              searchTextContains(station.country, query) ||
+              searchTextContains(station.tags, query),
         )
         .toList();
   }
@@ -47,10 +32,10 @@ class FavoritesPageController {
     List<RadioPlaylist> playlists,
     String rawQuery,
   ) {
-    final query = _normalizeQuery(rawQuery);
+    final query = normalizeSearchText(rawQuery);
     if (query.isEmpty) return playlists;
     return playlists
-        .where((playlist) => playlist.name.toLowerCase().contains(query))
+        .where((playlist) => searchTextContains(playlist.name, query))
         .toList();
   }
 
@@ -95,6 +80,4 @@ class FavoritesPageController {
       SnackBar(content: Text(LocaleKeys.radio_playlist_created.tr())),
     );
   }
-
-  String _normalizeQuery(String rawQuery) => rawQuery.trim().toLowerCase();
 }

@@ -80,7 +80,6 @@ abstract class LocaleKeys {
   static const source = 'source';
   static const volume = 'volume';
   static const normalize_volume = 'normalize_volume';
-  static const audio_tools = 'audio_tools';
   static const balance = 'balance';
   static const playback_rate = 'playback_rate';
   static const sleep_timer = 'sleep_timer';
@@ -136,8 +135,11 @@ abstract class LocaleKeys {
   static const player_complete = 'player_complete';
   static const seek_complete = 'seek_complete';
   static const search_radio = 'search_radio';
+  static const filter_by_country = 'filter_by_country';
   static const radio_error = 'radio_error';
   static const radio_play_error = 'radio_play_error';
+  static const radio_play_retrying = 'radio_play_retrying';
+  static const radio_play_retry_failed = 'radio_play_retry_failed';
   static const no_radio_results = 'no_radio_results';
   static const radio_map_explorer = 'radio_map_explorer';
   static const radio_map_explorer_short = 'radio_map_explorer_short';

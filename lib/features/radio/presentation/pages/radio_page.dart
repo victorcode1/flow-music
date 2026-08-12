@@ -6,14 +6,15 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
-import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/models/radio_tag.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_favorites_controller.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
+import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
 import 'package:flow_music/features/radio/presentation/widgets/radio_playlist_actions.dart';
+import 'package:flow_music/shared/widgets/optimized_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -31,6 +32,9 @@ String _countryFlagEmoji(String countryCode) {
     regionalIndicatorA + normalized.codeUnitAt(1) - asciiA,
   ]);
 }
+
+String _stationPlaybackId(RadioStation station) =>
+    station.stationUuid.isEmpty ? station.streamUrl : station.stationUuid;
 
 class _FlagEmoji extends StatelessWidget {
   const _FlagEmoji({required this.flag, this.size = 18, this.dimension = 22});
@@ -102,7 +106,12 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     _playerStateSubscription = flowAudioHandler.player.onPlayerStateChanged
         .listen((state) {
           if (mounted) {
-            setState(() => _playerState = state);
+            setState(() {
+              _playerState = state;
+              if (state == PlayerState.playing) {
+                _playingStationUuid = flowAudioHandler.mediaItem.value?.id;
+              }
+            });
           }
         });
 
@@ -122,6 +131,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     _debounce?.cancel();
     _playerStateSubscription?.cancel();
     _searchController.removeListener(_onSearchChanged);
+    _repository.close();
     super.dispose();
   }
 
@@ -169,18 +179,9 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     });
   }
 
-  Future<void> _toggleStation(RadioStation station) async {
-    final isCurrentStation = station.stationUuid == _playingStationUuid;
-    if (isCurrentStation && _playerState == PlayerState.playing) {
-      await flowAudioHandler.pause();
-      return;
-    }
-
-    if (isCurrentStation && _playerState == PlayerState.paused) {
-      await flowAudioHandler.play();
-      return;
-    }
-
+  Future<void> _selectStation(RadioStation station) async {
+    final isCurrentStation = _stationPlaybackId(station) == _playingStationUuid;
+    if (isCurrentStation && _playerState == PlayerState.playing) return;
     await _playStation(station);
   }
 
@@ -189,43 +190,20 @@ class _RadioPageState extends ConsumerState<RadioPage> {
 
     setState(() {
       _isLoadingPlayback = true;
-      _playingStationUuid = station.stationUuid;
+      _playingStationUuid = _stationPlaybackId(station);
     });
 
-    try {
-      final streamUrl = await _repository.countClickAndResolveUrl(station);
-      final artUrl = await _repository.resolveArtworkUrl(station);
-      await flowAudioHandler.playUrl(
-        url: streamUrl,
-        id: station.stationUuid.isEmpty ? streamUrl : station.stationUuid,
-        title: station.name,
-        artist: [
-          if (station.country.isNotEmpty) station.country,
-          if (station.codec.isNotEmpty) station.codec,
-          if (station.bitrate > 0) '${station.bitrate} kbps',
-        ].join(' · '),
-        artUrl: artUrl,
-      );
-      await ref
-          .read(playbackHistoryControllerProvider.notifier)
-          .recordRadio(
-            stationId: station.stationUuid.isEmpty
-                ? station.streamUrl
-                : station.stationUuid,
-            name: station.name,
-            country: station.country,
-            artworkUrl: artUrl ?? station.artworkUrl,
-          );
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(LocaleKeys.radio_play_error.tr())),
-        );
+    final succeeded = await playRadioStation(
+      context: context,
+      ref: ref,
+      station: station,
+      repository: _repository,
+    );
+    if (mounted) {
+      if (!succeeded && _playingStationUuid == _stationPlaybackId(station)) {
+        _playingStationUuid = null;
       }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoadingPlayback = false);
-      }
+      setState(() => _isLoadingPlayback = false);
     }
   }
 
@@ -287,7 +265,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                             favoriteStations,
                             favoriteStations.indexOf(station),
                           );
-                      _toggleStation(station);
+                      _selectStation(station);
                     },
                   ),
                   const SizedBox(height: 14),
@@ -372,7 +350,8 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                 separatorBuilder: (_, _) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
                   final station = stations[index];
-                  final isActive = station.stationUuid == _playingStationUuid;
+                  final isActive =
+                      _stationPlaybackId(station) == _playingStationUuid;
                   final isFavorite = favoritesController.contains(station);
                   return _StationTile(
                     station: station,
@@ -381,12 +360,12 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                     isPlaying: isActive && _playerState == PlayerState.playing,
                     isLoading:
                         _isLoadingPlayback &&
-                        station.stationUuid == _playingStationUuid,
+                        _stationPlaybackId(station) == _playingStationUuid,
                     onTap: () {
                       ref
                           .read(radioQueueControllerProvider.notifier)
                           .enqueue(stations, index);
-                      _toggleStation(station);
+                      _selectStation(station);
                     },
                     onLongPress: () => _showStationInfo(station),
                     onToggleFavorite: () async {
@@ -453,7 +432,8 @@ class _FavoriteStationStrip extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final station = stations[index];
-              final isActive = station.stationUuid == playingStationUuid;
+              final isActive =
+                  _stationPlaybackId(station) == playingStationUuid;
               final flag = _countryFlagEmoji(station.countryCode);
               return ActionChip(
                 avatar: isActive && playerState == PlayerState.playing
@@ -604,8 +584,9 @@ class _StationTile extends StatelessWidget {
                 dimension: 58,
                 child: station.artworkUrl.isEmpty
                     ? _RadioArtwork(colors: colors)
-                    : Image.network(
-                        station.artworkUrl,
+                    : OptimizedNetworkImage(
+                        url: station.artworkUrl,
+                        displaySize: 58,
                         fit: BoxFit.cover,
                         errorBuilder: (_, _, _) =>
                             _RadioArtwork(colors: colors),

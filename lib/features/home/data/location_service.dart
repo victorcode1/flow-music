@@ -34,16 +34,6 @@ class ResolvedLocation {
   final String? failureReason;
 
   bool get isResolved => latitude != null && longitude != null;
-
-  String get trackingStatus {
-    return switch (accessStatus) {
-      LocationAccessStatus.available => 'unavailable',
-      LocationAccessStatus.webUnsupported => 'unavailable',
-      LocationAccessStatus.serviceDisabled => 'serviceDisabled',
-      LocationAccessStatus.permissionDenied => 'permissionDenied',
-      LocationAccessStatus.permissionDeniedForever => 'permissionDeniedForever',
-    };
-  }
 }
 
 enum LocationAccessStatus {

@@ -7,8 +7,8 @@ part 'autoplay_enabled_controller.g.dart';
 const String _autoplayEnabledKey = 'autoplay_enabled';
 const String _settingsUpdatedAtKey = 'settings_updated_at_ms';
 
-/// Boolean preference: when true, after a tapped search result finishes the
-/// app auto-advances through the remaining results (prefetched in parallel).
+/// Preferencia para avanzar a la siguiente emisora cuando una lista de radio
+/// tiene más elementos disponibles.
 @Riverpod(keepAlive: true)
 class AutoplayEnabledController extends _$AutoplayEnabledController {
   @override

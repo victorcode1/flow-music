@@ -5,21 +5,26 @@ import 'package:flow_music/features/radio/data/models/radio_country.dart';
 import 'package:http/http.dart' as http;
 
 class CountryCatalogRepository {
-  CountryCatalogRepository({http.Client? client})
-    : _client = client ?? http.Client();
+  CountryCatalogRepository({
+    http.Client? client,
+    Duration requestTimeout = const Duration(seconds: 10),
+  }) : _client = client ?? http.Client(),
+       _ownsClient = client == null,
+       _requestTimeout = requestTimeout;
 
   static final Uri _restCountriesUri = Uri.parse(
     'https://restcountries.com/v3.1/all',
   ).replace(queryParameters: {'fields': 'cca2,name,translations,latlng,area'});
 
   final http.Client _client;
+  final bool _ownsClient;
+  final Duration _requestTimeout;
 
   Future<List<RadioCountry>> countries() async {
     try {
-      final response = await _client.get(
-        _restCountriesUri,
-        headers: const {'Accept': 'application/json'},
-      );
+      final response = await _client
+          .get(_restCountriesUri, headers: const {'Accept': 'application/json'})
+          .timeout(_requestTimeout);
       if (response.statusCode < 200 || response.statusCode >= 300) {
         return radioCountries;
       }
@@ -43,6 +48,10 @@ class CountryCatalogRepository {
     } catch (_) {
       return radioCountries;
     }
+  }
+
+  void close() {
+    if (_ownsClient) _client.close();
   }
 
   RadioCountry? _countryFromJson(

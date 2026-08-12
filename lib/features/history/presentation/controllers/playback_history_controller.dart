@@ -14,25 +14,6 @@ class PlaybackHistoryController extends Notifier<List<PlaybackHistoryEntry>> {
   @override
   List<PlaybackHistoryEntry> build() => _repository.readAll();
 
-  Future<void> recordSong({
-    required String videoId,
-    required String title,
-    required String author,
-    required String thumbnailUrl,
-  }) async {
-    await _record(
-      PlaybackHistoryEntry(
-        id: videoId,
-        title: title.isEmpty ? videoId : title,
-        subtitle: author,
-        thumbnailUrl: thumbnailUrl,
-        playedAt: DateTime.now(),
-        playCount: 1,
-        kind: PlaybackHistoryKind.song,
-      ),
-    );
-  }
-
   Future<void> recordRadio({
     required String stationId,
     required String name,

@@ -1,18 +1,15 @@
 import 'dart:async';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
-import 'package:flow_music/core/routes/app_navigator_key.dart';
-import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
-import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
-    if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
-import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
-import 'package:flow_music/features/autoplay/presentation/controllers/cache_status_controller.dart';
-import 'package:flow_music/features/home/data/location_service.dart';
+import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
+import 'package:flow_music/features/radio/data/models/radio_station.dart';
+import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
+import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
+import 'package:flow_music/features/radio/presentation/utils/playback_retry.dart';
+import 'package:flow_music/features/radio/presentation/utils/playback_retry_feedback.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
-import 'package:flow_music/features/song/presentation/controllers/repeat_mode_controller.dart';
-import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -24,15 +21,12 @@ class MainAppController {
   MainAppController(this.ref);
 
   final Ref ref;
-  DateTime? _lastLocationPromptAt;
+  int _queuePlaybackRequest = 0;
 
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
     flowAudioHandler.onSkipToNext = handleSkipToNext;
     flowAudioHandler.onSkipToPrevious = handleSkipToPrevious;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      unawaited(_promptCountryLocationAccessIfNeeded());
-    });
   }
 
   void dispose() {
@@ -48,159 +42,137 @@ class MainAppController {
   }
 
   Future<void> handleTrackComplete() async {
-    if (ref.read(repeatModeControllerProvider)) {
-      final player = flowAudioHandler.player;
-      await player.seek(Duration.zero);
-      await player.resume();
-      return;
-    }
-
     if (!ref.read(autoplayEnabledControllerProvider)) return;
-    await _playQueueTrack(
-      ref.read(autoplayQueueControllerProvider.notifier).playNext(),
+    await _playQueuedStation(
+      ref.read(radioQueueControllerProvider.notifier).next(),
     );
   }
 
   Future<void> handleSkipToNext() async {
-    await _playQueueTrack(
-      ref.read(autoplayQueueControllerProvider.notifier).playNext(),
+    await _playQueuedStation(
+      ref.read(radioQueueControllerProvider.notifier).next(),
     );
   }
 
   Future<void> handleSkipToPrevious() async {
-    final previous = ref
-        .read(autoplayQueueControllerProvider.notifier)
-        .playPrevious();
+    final previous = ref.read(radioQueueControllerProvider.notifier).previous();
     if (previous == null) {
       await flowAudioHandler.seek(Duration.zero);
       return;
     }
-    await _playQueueTrack(previous);
+    await _playQueuedStation(previous);
   }
 
-  void handleAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.detached:
-        ref.read(mainController).setAudioStateDetached();
-        unawaited(clearAudioCache());
-      case AppLifecycleState.resumed:
-        ref.read(mainController).setAudioStateResumed();
-        unawaited(_promptCountryLocationAccessIfNeeded());
-        break;
-      case AppLifecycleState.inactive:
-        ref.read(mainController).setAudioStateInactive();
-        break;
-      case AppLifecycleState.paused:
-        ref.read(mainController).setAudioStatePaused();
-        break;
-      case AppLifecycleState.hidden:
-        ref.read(mainController).setAudioStateHidden();
-        break;
-    }
-  }
+  Future<void> _playQueuedStation(RadioStation? station) async {
+    if (station == null || !station.isPlayable) return;
 
-  void handleCacheStatusChanged(CacheStatus? previous, CacheStatus next) {
-    if (!next.shouldShowDialog) return;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _showDiskFullDialog();
-    });
-  }
+    final requestId = ++_queuePlaybackRequest;
+    final repository = RadioBrowserRepository();
+    final stationId = station.stationUuid.isEmpty
+        ? station.streamUrl
+        : station.stationUuid;
+    final artUrl = station.artworkUrl.isEmpty ? null : station.artworkUrl;
+    ScaffoldFeatureController<SnackBar, SnackBarClosedReason>?
+    automaticRetryNotice;
+    bool isCurrentRequest() => requestId == _queuePlaybackRequest;
 
-  Future<void> _playQueueTrack(NextTrack? next) async {
-    if (next == null) return;
-    final controller = ref.read(songController);
-    final resolved = next.resolved;
-    if (resolved != null) {
-      await controller.playPrefetched(resolved);
-      return;
-    }
-    await controller.playAudio(id: next.suggestion.videoId);
-  }
-
-  void _showDiskFullDialog() {
-    final status = ref.read(cacheStatusControllerProvider);
-    if (!status.shouldShowDialog) return;
-
-    final navigatorContext = _navigatorDialogContext;
-    if (navigatorContext == null) return;
-
-    ref.read(cacheStatusControllerProvider.notifier).acknowledge();
-    showDialog<void>(
-      context: navigatorContext,
-      builder: (dialogContext) {
-        return AlertDialog(
-          icon: const Icon(Icons.sd_card_alert_rounded),
-          title: Text(LocaleKeys.storage_full_title.tr()),
-          content: Text(LocaleKeys.storage_full_message.tr()),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(LocaleKeys.understood.tr()),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Location is used only while the app is open to choose country-based
-  // recommendations. Coordinates are never stored or sent to a backend.
-  Future<void> _promptCountryLocationAccessIfNeeded() async {
-    final lastPromptAt = _lastLocationPromptAt;
-    if (lastPromptAt != null &&
-        DateTime.now().difference(lastPromptAt) < const Duration(minutes: 10)) {
-      return;
-    }
-
-    const locationService = LocationService();
-    final status = await locationService.locationAccessStatus();
-    if (status == LocationAccessStatus.available ||
-        status == LocationAccessStatus.webUnsupported) {
-      return;
-    }
-
-    final messenger = ref.read(mainController).scaffoldMessage.currentState;
-    if (messenger == null) return;
-    _lastLocationPromptAt = DateTime.now();
-
-    final message = switch (status) {
-      LocationAccessStatus.serviceDisabled =>
-        'Activa la ubicacion para sugerirte musica popular de tu pais.',
-      LocationAccessStatus.permissionDenied =>
-        'Permite la ubicacion para sugerirte musica popular de tu pais.',
-      LocationAccessStatus.permissionDeniedForever =>
-        'Habilita la ubicacion desde ajustes para sugerirte musica por pais.',
-      LocationAccessStatus.available ||
-      LocationAccessStatus.webUnsupported => '',
-    };
-
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          action: SnackBarAction(
-            label: 'Ajustes',
-            onPressed: () {
-              switch (status) {
-                case LocationAccessStatus.serviceDisabled:
-                  unawaited(locationService.openDeviceLocationSettings());
-                case LocationAccessStatus.permissionDenied:
-                  unawaited(locationService.requestLocationAccess());
-                case LocationAccessStatus.permissionDeniedForever:
-                  unawaited(locationService.openAppLocationSettings());
-                case LocationAccessStatus.available:
-                case LocationAccessStatus.webUnsupported:
-                  break;
-              }
-            },
-          ),
-        ),
+    try {
+      flowAudioHandler.beginMediaPreparation(
+        id: stationId,
+        title: station.name,
+        artist: station.country,
+        artUrl: artUrl,
       );
-  }
+      var streamUrl = await repository.countClickAndResolveUrl(station);
+      if (!isCurrentRequest()) return;
+      _debugLogQueuedRadioStream(station, streamUrl);
+      final messenger = ref.read(mainController).scaffoldMessage.currentState;
+      Object? finalPlaybackFailure;
 
-  BuildContext? get _navigatorDialogContext {
-    final navigatorKey = ref.read(appNavigatorKeyProvider);
-    return navigatorKey.currentContext ?? navigatorKey.currentState?.context;
+      Future<void> playResolvedStream() {
+        return flowAudioHandler.playUrl(
+          url: streamUrl,
+          id: stationId,
+          title: station.name,
+          artist: station.country,
+          artUrl: artUrl,
+        );
+      }
+
+      final succeeded = await runPlaybackWithAutomaticRetry(
+        shouldContinue: isCurrentRequest,
+        attempt: playResolvedStream,
+        retryAttempt: () async {
+          if (!isCurrentRequest()) return;
+          streamUrl = await repository.refreshResolvedUrl(
+            station,
+            fallbackUrl: streamUrl,
+          );
+          if (!isCurrentRequest()) return;
+          _debugLogQueuedRadioStream(station, streamUrl, isRetry: true);
+          await playResolvedStream();
+        },
+        onAutomaticRetry: (error) {
+          debugPrint('Queued radio playback failed; retrying: $error');
+          flowAudioHandler.continueMediaPreparation();
+          automaticRetryNotice = showAutomaticPlaybackRetryNotice(messenger);
+        },
+        onFinalFailure: (error) {
+          finalPlaybackFailure = error;
+          debugPrint('Queued radio retry failed: $error');
+          automaticRetryNotice?.close();
+        },
+      );
+
+      if (!succeeded || !isCurrentRequest()) {
+        if (isCurrentRequest() && finalPlaybackFailure != null) {
+          await repository.healthRepository.recordFailure(
+            station,
+            finalPlaybackFailure,
+          );
+          final next = ref.read(radioQueueControllerProvider.notifier).next();
+          if (next != null) {
+            await _playQueuedStation(next);
+          } else {
+            showFinalPlaybackFailureNotice(
+              messenger,
+              onRetry: () => unawaited(_playQueuedStation(station)),
+            );
+          }
+        }
+        return;
+      }
+      automaticRetryNotice?.close();
+      await repository.healthRepository.recordSuccess(station);
+      await ref
+          .read(playbackHistoryControllerProvider.notifier)
+          .recordRadio(
+            stationId: station.stationUuid.isEmpty
+                ? station.streamUrl
+                : station.stationUuid,
+            name: station.name,
+            country: station.country,
+            artworkUrl: artUrl ?? station.artworkUrl,
+          );
+    } catch (error) {
+      debugPrint('Unable to advance the radio queue: $error');
+      if (isCurrentRequest()) {
+        await repository.healthRepository.recordFailure(station, error);
+        flowAudioHandler.failMediaPreparation(error);
+      }
+    } finally {
+      automaticRetryNotice?.close();
+      repository.close();
+    }
   }
+}
+
+void _debugLogQueuedRadioStream(
+  RadioStation station,
+  String streamUrl, {
+  bool isRetry = false,
+}) {
+  if (!kDebugMode) return;
+  final phase = isRetry ? 'retry' : 'selected';
+  debugPrint('[Radio queue][$phase] ${station.name}: $streamUrl');
 }

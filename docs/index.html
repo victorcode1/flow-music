@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="StreamBeat: radio en vivo de todo el mundo.">
+  <title>StreamBeat</title>
+  <style>
+    :root { color-scheme: dark; --accent: #18d6be; --panel: #101c2a; --muted: #9dafbd; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: radial-gradient(circle at 15% 0%, #0e4a50 0, #08111b 42%, #050a10 100%); color: #f7fbfc; }
+    main { width: min(920px, calc(100% - 40px)); margin: 0 auto; min-height: 100vh; display: grid; place-items: center; padding: 56px 0; }
+    article { width: 100%; padding: clamp(28px, 7vw, 72px); border: 1px solid rgba(255,255,255,.1); border-radius: 36px; background: rgba(9, 20, 31, .82); box-shadow: 0 28px 90px rgba(0,0,0,.35); backdrop-filter: blur(18px); }
+    .brand { display: flex; align-items: center; gap: 18px; margin-bottom: 52px; }
+    .brand img { width: 70px; height: 70px; border-radius: 20px; box-shadow: 0 14px 36px rgba(24,214,190,.22); }
+    .brand strong { font-size: 1.35rem; letter-spacing: -.02em; }
+    h1 { max-width: 720px; margin: 0; font-size: clamp(2.7rem, 8vw, 5.7rem); line-height: .95; letter-spacing: -.07em; }
+    .accent { color: var(--accent); }
+    p { max-width: 650px; margin: 30px 0 0; color: var(--muted); font-size: clamp(1.05rem, 2.5vw, 1.3rem); line-height: 1.65; }
+    nav { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 44px; }
+    a { display: inline-flex; align-items: center; min-height: 50px; padding: 0 22px; border-radius: 999px; color: #06120f; background: var(--accent); font-weight: 750; text-decoration: none; }
+    a.secondary { color: #eaf4f5; background: var(--panel); border: 1px solid rgba(255,255,255,.12); }
+    footer { margin-top: 52px; color: #6e828f; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <article>
+      <div class="brand"><img src="assets/icon.png" alt="Icono de StreamBeat"><strong>StreamBeat</strong></div>
+      <h1>Tu música.<br>Tu radio.<br><span class="accent">Tu mundo.</span></h1>
+      <p>Descubre emisoras en vivo de distintos países, explora el mapa y guarda tus favoritas. Disponible en español e inglés.</p>
+      <nav aria-label="Enlaces">
+        <a href="privacy/">Política de privacidad</a>
+        <a class="secondary" href="https://github.com/victorcode1/flow-music/issues">Soporte</a>
+      </nav>
+      <footer>© 2026 StreamBeat</footer>
+    </article>
+  </main>
+</body>
+</html>

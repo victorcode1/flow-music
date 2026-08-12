@@ -1,13 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
-import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
-import 'package:flow_music/features/settings/presentation/controllers/default_playback_mode_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/settings_page_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/settings/presentation/widgets/accent_color_palette.dart';
-import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -31,16 +28,6 @@ class SettingsMobileContent extends ConsumerWidget {
     final autoplayEnabled = ref.watch(autoplayEnabledControllerProvider);
     final autoplayController = ref.read(
       autoplayEnabledControllerProvider.notifier,
-    );
-    final defaultPlaybackMode = ref.watch(
-      defaultPlaybackModeControllerProvider,
-    );
-    final defaultPlaybackModeController = ref.read(
-      defaultPlaybackModeControllerProvider.notifier,
-    );
-    final audioQuality = ref.watch(audioDownloadQualityControllerProvider);
-    final audioQualityController = ref.read(
-      audioDownloadQualityControllerProvider.notifier,
     );
 
     return Scaffold(
@@ -96,92 +83,12 @@ class SettingsMobileContent extends ConsumerWidget {
                 ),
                 const _RowDivider(),
                 _SettingsRow(
-                  icon: Icons.play_circle_outline_rounded,
-                  title: LocaleKeys.default_playback_mode.tr(),
-                  subtitle: pageController.playbackModeLabel(
-                    defaultPlaybackMode,
-                  ),
-                  trailing: DropdownButtonHideUnderline(
-                    child: DropdownButton<PlaybackMode>(
-                      value: defaultPlaybackMode,
-                      borderRadius: BorderRadius.circular(16),
-                      onChanged: (value) {
-                        if (value != null) {
-                          defaultPlaybackModeController.setMode(value);
-                        }
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          value: PlaybackMode.audio,
-                          child: Text(LocaleKeys.audio.tr()),
-                        ),
-                        DropdownMenuItem(
-                          value: PlaybackMode.video,
-                          child: Text(LocaleKeys.video.tr()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const _RowDivider(),
-                _SettingsRow(
                   icon: Icons.music_note_rounded,
                   title: LocaleKeys.continuous_playback.tr(),
                   trailing: Switch.adaptive(
                     value: autoplayEnabled,
                     onChanged: autoplayController.setEnabled,
                   ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          // Tarjeta de descargas/almacenamiento (no esta en el mockup pero
-          // conserva funcionalidad existente).
-          _SettingsCard(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            child: Column(
-              children: [
-                _SettingsRow(
-                  icon: Icons.high_quality_rounded,
-                  title: LocaleKeys.audio_download_quality.tr(),
-                  subtitle: pageController.audioQualityLabel(audioQuality),
-                  trailing: DropdownButtonHideUnderline(
-                    child: DropdownButton<AudioDownloadQuality>(
-                      value: audioQuality,
-                      borderRadius: BorderRadius.circular(16),
-                      onChanged: (value) {
-                        if (value != null) {
-                          audioQualityController.setQuality(value);
-                        }
-                      },
-                      items: [
-                        DropdownMenuItem(
-                          value: AudioDownloadQuality.high,
-                          child: Text(LocaleKeys.audio_quality_high.tr()),
-                        ),
-                        DropdownMenuItem(
-                          value: AudioDownloadQuality.medium,
-                          child: Text(LocaleKeys.audio_quality_medium.tr()),
-                        ),
-                        DropdownMenuItem(
-                          value: AudioDownloadQuality.low,
-                          child: Text(LocaleKeys.audio_quality_low.tr()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const _RowDivider(),
-                _SettingsRow(
-                  icon: Icons.storage_rounded,
-                  title: LocaleKeys.storage_manager.tr(),
-                  subtitle: LocaleKeys.storage_manager_subtitle.tr(),
-                  trailing: Icon(
-                    Icons.chevron_right_rounded,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onTap: () => pageController.showStorageManager(context, ref),
                 ),
               ],
             ),
