@@ -101,8 +101,6 @@ abstract class LocaleKeys {
   static const sleep_timer_remaining = 'sleep_timer_remaining';
   static const cancel_sleep_timer = 'cancel_sleep_timer';
   static const minutes_count = 'minutes_count';
-  static const lyrics = 'lyrics';
-  static const no_lyrics = 'no_lyrics';
   static const first = 'first';
   static const language = 'language';
   static const select_language = 'select_language';

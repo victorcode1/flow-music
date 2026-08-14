@@ -97,8 +97,6 @@
   "sleep_timer_remaining": "Playback will stop in {} min.",
   "cancel_sleep_timer": "Cancel sleep timer",
   "minutes_count": "{} minutes",
-  "lyrics": "Lyrics",
-  "no_lyrics": "No lyrics were found for this song.",
   "first": "First",
   "language": "Language",
   "select_language": "Select language",

@@ -180,22 +180,17 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
               onNormalizeVolumeChanged: audioToolsNotifier.setNormalizeVolume,
               onSmoothTransitionsChanged:
                   audioToolsNotifier.setSmoothTransitions,
-              // En escritorio el reproductor inmersivo muestra el riel de cola
-              // "A continuación / Letra" a la derecha (igual al mockup).
+              // En escritorio el reproductor inmersivo muestra la cola a la
+              // derecha.
               sourceLabel: isWide ? LocaleKeys.playing.tr() : null,
               sideRail: isWide ? const _PlayerQueueRail() : null,
             ),
           ),
-          // En movil, accesos rapidos al pie (Letra / Video / Cola). En
-          // escritorio el riel lateral cubre cola y letra, asi que se ocultan.
+          // En movil, accesos rapidos al pie (Video / Cola). En escritorio el
+          // riel lateral cubre la cola, asi que se ocultan.
           if (!isWide)
             _PlayerActionChips(
               isVideo: controller.currentMode == PlaybackMode.video,
-              onLyrics: () => showNowPlayingLyricsSheet(
-                context: context,
-                title: controller.displayTitle ?? '',
-                artist: controller.displayAuthor ?? '',
-              ),
               onToggleVideo: () => controller.switchMode(
                 controller.currentMode == PlaybackMode.video
                     ? PlaybackMode.audio
@@ -244,17 +239,15 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   }
 }
 
-/// Fila de accesos rapidos al pie del reproductor: Letra / Video / Cola.
+/// Fila de accesos rapidos al pie del reproductor: Video / Cola.
 class _PlayerActionChips extends StatelessWidget {
   const _PlayerActionChips({
     required this.isVideo,
-    required this.onLyrics,
     required this.onToggleVideo,
     required this.onQueue,
   });
 
   final bool isVideo;
-  final VoidCallback onLyrics;
   final VoidCallback onToggleVideo;
   final VoidCallback onQueue;
 
@@ -267,11 +260,6 @@ class _PlayerActionChips extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _PlayerActionChip(
-              icon: Icons.lyrics_outlined,
-              label: LocaleKeys.lyrics.tr(),
-              onTap: onLyrics,
-            ),
             _PlayerActionChip(
               icon: isVideo ? Icons.videocam_rounded : Icons.videocam_outlined,
               label: LocaleKeys.video.tr(),
@@ -336,19 +324,11 @@ class _PlayerActionChip extends StatelessWidget {
   }
 }
 
-/// Riel derecho del reproductor en escritorio: pestañas "A continuación" y
-/// "Letra" con la cola real de reproducción, igual al mockup StreamBeat.
-class _PlayerQueueRail extends ConsumerStatefulWidget {
+/// Riel derecho del reproductor en escritorio con la cola de reproducción.
+class _PlayerQueueRail extends ConsumerWidget {
   const _PlayerQueueRail();
 
-  @override
-  ConsumerState<_PlayerQueueRail> createState() => _PlayerQueueRailState();
-}
-
-class _PlayerQueueRailState extends ConsumerState<_PlayerQueueRail> {
-  int _tab = 0; // 0 = cola, 1 = letra
-
-  void _playUpcoming(int index) {
+  void _playUpcoming(WidgetRef ref, int index) {
     final notifier = ref.read(autoplayQueueControllerProvider.notifier);
     SongWidget.pageController.playFromQueue(
       controller: ref.read(songController),
@@ -357,7 +337,7 @@ class _PlayerQueueRailState extends ConsumerState<_PlayerQueueRail> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final queue = ref.watch(autoplayQueueControllerProvider);
@@ -375,99 +355,40 @@ class _PlayerQueueRailState extends ConsumerState<_PlayerQueueRail> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
+            child: Text(
+              LocaleKeys.queue.tr(),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: colors.onSurface,
+              ),
+            ),
+          ),
+          Divider(height: 1, color: colors.outlineVariant),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(12, 6, 12, 18),
               children: [
-                _RailTab(
-                  label: LocaleKeys.queue.tr(),
-                  selected: _tab == 0,
-                  onTap: () => setState(() => _tab = 0),
-                ),
-                const SizedBox(width: 22),
-                _RailTab(
-                  label: LocaleKeys.lyrics.tr(),
-                  selected: _tab == 1,
-                  onTap: () => setState(() => _tab = 1),
-                ),
+                if (curTitle.isNotEmpty)
+                  _QueueRow(
+                    title: curTitle,
+                    subtitle: curSubtitle,
+                    thumbnailUrl: curThumb,
+                    isCurrent: true,
+                    onTap: null,
+                  ),
+                for (var i = 0; i < queue.upcoming.length; i++)
+                  _QueueRow(
+                    title: queue.upcoming[i].displayText,
+                    subtitle: queue.upcoming[i].channelTitle,
+                    thumbnailUrl: queue.upcoming[i].thumbnailUrl,
+                    isCurrent: false,
+                    onTap: () => _playUpcoming(ref, i),
+                  ),
               ],
             ),
           ),
-          Divider(height: 17, color: colors.outlineVariant),
-          Expanded(
-            child: _tab == 0
-                ? ListView(
-                    padding: const EdgeInsets.fromLTRB(12, 6, 12, 18),
-                    children: [
-                      if (curTitle.isNotEmpty)
-                        _QueueRow(
-                          title: curTitle,
-                          subtitle: curSubtitle,
-                          thumbnailUrl: curThumb,
-                          isCurrent: true,
-                          onTap: null,
-                        ),
-                      for (var i = 0; i < queue.upcoming.length; i++)
-                        _QueueRow(
-                          title: queue.upcoming[i].displayText,
-                          subtitle: queue.upcoming[i].channelTitle,
-                          thumbnailUrl: queue.upcoming[i].thumbnailUrl,
-                          isCurrent: false,
-                          onTap: () => _playUpcoming(i),
-                        ),
-                    ],
-                  )
-                : _LyricsPanel(
-                    title: curTitle,
-                    artist: curSubtitle,
-                  ),
-          ),
         ],
-      ),
-    );
-  }
-}
-
-/// Pestaña del riel (texto con subrayado de acento cuando está activa).
-class _RailTab extends StatelessWidget {
-  const _RailTab({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: selected ? colors.onSurface : colors.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Container(
-              height: 2,
-              width: 26,
-              decoration: BoxDecoration(
-                color: selected ? colors.primary : Colors.transparent,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -560,51 +481,6 @@ class _QueueRow extends StatelessWidget {
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Panel de la pestaña "Letra" del riel: abre la hoja de letra sincronizada.
-class _LyricsPanel extends StatelessWidget {
-  const _LyricsPanel({required this.title, required this.artist});
-
-  final String title;
-  final String artist;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.lyrics_outlined, size: 40, color: colors.primary),
-            const SizedBox(height: 14),
-            Text(
-              title.isEmpty ? LocaleKeys.lyrics.tr() : title,
-              textAlign: TextAlign.center,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            const SizedBox(height: 18),
-            FilledButton.icon(
-              onPressed: () => showNowPlayingLyricsSheet(
-                context: context,
-                title: title,
-                artist: artist,
-              ),
-              icon: const Icon(Icons.menu_book_rounded, size: 18),
-              label: Text(LocaleKeys.lyrics.tr()),
-            ),
-          ],
         ),
       ),
     );

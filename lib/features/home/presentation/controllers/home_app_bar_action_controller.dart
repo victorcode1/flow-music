@@ -6,7 +6,6 @@ import 'package:flow_music/features/favorites/presentation/controllers/favorites
 import 'package:flow_music/features/home/presentation/controllers/home_view_controller.dart';
 import 'package:flow_music/features/library/data/downloaded_audio.dart';
 import 'package:flow_music/features/library/presentation/widgets/downloaded_file_actions.dart';
-import 'package:flow_music/features/lyrics/data/lyrics_repository.dart';
 import 'package:flow_music/features/playlists/presentation/controllers/playlists_controller.dart';
 import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
@@ -91,12 +90,6 @@ class HomeAppBarActionController {
           state: ref.read(sleepTimerControllerProvider),
           controller: ref.read(sleepTimerControllerProvider.notifier),
         );
-      case HomeAppBarMenuAction.lyrics:
-        return showNowPlayingLyricsSheet(
-          context: context,
-          title: item.title,
-          artist: item.author,
-        );
       case HomeAppBarMenuAction.audioTools:
         return _showAppBarAudioToolsSheet(
           context: context,
@@ -129,7 +122,6 @@ enum HomeAppBarMenuAction {
   queue,
   addToPlaylist,
   sleepTimer,
-  lyrics,
   audioTools,
   download,
   offline,
@@ -357,65 +349,6 @@ Future<void> _showAppBarSleepTimerSheet({
                 },
               ),
           ],
-        ),
-      );
-    },
-  );
-}
-
-Future<void> showNowPlayingLyricsSheet({
-  required BuildContext context,
-  required String title,
-  required String artist,
-}) async {
-  await showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    builder: (context) {
-      return SafeArea(
-        child: FractionallySizedBox(
-          heightFactor: 0.82,
-          child: FutureBuilder<String?>(
-            future: const LyricsRepository().findLyrics(
-              title: title,
-              artist: artist,
-            ),
-            builder: (context, snapshot) {
-              final theme = Theme.of(context);
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final lyrics = snapshot.data;
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.lyrics.tr(),
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: lyrics == null || lyrics.isEmpty
-                          ? Center(child: Text(LocaleKeys.no_lyrics.tr()))
-                          : SingleChildScrollView(
-                              child: SelectableText(
-                                lyrics,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  height: 1.45,
-                                ),
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ),
       );
     },

@@ -319,13 +319,6 @@ class _NowPlayingMenuButton extends StatelessWidget {
             ),
           ),
           PopupMenuItem(
-            value: HomeAppBarMenuAction.lyrics,
-            child: _NowPlayingMenuRow(
-              icon: Icons.lyrics_rounded,
-              label: LocaleKeys.lyrics.tr(),
-            ),
-          ),
-          PopupMenuItem(
             value: HomeAppBarMenuAction.audioTools,
             child: _NowPlayingMenuRow(
               icon: Icons.tune_rounded,
