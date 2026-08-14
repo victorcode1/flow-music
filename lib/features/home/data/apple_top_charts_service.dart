@@ -56,7 +56,7 @@ class AppleTopChartsService {
       if (response.statusCode < 200 || response.statusCode >= 300) {
         // Algunos paises no tienen tienda propia: caemos a Estados Unidos.
         if (code != 'us') {
-          return fetchTopSongs(countryCode: 'us', limit: limit);
+          return await fetchTopSongs(countryCode: 'us', limit: limit);
         }
         return const [];
       }
