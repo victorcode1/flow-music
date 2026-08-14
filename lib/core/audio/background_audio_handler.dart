@@ -10,7 +10,7 @@ Future<FlowAudioHandler> initFlowAudioHandler() async {
   flowAudioHandler = await AudioService.init(
     builder: FlowAudioHandler.new,
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.example.flow_music.channel.audio',
+      androidNotificationChannelId: 'com.victorflores.streambeat.channel.audio',
       androidNotificationChannelName: 'Reproduccion de audio',
       androidNotificationChannelDescription:
           'Controles de reproduccion de StreamBeat',
