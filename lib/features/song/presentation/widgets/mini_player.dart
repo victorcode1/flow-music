@@ -118,7 +118,8 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
                         ? () => playNextRadioStation(context: context, ref: ref)
                         : null)
                   : (autoplayQueue.hasNext
-                        ? () => _playFromQueue(autoplayNotifier.playNext())
+                        ? () async =>
+                              _playFromQueue(await autoplayNotifier.playNext())
                         : null),
               onStop: () => flowAudioHandler.stop(),
               onOpen: _openPlayer,

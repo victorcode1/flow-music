@@ -163,14 +163,14 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                     )
                   : null,
               onNext: autoplayQueue.hasNext
-                  ? () => SongWidget.pageController.playFromQueue(
+                  ? () async => SongWidget.pageController.playFromQueue(
                       controller: controller,
-                      track: autoplayNotifier.playNext(),
+                      track: await autoplayNotifier.playNext(),
                     )
                   : null,
               repeatEnabled: repeatEnabled,
               onToggleRepeat: repeatNotifier.toggle,
-              onShuffle: autoplayQueue.hasNext
+              onShuffle: autoplayQueue.upcoming.length > 1
                   ? autoplayNotifier.shuffleUpcoming
                   : null,
               playbackRate: audioTools.playbackRate,
@@ -384,6 +384,30 @@ class _PlayerQueueRail extends ConsumerWidget {
                     thumbnailUrl: queue.upcoming[i].thumbnailUrl,
                     isCurrent: false,
                     onTap: () => _playUpcoming(ref, i),
+                  ),
+                if (queue.isLoadingMore)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 16,
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox.square(
+                          dimension: 18,
+                          child: CircularProgressIndicator.adaptive(
+                            strokeWidth: 2,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          LocaleKeys.loading.tr(),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
               ],
             ),

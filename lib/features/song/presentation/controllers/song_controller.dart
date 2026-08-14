@@ -10,11 +10,14 @@ import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
     if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
+import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/library/data/downloaded_audio.dart';
 import 'package:flow_music/features/offline/data/offline_audio_store_stub.dart'
     if (dart.library.io) 'package:flow_music/features/offline/data/offline_audio_store_io.dart';
+import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/features/search/data/repositories/piped_video_duration.dart';
+import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -274,6 +277,7 @@ class SongController extends ChangeNotifier {
     _webVideoThumbnailUrl = (thumbnailUrl != null && thumbnailUrl.isNotEmpty)
         ? thumbnailUrl
         : null;
+    _ensureAutoplayQueueForCurrent(videoId);
     notifyListeners();
   }
 
@@ -354,6 +358,7 @@ class SongController extends ChangeNotifier {
       }
 
       _isLoading = false;
+      _ensureAutoplayQueueForCurrent(resolved.videoId);
       unawaited(
         ref
             .read(playbackHistoryControllerProvider.notifier)
@@ -607,6 +612,9 @@ class SongController extends ChangeNotifier {
     );
 
     _isLoading = false;
+    _ensureAutoplayQueueForCurrent(
+      audio.videoId.isEmpty ? _currentVideoId ?? '' : audio.videoId,
+    );
     unawaited(
       ref
           .read(playbackHistoryControllerProvider.notifier)
@@ -1266,6 +1274,7 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> _recordCurrentSong(String videoId) {
+    _ensureAutoplayQueueForCurrent(videoId);
     return ref
         .read(playbackHistoryControllerProvider.notifier)
         .recordSong(
@@ -1274,6 +1283,36 @@ class SongController extends ChangeNotifier {
           author: displayAuthor ?? '',
           thumbnailUrl: displayThumbnailUrl ?? '',
         );
+  }
+
+  /// Songs opened from favorites, a direct route or a saved playlist do not
+  /// arrive with a search-results queue. Seed autoplay from the resolved
+  /// metadata so those entry points also get a next song and background
+  /// refills. Existing search/home queues are preserved.
+  void _ensureAutoplayQueueForCurrent(String videoId) {
+    if (videoId.isEmpty || !ref.read(autoplayEnabledControllerProvider)) {
+      return;
+    }
+
+    final title = displayTitle?.trim() ?? '';
+    if (title.isEmpty) return;
+
+    final notifier = ref.read(autoplayQueueControllerProvider.notifier);
+    final queue = ref.read(autoplayQueueControllerProvider);
+    if (queue.current?.videoId == videoId) {
+      unawaited(notifier.ensureNext());
+      return;
+    }
+
+    notifier.enqueue([
+      YouTubeSearchSuggestion(
+        videoId: videoId,
+        displayText: title,
+        channelTitle: displayAuthor?.trim() ?? '',
+        thumbnailUrl: displayThumbnailUrl?.trim() ?? '',
+        duration: _videoInfo?.duration,
+      ),
+    ], 0);
   }
 
   @override

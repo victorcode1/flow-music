@@ -63,15 +63,17 @@ class MainAppController {
     }
 
     if (!ref.read(autoplayEnabledControllerProvider)) return;
-    await _playQueueTrack(
-      ref.read(autoplayQueueControllerProvider.notifier).playNext(),
-    );
+    final next = await ref
+        .read(autoplayQueueControllerProvider.notifier)
+        .playNext();
+    await _playQueueTrack(next);
   }
 
   Future<void> handleSkipToNext() async {
-    await _playQueueTrack(
-      ref.read(autoplayQueueControllerProvider.notifier).playNext(),
-    );
+    final next = await ref
+        .read(autoplayQueueControllerProvider.notifier)
+        .playNext();
+    await _playQueueTrack(next);
   }
 
   Future<void> handleSkipToPrevious() async {

@@ -232,9 +232,17 @@ Future<void> showNowPlayingQueueSheet({
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                  if (state.isLoadingMore)
+                    const LinearProgressIndicator(minHeight: 2),
                   Expanded(
                     child: upcoming.isEmpty
-                        ? Center(child: Text(LocaleKeys.empty_queue.tr()))
+                        ? Center(
+                            child: Text(
+                              state.isLoadingMore
+                                  ? LocaleKeys.loading.tr()
+                                  : LocaleKeys.empty_queue.tr(),
+                            ),
+                          )
                         : ReorderableListView.builder(
                             padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
                             itemCount: upcoming.length,
