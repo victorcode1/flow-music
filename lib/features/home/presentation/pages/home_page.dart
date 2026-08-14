@@ -109,11 +109,16 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: HomeMobileAppBar(
-        query: viewCtr.setQuery,
-        showNowPlayingDetails: showNowPlayingDetails,
-        showMiniPlayer: showMiniPlayer,
-      ),
+      // Configuracion ya trae su propia cabecera movil. La mantenemos dentro
+      // de este shell para que la barra inferior no desaparezca al cambiar de
+      // seccion, pero evitamos dibujar dos app bars.
+      appBar: currentPath == '/settings'
+          ? null
+          : HomeMobileAppBar(
+              query: viewCtr.setQuery,
+              showNowPlayingDetails: showNowPlayingDetails,
+              showMiniPlayer: showMiniPlayer,
+            ),
       body: HomePageContent(
         viewState: viewState,
         viewController: viewCtr,

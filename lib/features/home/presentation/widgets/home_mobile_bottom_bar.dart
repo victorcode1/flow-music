@@ -28,10 +28,6 @@ class HomeMobileBottomBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (showNowPlayingDetails) {
-      return const SizedBox.shrink();
-    }
-
     final searchController = ref.read(searchProvider);
 
     return Column(
@@ -45,9 +41,12 @@ class HomeMobileBottomBar extends ConsumerWidget {
               icon: Icons.home_outlined,
               activeIcon: Icons.home_rounded,
               label: LocaleKeys.home.tr(),
-              selected: currentPath == '/home',
+              selected: currentPath == '/home' || currentPath == '/playSong',
               onTap: () => _pageController.navigateToTab(
-                currentPath: currentPath,
+                // El reproductor tambien puede vivir en el estado interno de
+                // `/home`. Lo tratamos como una subruta para que volver a
+                // tocar Inicio cierre el reproductor y restaure sugerencias.
+                currentPath: showNowPlayingDetails ? '/playSong' : currentPath,
                 targetPath: '/home',
                 searchController: searchController,
                 setQuery: setQuery,
