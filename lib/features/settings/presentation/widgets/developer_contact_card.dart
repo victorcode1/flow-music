@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 const _developerName = 'Victor Flores';
@@ -62,24 +63,34 @@ class DeveloperContactCard extends StatelessWidget {
   }
 
   Future<void> _openEmail(BuildContext context) async {
-    final subject = LocaleKeys.developer_email_subject.tr();
-    final body = LocaleKeys.developer_email_body.tr();
-    final emailUri = Uri(
-      scheme: 'mailto',
-      path: _developerEmail,
-      query: _encodeQueryParameters({'subject': subject, 'body': body}),
+    final unavailableMessage = LocaleKeys.developer_email_unavailable.tr();
+    final contactErrorMessage = LocaleKeys.developer_contact_error.tr();
+    final email = Email(
+      subject: LocaleKeys.developer_email_subject.tr(),
+      body: LocaleKeys.developer_email_body.tr(),
+      recipients: const [_developerEmail],
+      isHTML: false,
     );
+    String? errorMessage;
 
-    if (await _tryOpenUri(emailUri)) return;
+    try {
+      final capabilities = await FlutterEmailSender.getCapabilities();
+      if (!capabilities.canSend) {
+        errorMessage = unavailableMessage;
+      } else {
+        await FlutterEmailSender.send(email);
+      }
+    } on FlutterEmailSenderNotAvailableException {
+      errorMessage = unavailableMessage;
+    } on FlutterEmailSenderException {
+      errorMessage = contactErrorMessage;
+    } catch (_) {
+      errorMessage = contactErrorMessage;
+    }
 
-    final gmailUri = Uri.https('mail.google.com', '/mail/', {
-      'view': 'cm',
-      'fs': '1',
-      'to': _developerEmail,
-      'su': subject,
-      'body': body,
-    });
-    await _openUri(context, gmailUri, mode: LaunchMode.externalApplication);
+    if (errorMessage != null && context.mounted) {
+      _showContactMessage(context, errorMessage);
+    }
   }
 
   Future<void> _openTelegram(BuildContext context) {
@@ -104,9 +115,7 @@ class DeveloperContactCard extends StatelessWidget {
     final opened = await _tryOpenUri(uri, mode: mode);
 
     if (!opened && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(LocaleKeys.developer_contact_error.tr())),
-      );
+      _showContactMessage(context, LocaleKeys.developer_contact_error.tr());
     }
   }
 
@@ -121,13 +130,11 @@ class DeveloperContactCard extends StatelessWidget {
     }
   }
 
-  String _encodeQueryParameters(Map<String, String> params) {
-    return params.entries
-        .map(
-          (entry) =>
-              '${Uri.encodeComponent(entry.key)}=${Uri.encodeComponent(entry.value)}',
-        )
-        .join('&');
+  void _showContactMessage(BuildContext context, String message) {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

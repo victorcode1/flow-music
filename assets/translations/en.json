@@ -61,6 +61,7 @@
   "developer_contact_invitation": "Have an idea, found an issue, or want to collaborate? I'd love to hear from you.",
   "developer_email_subject": "Contact from StreamBeat",
   "developer_email_body": "Hi Victor,\n\nI'm contacting you from StreamBeat.\n\n",
+  "developer_email_unavailable": "Set up an account in the Mail app to send the email.",
   "developer_contact_error": "This contact option could not be opened.",
   "developer_chat_message": "Hi Victor, I'm contacting you from StreamBeat.",
   "contact_me": "Contact me",

@@ -65,6 +65,7 @@ abstract class LocaleKeys {
   static const developer_contact_invitation = 'developer_contact_invitation';
   static const developer_email_subject = 'developer_email_subject';
   static const developer_email_body = 'developer_email_body';
+  static const developer_email_unavailable = 'developer_email_unavailable';
   static const developer_contact_error = 'developer_contact_error';
   static const developer_chat_message = 'developer_chat_message';
   static const contact_me = 'contact_me';

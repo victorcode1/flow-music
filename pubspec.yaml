@@ -30,6 +30,7 @@ dependencies:
   geocoding: ^5.0.0
   share_plus: ^13.1.0
   flutter_map: ^8.3.0
+  flutter_email_sender: ^10.0.1
   latlong2: ^0.10.1
   google_fonts: ^8.1.0
   cached_network_image: ^3.4.1
