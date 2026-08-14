@@ -60,6 +60,17 @@ abstract class LocaleKeys {
   static const smart_favorite_stations = 'smart_favorite_stations';
   static const radio = 'radio';
   static const settings = 'settings';
+  static const about_developer = 'about_developer';
+  static const developer_role = 'developer_role';
+  static const developer_contact_invitation = 'developer_contact_invitation';
+  static const developer_email_subject = 'developer_email_subject';
+  static const developer_email_body = 'developer_email_body';
+  static const developer_contact_error = 'developer_contact_error';
+  static const developer_chat_message = 'developer_chat_message';
+  static const contact_me = 'contact_me';
+  static const view_github = 'view_github';
+  static const telegram = 'telegram';
+  static const whatsapp = 'whatsapp';
   static const coming_soon = 'coming_soon';
   static const no_results = 'no_results';
   static const loading = 'loading';
@@ -104,8 +115,8 @@ abstract class LocaleKeys {
   static const video = 'video';
   static const fullscreen = 'fullscreen';
   static const exit_fullscreen = 'exit_fullscreen';
-  static const playing = 'playing';
   static const shuffle = 'shuffle';
+  static const playing = 'playing';
   static const live = 'live';
   static const downloading_progress = 'downloading_progress';
   static const download_audio = 'download_audio';

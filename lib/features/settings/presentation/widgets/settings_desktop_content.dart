@@ -5,6 +5,7 @@ import 'package:flow_music/features/settings/presentation/controllers/autoplay_e
 import 'package:flow_music/features/settings/presentation/controllers/settings_page_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/settings/presentation/widgets/accent_color_palette.dart';
+import 'package:flow_music/features/settings/presentation/widgets/developer_contact_card.dart';
 import 'package:flow_music/features/settings/presentation/widgets/settings_web_card.dart';
 import 'package:flow_music/features/monetization/presentation/widgets/monetization_settings_card.dart';
 import 'package:flutter/material.dart';
@@ -149,6 +150,8 @@ class SettingsDesktopContent extends ConsumerWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 14),
+                      const DeveloperContactCard(),
                     ],
                   ),
                 ),
