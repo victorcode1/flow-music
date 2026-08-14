@@ -75,6 +75,10 @@ scrip.sh
 **/.env.*
 **/.envrc
 !*.env.example
+/config/monetization.local.json
+
+# Temporary staging for private backups uploaded outside Git.
+/.private-backup/
 
 # Local clones of Radio Browser upstream repositories.
 # These are working copies only; commit the generated bundles in `radio-bundles/`.

@@ -10,6 +10,8 @@ import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/cache_status_controller.dart';
 import 'package:flow_music/features/home/data/location_service.dart';
+import 'package:flow_music/features/monetization/application/monetization_coordinator.dart';
+import 'package:flow_music/features/monetization/application/monetization_coordinator_provider.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/repeat_mode_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
@@ -25,6 +27,9 @@ class MainAppController {
 
   final Ref ref;
   DateTime? _lastLocationPromptAt;
+  late final MonetizationCoordinator _monetizationCoordinator = ref.read(
+    monetizationCoordinatorProvider,
+  );
 
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
@@ -33,9 +38,11 @@ class MainAppController {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       unawaited(_promptCountryLocationAccessIfNeeded());
     });
+    unawaited(_monetizationCoordinator.initialize());
   }
 
   void dispose() {
+    _monetizationCoordinator.dispose();
     if (flowAudioHandler.onTrackComplete == handleTrackComplete) {
       flowAudioHandler.onTrackComplete = null;
     }

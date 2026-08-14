@@ -4,23 +4,36 @@ Aplicación Flutter para descubrir música, reproducir audio y explorar estacion
 
 ## Datos y privacidad
 
-La aplicación funciona de forma local:
+La reproducción y las preferencias siguen funcionando de forma local. Las
+funciones opcionales de cuenta y monetización usan servicios desacoplados:
 
 - Favoritos, playlists y preferencias se guardan solamente en el dispositivo con Hive.
 - La ubicación se solicita solo mientras la app está abierta, para elegir el país de las recomendaciones y centrar el explorador de radio. No se guarda ni se envía a un servidor.
+- Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos.
+- RevenueCat valida la suscripción mensual de USD 1 mediante Google Play Billing o Apple In-App Purchase.
+- AdMob muestra como máximo un banner adaptativo; se oculta durante la reproducción y para suscriptores.
 
 La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
 
 ## Requisitos
 
 - Flutter SDK 3.8 o posterior
-- Xcode y CocoaPods para iOS o macOS
+- Xcode con Swift Package Manager para iOS o macOS
 - Android SDK para Android
 
 ## Ejecutar
 
     flutter pub get
     flutter run
+
+Para habilitar cuenta, suscripción y anuncios usa el archivo de ejemplo en
+`config/monetization.example.json`:
+
+    cp config/monetization.example.json config/monetization.local.json
+    flutter run --dart-define-from-file=config/monetization.local.json
+
+La arquitectura, el esquema y el procedimiento de publicación están descritos
+en `docs/MONETIZATION.md`.
 
 Para generar los archivos de Riverpod y Freezed:
 
