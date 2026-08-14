@@ -16,9 +16,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///
 /// Muestra la portada, el nombre y los datos de la emisora actual y permite
 /// pausar / reanudar, pasar a la siguiente / anterior emisora de la cola y
-/// marcarla como favorita. Es autonomo (su propio `Scaffold` + `AppBar` con
-/// boton de retroceso) porque se abre con `Navigator.push` desde el mini
-/// player, fuera del shell `HomePage`.
+/// marcarla como favorita. Conserva su propio `Scaffold` + `AppBar`, pero se
+/// renderiza dentro del shell `HomePage` para mantener visible la navegacion
+/// principal.
 class RadioPlayerPage extends ConsumerStatefulWidget {
   const RadioPlayerPage({super.key});
 

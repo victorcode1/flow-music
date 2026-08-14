@@ -28,7 +28,9 @@ class SettingsPage extends ConsumerWidget {
     }
 
     return SettingsMobileContent(
-      onBack: () => route.push('/home'),
+      // Configuracion es una seccion principal. Apilar otra copia de Home
+      // creaba el ciclo Home/Configuracion al repetir Atrás.
+      onBack: () => route.go('/home'),
       pageController: _pageController,
     );
   }

@@ -50,7 +50,8 @@ class HomeDesktopSidebar extends ConsumerWidget {
               _HomeDesktopNavItem(
                 icon: Icons.radio_rounded,
                 label: LocaleKeys.radio.tr(),
-                selected: currentPath == '/radio',
+                selected:
+                    currentPath == '/radio' || currentPath == '/radio-player',
                 onTap: () => route.go('/radio'),
               ),
               _HomeDesktopNavItem(
