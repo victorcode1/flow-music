@@ -6,6 +6,7 @@ import 'package:flow_music/features/settings/presentation/controllers/settings_p
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/settings/presentation/widgets/accent_color_palette.dart';
 import 'package:flow_music/features/settings/presentation/widgets/settings_web_card.dart';
+import 'package:flow_music/features/monetization/presentation/widgets/monetization_settings_card.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -63,6 +64,8 @@ class SettingsDesktopContent extends ConsumerWidget {
                 Expanded(
                   child: ListView(
                     children: [
+                      const MonetizationSettingsCard(),
+                      const SizedBox(height: 14),
                       SettingsWebCard(
                         icon: Icons.language_rounded,
                         title: LocaleKeys.language.tr(),

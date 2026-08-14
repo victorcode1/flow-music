@@ -255,4 +255,27 @@ abstract class LocaleKeys {
   static const guest_signup_prompt_message = 'guest_signup_prompt_message';
   static const guest_signup_prompt_action = 'guest_signup_prompt_action';
   static const guest_signup_prompt_later = 'guest_signup_prompt_later';
+  static const remove_ads_title = 'remove_ads_title';
+  static const remove_ads_subtitle = 'remove_ads_subtitle';
+  static const remove_ads_action = 'remove_ads_action';
+  static const subscribe_monthly_action = 'subscribe_monthly_action';
+  static const premium_active_title = 'premium_active_title';
+  static const premium_active_subtitle = 'premium_active_subtitle';
+  static const premium_badge = 'premium_badge';
+  static const restore_purchase = 'restore_purchase';
+  static const restore_success = 'restore_success';
+  static const restore_empty = 'restore_empty';
+  static const subscription_success = 'subscription_success';
+  static const monetization_unavailable = 'monetization_unavailable';
+  static const ad_privacy_options = 'ad_privacy_options';
+  static const account_subscription_reason = 'account_subscription_reason';
+  static const auth_confirmation_sent = 'auth_confirmation_sent';
+  static const auth_account_created = 'auth_account_created';
+  static const auth_new_password_title = 'auth_new_password_title';
+  static const auth_update_password = 'auth_update_password';
+  static const auth_password_updated = 'auth_password_updated';
+  static const auth_delete_account = 'auth_delete_account';
+  static const auth_delete_account_title = 'auth_delete_account_title';
+  static const auth_delete_account_message = 'auth_delete_account_message';
+  static const auth_account_deleted = 'auth_account_deleted';
 }

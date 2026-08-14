@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
+import 'package:flow_music/features/monetization/application/monetization_coordinator.dart';
+import 'package:flow_music/features/monetization/application/monetization_coordinator_provider.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
@@ -22,14 +24,19 @@ class MainAppController {
 
   final Ref ref;
   int _queuePlaybackRequest = 0;
+  late final MonetizationCoordinator _monetizationCoordinator = ref.read(
+    monetizationCoordinatorProvider,
+  );
 
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
     flowAudioHandler.onSkipToNext = handleSkipToNext;
     flowAudioHandler.onSkipToPrevious = handleSkipToPrevious;
+    unawaited(_monetizationCoordinator.initialize());
   }
 
   void dispose() {
+    _monetizationCoordinator.dispose();
     if (flowAudioHandler.onTrackComplete == handleTrackComplete) {
       flowAudioHandler.onTrackComplete = null;
     }

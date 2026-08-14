@@ -4,11 +4,15 @@ Aplicación Flutter para descubrir música, reproducir audio y explorar estacion
 
 ## Datos y privacidad
 
-La aplicación funciona de forma local:
+La reproducción y las preferencias siguen funcionando de forma local. Las
+funciones opcionales de cuenta y monetización usan servicios desacoplados:
 
 - Favoritos, playlists y preferencias se guardan solamente en el dispositivo con Hive.
 - La ubicación se solicita solo mientras la app está abierta, para elegir el país de las recomendaciones y centrar el explorador de radio. No se guarda ni se envía a un servidor.
 - Las compilaciones `release` envían a Sentry errores y una muestra de trazas de rendimiento para diagnóstico. Sentry permanece desactivado en debug y profile, y la integración no envía información personal por defecto.
+- Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos.
+- RevenueCat valida la suscripción mensual de USD 1 mediante Google Play Billing o Apple In-App Purchase.
+- AdMob muestra como máximo un banner adaptativo; se oculta durante la reproducción y para suscriptores.
 
 La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
 
@@ -22,6 +26,15 @@ La rama main conserva las funciones de búsqueda y reproducción basadas en YouT
 
     flutter pub get
     flutter run
+
+Para habilitar cuenta, suscripción y anuncios usa el archivo de ejemplo en
+`config/monetization.example.json`:
+
+    cp config/monetization.example.json config/monetization.local.json
+    flutter run --dart-define-from-file=config/monetization.local.json
+
+La arquitectura, el esquema y el procedimiento de publicación están descritos
+en `docs/MONETIZATION.md`.
 
 Sentry ya está conectado al proyecto `streambeat` y solo se inicializa en
 compilaciones `release`. `flutter run` y las compilaciones profile no envían

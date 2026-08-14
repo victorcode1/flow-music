@@ -1,5 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/app/app.dart';
+import 'package:flow_music/core/backend/backend_bootstrap.dart';
+import 'package:flow_music/core/backend/backend_providers.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/monitoring/sentry_config.dart';
 import 'package:flow_music/features/history/data/playback_history_repository.dart';
@@ -29,11 +31,13 @@ Future<void> _bootstrap() async {
   await Hive.openBox(radioPlaylistsBoxName);
   await Hive.openBox(radioStationHealthBoxName);
   await initFlowAudioHandler();
+  final backend = await BackendBootstrap.initialize();
   final packageInfo = await PackageInfo.fromPlatform();
 
   runApp(
     ProviderScope(
       overrides: [
+        supabaseClientProvider.overrideWithValue(backend.supabaseClient),
         infoVersionProvider.overrideWithBuild((ref, notifier) {
           return InfoVersion().build().copyWith(
             version: packageInfo.version,

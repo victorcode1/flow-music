@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/core/audio/radio_mini_player.dart';
+import 'package:flow_music/features/monetization/presentation/widgets/respectful_banner_slot.dart';
 import 'package:flow_music/shared/widgets/flow_bottom_nav.dart';
 import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:flutter/widget_previews.dart';
@@ -27,6 +28,7 @@ class HomeMobileBottomBar extends ConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        const RespectfulBannerSlot(),
         const RadioMiniPlayer(),
         FlowBottomNav(
           destinations: [
