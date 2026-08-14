@@ -72,7 +72,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ],
               ),
             ),
-            const RadioMiniPlayer(),
+            if (currentPath != '/radio-player') const RadioMiniPlayer(),
           ],
         ),
       );
@@ -80,12 +80,16 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      appBar: HomeMobileAppBar(
-        onSearch: _openSearch,
-        isSearching: _isSearching,
-        searchController: searchController,
-        onCloseSearch: _closeSearch,
-      ),
+      // Configuracion y el reproductor traen su propia cabecera. Ambos viven
+      // dentro de este shell para conservar la navegacion inferior.
+      appBar: currentPath == '/settings' || currentPath == '/radio-player'
+          ? null
+          : HomeMobileAppBar(
+              onSearch: _openSearch,
+              isSearching: _isSearching,
+              searchController: searchController,
+              onCloseSearch: _closeSearch,
+            ),
       body: HomePageContent(child: pageContent),
       bottomNavigationBar: HomeMobileBottomBar(currentPath: currentPath),
     );
