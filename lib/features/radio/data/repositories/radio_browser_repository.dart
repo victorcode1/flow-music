@@ -170,16 +170,27 @@ class RadioBrowserRepository {
     if (artworkUrl.isEmpty) return null;
 
     try {
+      final uri = Uri.parse(artworkUrl);
       final response = await _client
-          .head(Uri.parse(artworkUrl), headers: _headers)
+          .head(uri, headers: _imageHeaders)
           .timeout(_requestTimeout);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return artworkUrl;
       }
 
+      // Algunos servidores no permiten HEAD aunque la imagen sí se pueda
+      // descargar. En esos casos confirmamos con GET antes de conservar la URL.
       if (response.statusCode == 403 || response.statusCode == 405) {
-        return artworkUrl;
+        final getResponse = await _client
+            .get(
+              uri,
+              headers: {..._imageHeaders, 'Range': 'bytes=0-0'},
+            )
+            .timeout(_requestTimeout);
+        if (getResponse.statusCode >= 200 && getResponse.statusCode < 300) {
+          return artworkUrl;
+        }
       }
     } catch (_) {
       return null;
@@ -301,6 +312,11 @@ class RadioBrowserRepository {
 
   Map<String, String> get _headers => const {
     'Accept': 'application/json',
+    'User-Agent': 'StreamBeat/0.1.0 (flow-music)',
+  };
+
+  Map<String, String> get _imageHeaders => const {
+    'Accept': 'image/*,*/*;q=0.8',
     'User-Agent': 'StreamBeat/0.1.0 (flow-music)',
   };
 
