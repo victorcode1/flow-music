@@ -827,6 +827,17 @@ class _HistoryStrip extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: 10),
             itemBuilder: (context, index) {
               final item = items[index];
+              final fallbackArtwork = ColoredBox(
+                color: colors.surfaceContainerHighest,
+                child: Center(
+                  child: Icon(
+                    item.kind == PlaybackHistoryKind.radio
+                        ? Icons.radio_rounded
+                        : Icons.music_note_rounded,
+                    color: colors.primary,
+                  ),
+                ),
+              );
               return SizedBox(
                 width: 230,
                 child: InkWell(
@@ -846,15 +857,11 @@ class _HistoryStrip extends StatelessWidget {
                           child: SizedBox.square(
                             dimension: 56,
                             child: item.thumbnailUrl.isEmpty
-                                ? Icon(
-                                    item.kind == PlaybackHistoryKind.radio
-                                        ? Icons.radio_rounded
-                                        : Icons.music_note_rounded,
-                                    color: colors.primary,
-                                  )
+                                ? fallbackArtwork
                                 : Image.network(
                                     item.thumbnailUrl,
                                     fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) => fallbackArtwork,
                                   ),
                           ),
                         ),

@@ -81,7 +81,7 @@ Future<void> _resolveAndPlay({
               : station.stationUuid,
           name: station.name,
           country: station.country,
-          artworkUrl: artUrl ?? station.artworkUrl,
+          artworkUrl: artUrl ?? '',
         );
   } catch (_) {
     if (!context.mounted) return;
