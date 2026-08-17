@@ -162,25 +162,10 @@ class SuggestedListSearch extends ConsumerWidget {
                   ),
                   child: Row(
                     children: [
-                      Container(
-                        height: 56,
-                        width: 56,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(18),
-                          gradient: extras?.primaryGradient,
-                          boxShadow: [
-                            BoxShadow(
-                              color: colors.primary.withValues(alpha: 0.25),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.music_note_rounded,
-                          color: colors.onPrimary,
-                          size: 26,
-                        ),
+                      _SuggestionArtwork(
+                        imageUrl: suggestion.thumbnailUrl,
+                        extras: extras,
+                        colors: colors,
                       ),
                       const SizedBox(width: 16),
                       Expanded(
@@ -257,6 +242,74 @@ class SuggestedListSearch extends ConsumerWidget {
       ),
       loading: () => const Center(
         child: CircularProgressIndicator.adaptive(strokeWidth: 2),
+      ),
+    );
+  }
+}
+
+class _SuggestionArtwork extends StatelessWidget {
+  const _SuggestionArtwork({
+    required this.imageUrl,
+    required this.extras,
+    required this.colors,
+  });
+
+  final String imageUrl;
+  final FlowThemeExtras? extras;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56,
+      width: 56,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: colors.primary.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: imageUrl.isNotEmpty
+          ? Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              filterQuality: FilterQuality.medium,
+              excludeFromSemantics: true,
+              errorBuilder: (_, _, _) =>
+                  _SuggestionArtworkFallback(extras: extras, colors: colors),
+            )
+          : _SuggestionArtworkFallback(extras: extras, colors: colors),
+    );
+  }
+}
+
+class _SuggestionArtworkFallback extends StatelessWidget {
+  const _SuggestionArtworkFallback({
+    required this.extras,
+    required this.colors,
+  });
+
+  final FlowThemeExtras? extras;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: extras?.primaryGradient,
+        color: extras?.primaryGradient == null ? colors.primary : null,
+      ),
+      child: Center(
+        child: Icon(
+          Icons.music_note_rounded,
+          color: colors.onPrimary,
+          size: 26,
+        ),
       ),
     );
   }

@@ -145,7 +145,7 @@ class ModernPlayerViewController extends ValueNotifier<ModernPlayerViewState> {
         return;
       }
       _emit(value.copyWith(duration: duration));
-    });
+    }, onError: (Object _, StackTrace _) {});
 
     _positionSubscription = audioPlayer.onPositionChanged.listen((position) {
       _emit(value.copyWith(position: _clampPosition(position)));

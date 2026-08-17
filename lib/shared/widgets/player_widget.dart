@@ -135,7 +135,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
   void _initStreams() {
     _durationSubscription = player.onDurationChanged.listen((duration) {
       setState(() => _duration = duration);
-    });
+    }, onError: (Object _, StackTrace _) {});
 
     _positionSubscription = player.onPositionChanged.listen(
       (p) => setState(() => _position = p),
@@ -146,7 +146,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         _playerState = PlayerState.stopped;
         _position = Duration.zero;
       });
-    });
+    }, onError: (Object _, StackTrace _) {});
 
     _playerStateChangeSubscription = player.onPlayerStateChanged.listen((
       state,

@@ -51,8 +51,29 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
     final video = await yt.videos.get(suggestion.videoId);
     final manifest = await yt.videos.streamsClient.getManifest(
       suggestion.videoId,
-      ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
     );
+    if (_needsAppleLocalCache) {
+      if (manifest.streams.isEmpty) return null;
+      final firstStream = manifest.streams.first;
+      if (firstStream.container != StreamContainer.mp4 ||
+          (firstStream is! MuxedStreamInfo &&
+              firstStream is! AudioOnlyStreamInfo)) {
+        return null;
+      }
+      return ResolvedAudio(
+        suggestion: suggestion,
+        audioUrl: firstStream.url.toString(),
+        mimeType: '${firstStream.codec.type}/${firstStream.codec.subtype}',
+        requestHeaders: YoutubeHttpClient.defaultHeaders,
+        rangeEnd: firstStream.size.totalBytes - 1,
+        fileExtension: firstStream.container.name,
+        title: suggestion.displayText,
+        author: suggestion.channelTitle,
+        thumbnailUrl: suggestion.thumbnailUrl,
+        duration: suggestion.duration ?? video.duration,
+      );
+    }
+
     if (manifest.audioOnly.isEmpty) return null;
 
     final preferred = manifest.audioOnly.where(
@@ -66,6 +87,7 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
     return ResolvedAudio(
       suggestion: suggestion,
       audioUrl: audioStream.url.toString(),
+      mimeType: '${audioStream.codec.type}/${audioStream.codec.subtype}',
       title: suggestion.displayText,
       author: suggestion.channelTitle,
       thumbnailUrl: suggestion.thumbnailUrl,
@@ -79,6 +101,11 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
     yt.close();
   }
 }
+
+bool get _needsAppleLocalCache =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS);
 
 Future<ResolvedAudio?> _resolveViaPiped(
   YouTubeSearchSuggestion suggestion,

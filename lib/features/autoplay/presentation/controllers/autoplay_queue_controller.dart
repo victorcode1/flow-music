@@ -517,6 +517,9 @@ class AutoplayQueueController extends _$AutoplayQueueController {
     final cacheResult = await cacheAudioToDisk(
       videoId: id,
       url: resolved.audioUrl,
+      requestHeaders: resolved.requestHeaders,
+      rangeEnd: resolved.rangeEnd,
+      fileExtension: resolved.fileExtension,
     );
     if (!ref.mounted) return;
     if (cacheResult.diskFull) {

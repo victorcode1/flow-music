@@ -63,14 +63,14 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
         // segundos. Esto evita el "tail" vacio en la barra de progreso.
         if (_hasTrustedDuration) return;
         _applyDuration(duration);
-      }),
+      }, onError: _ignorePlayerStreamError),
     );
     _subscriptions.add(
       player.onPlayerComplete.listen((_) {
         if (_completionFired) return;
         _completionFired = true;
         unawaited(_handleCompletion());
-      }),
+      }, onError: _ignorePlayerStreamError),
     );
   }
 
@@ -165,7 +165,8 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
       await _playRemoteSource(url: url, mimeType: mimeType);
       _startFadeIn();
     } catch (error, stack) {
-      _handlePlaybackError(error, stack);
+      await _handlePlaybackError(error, stack);
+      Error.throwWithStackTrace(error, stack);
     }
   }
 
@@ -194,7 +195,8 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
       await player.play(DeviceFileSource(filePath));
       _startFadeIn();
     } catch (error, stack) {
-      _handlePlaybackError(error, stack);
+      await _handlePlaybackError(error, stack);
+      Error.throwWithStackTrace(error, stack);
     }
   }
 
@@ -256,7 +258,9 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     } catch (_) {}
     // Restauramos volumen para que la proxima fuente no quede en silencio por
     // el fade-in que no llego a completarse.
-    await player.setVolume(1);
+    try {
+      await player.setVolume(1);
+    } catch (_) {}
     playbackState.add(
       playbackState.value.copyWith(
         processingState: AudioProcessingState.error,
@@ -268,6 +272,12 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     if (hook != null) {
       unawaited(hook(error));
     }
+  }
+
+  void _ignorePlayerStreamError(Object _, StackTrace _) {
+    // The awaited play/setSource call owns source errors. Without an error
+    // handler, every derived audioplayers stream reports the same platform
+    // failure as a separate uncaught exception.
   }
 
   void _applyDuration(Duration duration, {bool trusted = false}) {

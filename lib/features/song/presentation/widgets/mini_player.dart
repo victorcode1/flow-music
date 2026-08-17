@@ -55,7 +55,7 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
     });
     _durationSubscription = player.onDurationChanged.listen((d) {
       if (mounted) setState(() => _duration = d);
-    });
+    }, onError: (Object _, StackTrace _) {});
     _playerStateSubscription = player.onPlayerStateChanged.listen((state) {
       if (mounted) {
         setState(() => _isPlaying = state == PlayerState.playing);

@@ -39,6 +39,11 @@ enum PlaybackMode { audio, video }
 
 const _pipedApiBaseUrl = 'https://api.piped.private.coffee';
 
+bool get _needsAppleLocalCache =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS);
+
 class _PipedStreamInfo {
   const _PipedStreamInfo({
     required this.title,
@@ -313,8 +318,23 @@ class SongController extends ChangeNotifier {
       _videoPlayerController = null;
 
       final offlineAudio = _currentOfflineAudio;
-      final cachedPrefetchPath =
+      var cachedPrefetchPath =
           resolved.cacheFilePath ?? await cachedAudioPath(resolved.videoId);
+      if (cachedPrefetchPath == null && _needsAppleLocalCache) {
+        final cacheResult = await cacheAudioToDisk(
+          videoId: resolved.videoId,
+          url: resolved.audioUrl,
+          requestHeaders: resolved.requestHeaders,
+          rangeEnd: resolved.rangeEnd,
+          fileExtension: resolved.fileExtension,
+        );
+        cachedPrefetchPath = cacheResult.filePath;
+        if (cachedPrefetchPath == null) {
+          throw StateError(
+            'Could not cache prefetched Apple audio for: ${resolved.videoId}',
+          );
+        }
+      }
       final cachePath = offlineAudio?.filePath ?? cachedPrefetchPath;
       if (cachePath != null && cachePath.isNotEmpty) {
         _isPlayingOfflineAudio = offlineAudio != null;
@@ -409,60 +429,91 @@ class SongController extends ChangeNotifier {
         return;
       }
 
-      var yt = YoutubeExplode();
-
-      // Get video info
-      _videoInfo = await yt.videos.get(videoId);
-
-      var manifest = await yt.videos.streamsClient.getManifest(
-        videoId,
-        ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
-      );
-      if (manifest.audioOnly.isEmpty) {
-        debugPrint('No audio streams available for video: $videoId');
-        yt.close();
-        _isLoading = false;
-        notifyListeners();
-        return;
-      }
-      var audioStream = manifest.audioOnly
-          .where(
-            (stream) =>
-                stream.container == StreamContainer.mp4 ||
-                stream.codec.subtype == 'mp4a.40.2',
-          )
-          .withHighestBitrate();
-      yt.close();
-
-      final audioUri = audioStream.url;
-      final audioUrl = audioUri.toString();
-      final pipedDuration = knownDuration == null
-          ? await fetchPipedVideoDuration(videoId)
-          : null;
-      final canonicalDuration = _resolveAudioDuration(
-        streamUri: audioUri,
-        knownDuration: knownDuration ?? pipedDuration,
-        fallback: _videoInfo?.duration,
-      );
-      debugPrint('Got audio URL: $audioUrl');
-
       // Dispose video player if exists
       await _videoPlayerController?.dispose();
       _videoPlayerController = null;
 
+      YoutubeExplode? yt;
+      Duration? pipedDuration;
       try {
-        await _audioHandler.playUrl(
-          url: audioUrl,
-          id: videoId,
-          title: _videoInfo?.title ?? videoId,
-          artist: _videoInfo?.author ?? '',
-          artUrl: _videoInfo?.thumbnails.highResUrl,
-          canonicalDuration: canonicalDuration,
-        );
+        yt = YoutubeExplode();
+
+        // Get video info
+        _videoInfo = await yt.videos.get(videoId);
+
+        final manifest = await yt.videos.streamsClient.getManifest(videoId);
+        if (_needsAppleLocalCache) {
+          if (manifest.streams.isEmpty) {
+            throw StateError('No streams available for video: $videoId');
+          }
+          final stream = manifest.streams.first;
+          if (stream.container != StreamContainer.mp4 ||
+              (stream is! MuxedStreamInfo && stream is! AudioOnlyStreamInfo)) {
+            throw StateError(
+              'No Apple-compatible validated stream for video: $videoId',
+            );
+          }
+          final cacheResult = await cacheAudioToDisk(
+            videoId: videoId,
+            url: stream.url.toString(),
+            requestHeaders: YoutubeHttpClient.defaultHeaders,
+            rangeEnd: stream.size.totalBytes - 1,
+            fileExtension: stream.container.name,
+          );
+          final filePath = cacheResult.filePath;
+          if (filePath == null || filePath.isEmpty) {
+            throw StateError('Could not cache Apple audio for: $videoId');
+          }
+          debugPrint('Playing validated YouTube cache for $videoId');
+          await _audioHandler.playFile(
+            filePath: filePath,
+            id: videoId,
+            title: _videoInfo?.title ?? videoId,
+            artist: _videoInfo?.author ?? '',
+            artUrl: _videoInfo?.thumbnails.highResUrl,
+            canonicalDuration: knownDuration ?? _videoInfo?.duration,
+          );
+        } else {
+          if (manifest.audioOnly.isEmpty) {
+            throw StateError('No audio streams available for video: $videoId');
+          }
+          final preferredStreams = manifest.audioOnly.where(
+            (stream) =>
+                stream.container == StreamContainer.mp4 ||
+                stream.codec.subtype == 'mp4a.40.2',
+          );
+          final audioStream =
+              (preferredStreams.isEmpty ? manifest.audioOnly : preferredStreams)
+                  .withHighestBitrate();
+
+          final audioUri = audioStream.url;
+          final audioUrl = audioUri.toString();
+          final audioMimeType =
+              '${audioStream.codec.type}/${audioStream.codec.subtype}';
+          pipedDuration = knownDuration == null
+              ? await fetchPipedVideoDuration(videoId)
+              : null;
+          final canonicalDuration = _resolveAudioDuration(
+            streamUri: audioUri,
+            knownDuration: knownDuration ?? pipedDuration,
+            fallback: _videoInfo?.duration,
+          );
+          debugPrint('Resolved YouTube audio for $videoId ($audioMimeType)');
+
+          await _audioHandler.playUrl(
+            url: audioUrl,
+            id: videoId,
+            title: _videoInfo?.title ?? videoId,
+            artist: _videoInfo?.author ?? '',
+            artUrl: _videoInfo?.thumbnails.highResUrl,
+            mimeType: audioMimeType,
+            canonicalDuration: canonicalDuration,
+          );
+        }
         debugPrint('Audio player started');
       } catch (error, stackTrace) {
         debugPrint(
-          'Primary YouTube audio URL failed for $videoId, trying Piped fallback: $error',
+          'Primary YouTube audio failed for $videoId, trying Piped fallback: $error',
         );
         debugPrint('Stack trace: $stackTrace');
         final fallbackStarted = await _tryPlayPipedAudioFallback(
@@ -472,6 +523,8 @@ class SongController extends ChangeNotifier {
         );
         if (!fallbackStarted) rethrow;
         debugPrint('Audio player started via Piped fallback');
+      } finally {
+        yt?.close();
       }
 
       _isLoading = false;
@@ -513,10 +566,7 @@ class SongController extends ChangeNotifier {
       // Get video info
       _videoInfo = await yt.videos.get(videoId);
 
-      var manifest = await yt.videos.streamsClient.getManifest(
-        videoId,
-        ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
-      );
+      var manifest = await yt.videos.streamsClient.getManifest(videoId);
 
       // Get video and audio streams
       var videoStream = manifest.muxed.withHighestBitrate();
@@ -718,10 +768,7 @@ class SongController extends ChangeNotifier {
       final video = await yt.videos.get(videoId);
       _videoInfo = video;
 
-      final manifest = await yt.videos.streamsClient.getManifest(
-        videoId,
-        ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
-      );
+      final manifest = await yt.videos.streamsClient.getManifest(videoId);
       if (manifest.audioOnly.isEmpty) {
         throw StateError(LocaleKeys.no_audio_streams.tr());
       }
@@ -826,10 +873,7 @@ class SongController extends ChangeNotifier {
       final video = await yt.videos.get(videoId);
       _videoInfo = video;
 
-      final manifest = await yt.videos.streamsClient.getManifest(
-        videoId,
-        ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
-      );
+      final manifest = await yt.videos.streamsClient.getManifest(videoId);
 
       if (manifest.audioOnly.isEmpty) {
         throw StateError(LocaleKeys.no_audio_streams.tr());
@@ -916,10 +960,7 @@ class SongController extends ChangeNotifier {
       final video = await yt.videos.get(videoId);
       _videoInfo = video;
 
-      final manifest = await yt.videos.streamsClient.getManifest(
-        videoId,
-        ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
-      );
+      final manifest = await yt.videos.streamsClient.getManifest(videoId);
 
       if (manifest.muxed.isEmpty) {
         throw StateError(LocaleKeys.no_video_streams.tr());
@@ -988,10 +1029,7 @@ class SongController extends ChangeNotifier {
       }
 
       var yt = YoutubeExplode();
-      var manifest = await yt.videos.streamsClient.getManifest(
-        videoId,
-        ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
-      );
+      var manifest = await yt.videos.streamsClient.getManifest(videoId);
       if (manifest.audioOnly.isEmpty) {
         debugPrint('No audio streams available for video: $videoId');
         yt.close();
@@ -1082,15 +1120,32 @@ class SongController extends ChangeNotifier {
               fallback: fallbackDuration,
             );
 
-      await _audioHandler.playUrl(
-        url: audioUrl,
-        id: videoId,
-        title: _videoInfo?.title ?? streamInfo.title,
-        artist: _videoInfo?.author ?? streamInfo.uploader,
-        artUrl: _videoInfo?.thumbnails.highResUrl ?? streamInfo.thumbnailUrl,
-        mimeType: streamInfo.audioMimeType,
-        canonicalDuration: canonicalDuration,
-      );
+      if (_needsAppleLocalCache) {
+        final cacheResult = await cacheAudioToDisk(
+          videoId: videoId,
+          url: audioUrl,
+        );
+        final filePath = cacheResult.filePath;
+        if (filePath == null || filePath.isEmpty) return false;
+        await _audioHandler.playFile(
+          filePath: filePath,
+          id: videoId,
+          title: _videoInfo?.title ?? streamInfo.title,
+          artist: _videoInfo?.author ?? streamInfo.uploader,
+          artUrl: _videoInfo?.thumbnails.highResUrl ?? streamInfo.thumbnailUrl,
+          canonicalDuration: canonicalDuration,
+        );
+      } else {
+        await _audioHandler.playUrl(
+          url: audioUrl,
+          id: videoId,
+          title: _videoInfo?.title ?? streamInfo.title,
+          artist: _videoInfo?.author ?? streamInfo.uploader,
+          artUrl: _videoInfo?.thumbnails.highResUrl ?? streamInfo.thumbnailUrl,
+          mimeType: streamInfo.audioMimeType,
+          canonicalDuration: canonicalDuration,
+        );
+      }
       return true;
     } catch (error, stackTrace) {
       debugPrint('Piped audio fallback failed for $videoId: $error');
