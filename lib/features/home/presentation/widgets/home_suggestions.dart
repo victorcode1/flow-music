@@ -13,7 +13,48 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Categorias rapidas del home (chips "Descubre"), igual al diseno StreamBeat.
-enum _HomeCategory { forYou, pop, reggaeton, radio }
+enum _HomeCategoryKind { forYou, radio, genre }
+
+/// Un chip del carrusel de categorias del home.
+///
+/// Los dos que no son genero se comportan distinto: "Para ti" pide otra tanda de
+/// sugerencias y "Radio" cambia de seccion. El resto son generos que se buscan
+/// en YouTube.
+class _HomeCategory {
+  const _HomeCategory.forYou(this.label) : kind = _HomeCategoryKind.forYou;
+  const _HomeCategory.radio(this.label) : kind = _HomeCategoryKind.radio;
+  const _HomeCategory.genre(this.label) : kind = _HomeCategoryKind.genre;
+
+  final _HomeCategoryKind kind;
+  final String label;
+
+  /// Busqueda de un chip de genero. El "mix" empuja a YouTube hacia
+  /// recopilatorios del genero en vez de una cancion suelta, y sale en el idioma
+  /// de la etiqueta sin tener que traducir la query aparte.
+  String get searchQuery => '$label mix';
+}
+
+/// Nombres de genero que son iguales en cualquier idioma van tal cual; los que
+/// cambian salen de las traducciones.
+List<_HomeCategory> _homeCategories() => <_HomeCategory>[
+  _HomeCategory.forYou(LocaleKeys.category_for_you.tr()),
+  _HomeCategory.genre(LocaleKeys.category_pop.tr()),
+  _HomeCategory.genre(LocaleKeys.category_reggaeton.tr()),
+  const _HomeCategory.genre('Salsa'),
+  const _HomeCategory.genre('Bachata'),
+  const _HomeCategory.genre('Merengue'),
+  const _HomeCategory.genre('Cumbia'),
+  const _HomeCategory.genre('Vallenato'),
+  const _HomeCategory.genre('Rock'),
+  const _HomeCategory.genre('Trap'),
+  const _HomeCategory.genre('Hip hop'),
+  _HomeCategory.genre(LocaleKeys.category_electronic.tr()),
+  _HomeCategory.genre(LocaleKeys.category_ballads.tr()),
+  const _HomeCategory.genre('Jazz'),
+  const _HomeCategory.genre('K-pop'),
+  _HomeCategory.genre(LocaleKeys.category_classical.tr()),
+  _HomeCategory.radio(LocaleKeys.radio.tr()),
+];
 
 /// Sugerencias iniciales en la pantalla `home` cuando no hay busqueda ni
 /// reproduccion en curso.
@@ -38,14 +79,14 @@ class HomeSuggestions extends ConsumerWidget {
       data: (result) {
         if (result.suggestions.isEmpty) {
           return _EmptyState(
-            onRetry: () => ref.invalidate(homeSuggestionsProvider),
+            onRetry: () => ref.read(homeSuggestionsProvider.notifier).refresh(),
           );
         }
 
         // Al tocar una sugerencia del home encolamos toda la lista centrada en
-        // la cancion tocada. Esto dispara el prefetch en segundo plano de las
-        // siguientes pistas (ver AutoplayQueueController._prefetchHead) para que
-        // el boton "next" pueda avanzar al instante.
+        // la cancion tocada. Esto arranca el prefetch rodante en segundo plano
+        // de las siguientes pistas (ver AutoplayQueueController._pumpPrefetch)
+        // para que el boton "next" pueda avanzar al instante.
         void onSuggestionTap(YouTubeSearchSuggestion suggestion) {
           final items = result.suggestions;
           final index = items.indexWhere(
@@ -61,15 +102,13 @@ class HomeSuggestions extends ConsumerWidget {
         }
 
         void onCategory(_HomeCategory category) {
-          switch (category) {
-            case _HomeCategory.forYou:
-              ref.invalidate(homeSuggestionsProvider);
-            case _HomeCategory.pop:
-              viewCtr.showListSearch('Pop');
-            case _HomeCategory.reggaeton:
-              viewCtr.showListSearch('Reggaeton');
-            case _HomeCategory.radio:
+          switch (category.kind) {
+            case _HomeCategoryKind.forYou:
+              ref.read(homeSuggestionsProvider.notifier).refresh();
+            case _HomeCategoryKind.radio:
               context.go('/radio');
+            case _HomeCategoryKind.genre:
+              viewCtr.showListSearch(category.searchQuery);
           }
         }
 
@@ -104,7 +143,7 @@ class HomeSuggestions extends ConsumerWidget {
                 .enqueue(suggestions, selectedIndex);
             viewCtr.listen(suggestions[selectedIndex]);
           },
-          onRefresh: () => ref.invalidate(homeSuggestionsProvider),
+          onRefresh: () => ref.read(homeSuggestionsProvider.notifier).refresh(),
         );
       },
       error: (error, stack) => Center(
@@ -127,7 +166,8 @@ class HomeSuggestions extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               FilledButton.tonal(
-                onPressed: () => ref.invalidate(homeSuggestionsProvider),
+                onPressed: () =>
+                    ref.read(homeSuggestionsProvider.notifier).refresh(),
                 child: Text(LocaleKeys.retry.tr()),
               ),
             ],
@@ -189,25 +229,20 @@ class _CategoryChips extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final entries = <(_HomeCategory, String)>[
-      (_HomeCategory.forYou, LocaleKeys.category_for_you.tr()),
-      (_HomeCategory.pop, LocaleKeys.category_pop.tr()),
-      (_HomeCategory.reggaeton, LocaleKeys.category_reggaeton.tr()),
-      (_HomeCategory.radio, LocaleKeys.radio.tr()),
-    ];
+    final categories = _homeCategories();
 
     return SizedBox(
       height: 38,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         padding: EdgeInsets.zero,
-        itemCount: entries.length,
+        itemCount: categories.length,
         separatorBuilder: (_, _) => const SizedBox(width: 10),
         itemBuilder: (context, index) {
-          final (category, label) = entries[index];
+          final category = categories[index];
           return _CategoryChip(
-            label: label,
-            selected: category == _HomeCategory.forYou,
+            label: category.label,
+            selected: category.kind == _HomeCategoryKind.forYou,
             onTap: () => onCategory(category),
           );
         },

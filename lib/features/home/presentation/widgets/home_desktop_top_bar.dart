@@ -14,10 +14,15 @@ class HomeDesktopTopBar extends ConsumerStatefulWidget {
     super.key,
     required this.query,
     required this.showSearch,
+    this.isRadioSection = false,
   });
 
   final ValueChanged<String> query;
   final Future<void> Function() showSearch;
+
+  /// Estando en Radio o en el mapa, lo que se escribe filtra emisoras (la
+  /// pantalla de radio escucha el mismo controlador) en vez de buscar canciones.
+  final bool isRadioSection;
 
   @override
   ConsumerState<HomeDesktopTopBar> createState() => _HomeDesktopTopBarState();
@@ -117,9 +122,11 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                         focusNode: _focusNode,
                         controller: searchController,
                         style: theme.textTheme.bodyMedium,
-                        onChanged: widget.query,
+                        onChanged: widget.isRadioSection ? null : widget.query,
                         decoration: InputDecoration(
-                          hintText: LocaleKeys.search_music.tr(),
+                          hintText: widget.isRadioSection
+                              ? LocaleKeys.search_radio.tr()
+                              : LocaleKeys.search_music.tr(),
                           filled: false,
                           border: InputBorder.none,
                           isDense: true,

@@ -10,6 +10,7 @@ import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
     if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
+import 'package:flow_music/features/autoplay/data/youtube_access_state.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/library/data/downloaded_audio.dart';
@@ -67,6 +68,55 @@ class _PipedAudioStream {
 
   final String url;
   final String mimeType;
+}
+
+/// Un stream de audio de Piped elegido para guardar a disco.
+class _PipedDownloadStream {
+  const _PipedDownloadStream({
+    required this.url,
+    required this.mimeType,
+    required this.contentLength,
+  });
+
+  final String url;
+  final String mimeType;
+
+  /// 0 cuando Piped no lo anota: el escritor simplemente no reporta progreso.
+  final int contentLength;
+}
+
+/// Bytes y metadatos listos para escribir a disco, sin importar de que fuente
+/// salieron (youtube_explode o Piped).
+class _AudioDownloadSource {
+  const _AudioDownloadSource({
+    required this.title,
+    required this.author,
+    required this.thumbnailUrl,
+    required this.extension,
+    required this.totalBytes,
+    required this.chunks,
+    required this.dispose,
+  });
+
+  final String title;
+  final String author;
+  final String thumbnailUrl;
+  final String extension;
+  final int totalBytes;
+  final Stream<List<int>> chunks;
+
+  /// Cierra el cliente que abrio el stream. Se llama una vez escrito el archivo
+  /// (o si algo falla), nunca antes: los bytes siguen viniendo de ahi.
+  final void Function() dispose;
+}
+
+/// Extension de archivo para lo que sirve Piped.
+String _downloadExtensionFor(String mimeType) {
+  final normalized = mimeType.toLowerCase();
+  if (normalized.contains('mp4') || normalized.contains('m4a')) return 'm4a';
+  if (normalized.contains('webm') || normalized.contains('opus')) return 'webm';
+  if (normalized.contains('mpeg')) return 'mp3';
+  return 'm4a';
 }
 
 Duration? _resolveAudioDuration({
@@ -745,7 +795,7 @@ class SongController extends ChangeNotifier {
   Future<String?> saveAudioForOffline({required String id}) async {
     if (_isSavingOffline) return null;
 
-    YoutubeExplode? yt;
+    _AudioDownloadSource? source;
 
     try {
       final extracted = extractVideoId(id);
@@ -764,34 +814,15 @@ class SongController extends ChangeNotifier {
       _offlineProgress = 0;
       notifyListeners();
 
-      yt = YoutubeExplode();
-      final video = await yt.videos.get(videoId);
-      _videoInfo = video;
-
-      final manifest = await yt.videos.streamsClient.getManifest(videoId);
-      if (manifest.audioOnly.isEmpty) {
-        throw StateError(LocaleKeys.no_audio_streams.tr());
-      }
-
-      final preferredAudioStreams = manifest.audioOnly.where(
-        (stream) =>
-            stream.container == StreamContainer.mp4 ||
-            stream.codec.subtype == 'mp4a.40.2',
-      );
-      final pool = preferredAudioStreams.isEmpty
-          ? manifest.audioOnly.toList()
-          : preferredAudioStreams.toList();
-      final quality = ref.read(audioDownloadQualityControllerProvider);
-      final audioStream = _pickAudioForQuality(pool, quality);
-
+      source = await _openAudioDownload(videoId);
       final offlineAudio = await saveOfflineAudioStream(
         videoId: videoId,
-        title: video.title,
-        author: video.author,
-        thumbnailUrl: video.thumbnails.highResUrl,
-        extension: audioStream.container.name,
-        totalBytes: audioStream.size.totalBytes,
-        chunks: yt.videos.streamsClient.get(audioStream),
+        title: source.title,
+        author: source.author,
+        thumbnailUrl: source.thumbnailUrl,
+        extension: source.extension,
+        totalBytes: source.totalBytes,
+        chunks: source.chunks,
         onProgress: (progress) {
           _offlineProgress = progress;
           notifyListeners();
@@ -821,7 +852,7 @@ class SongController extends ChangeNotifier {
           );
       return null;
     } finally {
-      yt?.close();
+      source?.dispose();
       _isSavingOffline = false;
       notifyListeners();
     }
@@ -849,7 +880,7 @@ class SongController extends ChangeNotifier {
   Future<String?> downloadAudio({required String id}) async {
     if (_isDownloading) return null;
 
-    YoutubeExplode? yt;
+    _AudioDownloadSource? source;
 
     try {
       final extracted = extractVideoId(id);
@@ -869,35 +900,15 @@ class SongController extends ChangeNotifier {
       _downloadedAudio = null;
       notifyListeners();
 
-      yt = YoutubeExplode();
-      final video = await yt.videos.get(videoId);
-      _videoInfo = video;
-
-      final manifest = await yt.videos.streamsClient.getManifest(videoId);
-
-      if (manifest.audioOnly.isEmpty) {
-        throw StateError(LocaleKeys.no_audio_streams.tr());
-      }
-
-      final preferredAudioStreams = manifest.audioOnly.where(
-        (stream) =>
-            stream.container == StreamContainer.mp4 ||
-            stream.codec.subtype == 'mp4a.40.2',
-      );
-      final pool = preferredAudioStreams.isEmpty
-          ? manifest.audioOnly.toList()
-          : preferredAudioStreams.toList();
-      final quality = ref.read(audioDownloadQualityControllerProvider);
-      final audioStream = _pickAudioForQuality(pool, quality);
-
+      source = await _openAudioDownload(videoId);
       final downloadedAudio = await saveAudioStream(
         videoId: videoId,
-        title: video.title,
-        author: video.author,
-        thumbnailUrl: video.thumbnails.highResUrl,
-        extension: audioStream.container.name,
-        totalBytes: audioStream.size.totalBytes,
-        chunks: yt.videos.streamsClient.get(audioStream),
+        title: source.title,
+        author: source.author,
+        thumbnailUrl: source.thumbnailUrl,
+        extension: source.extension,
+        totalBytes: source.totalBytes,
+        chunks: source.chunks,
         onProgress: (progress) {
           _downloadProgress = progress;
           notifyListeners();
@@ -927,7 +938,7 @@ class SongController extends ChangeNotifier {
           );
       return null;
     } finally {
-      yt?.close();
+      source?.dispose();
       _isDownloading = false;
       notifyListeners();
     }
@@ -1152,6 +1163,160 @@ class SongController extends ChangeNotifier {
       debugPrint('Stack trace: $stackTrace');
       return false;
     }
+  }
+
+  /// Abre los bytes del audio de [videoId] para guardarlo a disco.
+  ///
+  /// Prefiere youtube_explode (mejor metadata y bitrate) y cae a Piped cuando
+  /// YouTube limita la IP por exceso de peticiones. Sin este respaldo, una
+  /// descarga en primer plano fallaba solo porque el prefetch habia dejado la
+  /// IP marcada, aunque la reproduccion siguiera funcionando (ella si cae a
+  /// Piped desde siempre).
+  Future<_AudioDownloadSource> _openAudioDownload(String videoId) async {
+    if (!isYoutubeRateLimited) {
+      try {
+        return await _openAudioDownloadViaYoutube(videoId);
+      } catch (error, stackTrace) {
+        final rateLimited = reportYoutubeFailure(error);
+        debugPrint('Download via youtube_explode failed for $videoId: $error');
+        if (!rateLimited) debugPrintStack(stackTrace: stackTrace);
+      }
+    }
+    return _openAudioDownloadViaPiped(videoId);
+  }
+
+  Future<_AudioDownloadSource> _openAudioDownloadViaYoutube(
+    String videoId,
+  ) async {
+    final yt = YoutubeExplode();
+    try {
+      final video = await yt.videos.get(videoId);
+      _videoInfo = video;
+
+      final manifest = await yt.videos.streamsClient.getManifest(videoId);
+      if (manifest.audioOnly.isEmpty) {
+        throw StateError(LocaleKeys.no_audio_streams.tr());
+      }
+
+      final preferredAudioStreams = manifest.audioOnly.where(
+        (stream) =>
+            stream.container == StreamContainer.mp4 ||
+            stream.codec.subtype == 'mp4a.40.2',
+      );
+      final pool = preferredAudioStreams.isEmpty
+          ? manifest.audioOnly.toList()
+          : preferredAudioStreams.toList();
+      final quality = ref.read(audioDownloadQualityControllerProvider);
+      final audioStream = _pickAudioForQuality(pool, quality);
+
+      return _AudioDownloadSource(
+        title: video.title,
+        author: video.author,
+        thumbnailUrl: video.thumbnails.highResUrl,
+        extension: audioStream.container.name,
+        totalBytes: audioStream.size.totalBytes,
+        chunks: yt.videos.streamsClient.get(audioStream),
+        dispose: yt.close,
+      );
+    } catch (_) {
+      yt.close();
+      rethrow;
+    }
+  }
+
+  /// Los bytes salen de googlevideo.com por la URL que da Piped, sin pasar por
+  /// youtube.com: es lo que permite descargar aun con la IP marcada.
+  Future<_AudioDownloadSource> _openAudioDownloadViaPiped(
+    String videoId,
+  ) async {
+    final uri = Uri.parse('$_pipedApiBaseUrl/streams/$videoId');
+    final response = await http.get(uri);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw http.ClientException(
+        'Unexpected Piped status code: ${response.statusCode}',
+        uri,
+      );
+    }
+
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Invalid Piped stream response.');
+    }
+
+    final quality = ref.read(audioDownloadQualityControllerProvider);
+    final stream = _pickPipedDownloadStream(decoded['audioStreams'], quality);
+    if (stream == null) {
+      throw StateError(LocaleKeys.no_audio_streams.tr());
+    }
+
+    final streamUri = Uri.parse(stream.url);
+    final client = http.Client();
+    try {
+      final audioResponse = await client.send(http.Request('GET', streamUri));
+      if (audioResponse.statusCode < 200 || audioResponse.statusCode >= 300) {
+        throw http.ClientException(
+          'Unexpected audio status code: ${audioResponse.statusCode}',
+          streamUri,
+        );
+      }
+
+      return _AudioDownloadSource(
+        title: decoded['title'] as String? ?? videoId,
+        author: decoded['uploader'] as String? ?? '',
+        thumbnailUrl: _youtubeThumbnailUrl(videoId),
+        extension: _downloadExtensionFor(stream.mimeType),
+        totalBytes: stream.contentLength > 0
+            ? stream.contentLength
+            : (audioResponse.contentLength ?? 0),
+        chunks: audioResponse.stream,
+        dispose: client.close,
+      );
+    } catch (_) {
+      client.close();
+      rethrow;
+    }
+  }
+
+  /// A diferencia del stream para reproducir, aqui se prefiere M4A: es lo que
+  /// abre cualquier reproductor del sistema (opus no suena en iOS).
+  _PipedDownloadStream? _pickPipedDownloadStream(
+    Object? streams,
+    AudioDownloadQuality quality,
+  ) {
+    if (streams is! List || streams.isEmpty) return null;
+
+    final typedStreams = streams
+        .whereType<Map>()
+        .map((stream) => Map<String, dynamic>.from(stream))
+        .where((stream) => (stream['url'] as String? ?? '').isNotEmpty)
+        .toList();
+    if (typedStreams.isEmpty) return null;
+
+    bool isM4a(Map<String, dynamic> stream) {
+      final format = (stream['format'] as String? ?? '').toUpperCase();
+      final mimeType = (stream['mimeType'] as String? ?? '').toLowerCase();
+      return format.contains('M4A') || mimeType.contains('mp4');
+    }
+
+    final m4a = typedStreams.where(isM4a).toList();
+    final pool = m4a.isEmpty ? typedStreams : m4a;
+    pool.sort((a, b) {
+      final aBitrate = a['bitrate'] as int? ?? 0;
+      final bBitrate = b['bitrate'] as int? ?? 0;
+      return aBitrate.compareTo(bBitrate);
+    });
+
+    final picked = switch (quality) {
+      AudioDownloadQuality.low => pool.first,
+      AudioDownloadQuality.high => pool.last,
+      AudioDownloadQuality.medium => pool[pool.length ~/ 2],
+    };
+
+    return _PipedDownloadStream(
+      url: picked['url'] as String,
+      mimeType: picked['mimeType'] as String? ?? 'audio/mp4',
+      contentLength: picked['contentLength'] as int? ?? 0,
+    );
   }
 
   _PipedAudioStream? _pickPipedAudioStream(Object? streams) {

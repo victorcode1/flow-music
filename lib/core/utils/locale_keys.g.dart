@@ -23,6 +23,7 @@ abstract class LocaleKeys {
   static const playlists = 'playlists';
   static const queue = 'queue';
   static const up_next = 'up_next';
+  static const previously_played = 'previously_played';
   static const empty_queue = 'empty_queue';
   static const save_as_playlist = 'save_as_playlist';
   static const new_playlist = 'new_playlist';
@@ -182,6 +183,9 @@ abstract class LocaleKeys {
   static const category_for_you = 'category_for_you';
   static const category_pop = 'category_pop';
   static const category_reggaeton = 'category_reggaeton';
+  static const category_electronic = 'category_electronic';
+  static const category_ballads = 'category_ballads';
+  static const category_classical = 'category_classical';
   static const suggestions_for_you = 'suggestions_for_you';
   static const suggestions_for_country = 'suggestions_for_country';
   static const featured = 'featured';
@@ -215,6 +219,12 @@ abstract class LocaleKeys {
   static const delete_download = 'delete_download';
   static const share = 'share';
   static const share_file = 'share_file';
+  static const share_song = 'share_song';
+  static const share_youtube_link = 'share_youtube_link';
+  static const share_audio_file = 'share_audio_file';
+  static const share_audio_needs_download = 'share_audio_needs_download';
+  static const copy_link = 'copy_link';
+  static const link_copied = 'link_copied';
   static const view_file_location = 'view_file_location';
   static const file_location = 'file_location';
   static const file_size = 'file_size';

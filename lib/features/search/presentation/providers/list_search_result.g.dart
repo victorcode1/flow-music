@@ -66,7 +66,7 @@ final class SearchResultDataProvider
   }
 }
 
-String _$searchResultDataHash() => r'dcf24fa1c675227f411effa604c3860b1c1c65c2';
+String _$searchResultDataHash() => r'b364bdb95c42c6f887010fe1bf93f6a28f434046';
 
 final class SearchResultDataFamily extends $Family
     with

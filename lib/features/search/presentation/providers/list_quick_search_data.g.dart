@@ -51,7 +51,7 @@ final class SearchDataReqProvider
   }
 }
 
-String _$searchDataReqHash() => r'03e1fbb052235e6ef00861ca4a6db690c67a33bb';
+String _$searchDataReqHash() => r'489b58b4853582635639831d50ebfe15558219a2';
 
 final class SearchDataReqFamily extends $Family
     with

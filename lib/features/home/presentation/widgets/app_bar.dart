@@ -21,12 +21,21 @@ class AppAbarMain extends ConsumerStatefulWidget
   final bool showNowPlayingDetails;
   final bool showNowPlayingTitle;
 
+  /// El shell esta mostrando algo encima de las sugerencias (p. ej. la lista de
+  /// una categoria). Sin esta flecha no habia como volver al home.
+  final bool showBack;
+
+  /// Que hacer al tocar la flecha cuando no estamos en el reproductor.
+  final VoidCallback? onBack;
+
   const AppAbarMain({
     super.key,
     this.query,
     required this.showSearch,
     this.showNowPlayingDetails = false,
     this.showNowPlayingTitle = true,
+    this.showBack = false,
+    this.onBack,
   });
 
   @override
@@ -77,13 +86,15 @@ class _AppAbarMainState extends ConsumerState<AppAbarMain> {
       // Sin drawer: la navegacion vive en la barra inferior. Solo mostramos el
       // boton de retroceso cuando estamos en el reproductor a pantalla completa.
       automaticallyImplyLeading: false,
-      leading: widget.showNowPlayingDetails
+      leading: widget.showNowPlayingDetails || widget.showBack
           ? IconButton(
               icon: Icon(
                 Icons.arrow_back_ios_new_rounded,
                 color: colorScheme.onSurface,
               ),
-              onPressed: () => actions.handleBack(context),
+              onPressed: widget.showNowPlayingDetails
+                  ? () => actions.handleBack(context)
+                  : (widget.onBack ?? () => actions.handleBack(context)),
             )
           : null,
       title: widget.showNowPlayingDetails
@@ -302,6 +313,13 @@ class _NowPlayingMenuButton extends StatelessWidget {
             child: _NowPlayingMenuRow(
               icon: Icons.queue_music_rounded,
               label: LocaleKeys.queue.tr(),
+            ),
+          ),
+          PopupMenuItem(
+            value: HomeAppBarMenuAction.share,
+            child: _NowPlayingMenuRow(
+              icon: Icons.ios_share_rounded,
+              label: LocaleKeys.share_song.tr(),
             ),
           ),
           PopupMenuItem(

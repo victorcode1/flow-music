@@ -101,6 +101,12 @@ class ModernPlayerWidget extends StatefulWidget {
 class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
   late final ModernPlayerViewController _controller;
 
+  /// Sentido del ultimo salto en la cola, para que la animacion de relevo se
+  /// mueva igual que el gesto: "siguiente" entra por la derecha y "anterior"
+  /// por la izquierda. El avance automatico al terminar la cancion cuenta como
+  /// "siguiente".
+  bool _forward = true;
+
   @override
   void initState() {
     super.initState();
@@ -130,12 +136,34 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
     super.dispose();
   }
 
+  /// Anota el sentido antes de delegar en el callback real. No hace falta
+  /// `setState`: el cambio de cancion ya provoca la reconstruccion, y es ahi
+  /// donde se lee el sentido.
+  VoidCallback? _tracking(VoidCallback? action, {required bool forward}) {
+    if (action == null) return null;
+    return () {
+      _forward = forward;
+      action();
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final extras = theme.extension<FlowThemeExtras>();
     final usesWebEmbed = kIsWeb && widget.webEmbedVideoId != null;
+    final trackKey =
+        widget.currentVideoId ?? widget.thumbnailUrl ?? widget.videoTitle ?? '';
+    // Al cambiar de cancion el reproductor pasa por "cargando" un instante.
+    // Vaciar la pantalla en ese momento era el brinco: mientras haya datos de
+    // la pista, se mantiene el reproductor y solo se atenua la caratula. La
+    // pantalla completa de carga queda para el arranque en frio.
+    final hasTrackToShow =
+        (widget.videoTitle ?? '').isNotEmpty ||
+        (widget.thumbnailUrl ?? '').isNotEmpty;
+    final showColdLoader = widget.isLoading && !hasTrackToShow;
+    final isBusy = widget.isLoading && hasTrackToShow;
 
     return ValueListenableBuilder<ModernPlayerViewState>(
       valueListenable: _controller,
@@ -158,11 +186,13 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
           onSkipForward: () => _controller.skip(10),
           onToggleMute: _controller.toggleMute,
           onVolumeChanged: _controller.setVolume,
-          onPrevious: widget.onPrevious,
-          onNext: widget.onNext,
+          onPrevious: _tracking(widget.onPrevious, forward: false),
+          onNext: _tracking(widget.onNext, forward: true),
           repeatEnabled: widget.repeatEnabled,
           onToggleRepeat: widget.onToggleRepeat,
           onShuffle: widget.onShuffle,
+          trackKey: trackKey,
+          forward: _forward,
         );
 
         if (supportsFlowDesktopShell && useFlowWideLayout(context)) {
@@ -171,7 +201,8 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
             isDark: isDark,
             backgroundGradient: extras?.secondaryGradient,
             backgroundColor: extras == null ? theme.colorScheme.surface : null,
-            isLoading: widget.isLoading,
+            isLoading: showColdLoader,
+            isBusy: isBusy,
             webEmbedVideoId: widget.webEmbedVideoId,
             videoTitle: widget.videoTitle,
             videoAuthor: widget.videoAuthor,
@@ -180,6 +211,8 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
             controls: controls,
             sideRail: widget.sideRail,
             sourceLabel: widget.sourceLabel,
+            trackKey: trackKey,
+            forward: _forward,
           );
         }
 
@@ -188,40 +221,52 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
             gradient: extras?.secondaryGradient,
             color: extras == null ? theme.colorScheme.surface : null,
           ),
-          child: widget.isLoading
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(
-                        color: theme.colorScheme.primary,
-                        strokeWidth: 3,
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        LocaleKeys.loading.tr(),
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.7,
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            layoutBuilder: (currentChild, previousChildren) => Stack(
+              fit: StackFit.expand,
+              children: [...previousChildren, ?currentChild],
+            ),
+            child: showColdLoader
+                ? Center(
+                    key: const ValueKey('modern-player-cold-loader'),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(
+                          color: theme.colorScheme.primary,
+                          strokeWidth: 3,
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          LocaleKeys.loading.tr(),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.7,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    key: const ValueKey('modern-player-content'),
+                    children: [
+                      Expanded(
+                        child: ModernPlayerMediaDisplay(
+                          theme: theme,
+                          webEmbedVideoId: widget.webEmbedVideoId,
+                          videoController: widget.videoController,
+                          thumbnailUrl: widget.thumbnailUrl,
+                          trackKey: trackKey,
+                          forward: _forward,
+                          isBusy: isBusy,
+                        ),
                       ),
+                      if (!usesWebEmbed) controls,
                     ],
                   ),
-                )
-              : Column(
-                  children: [
-                    Expanded(
-                      child: ModernPlayerMediaDisplay(
-                        theme: theme,
-                        webEmbedVideoId: widget.webEmbedVideoId,
-                        videoController: widget.videoController,
-                        thumbnailUrl: widget.thumbnailUrl,
-                      ),
-                    ),
-                    if (!usesWebEmbed) controls,
-                  ],
-                ),
+          ),
         );
       },
     );

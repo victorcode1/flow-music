@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 import 'modern_player_artwork.dart';
+import 'track_change_transition.dart';
 import 'youtube_embed_view_stub.dart'
     if (dart.library.js_interop) 'youtube_embed_view_web.dart';
 
@@ -13,6 +14,17 @@ class ModernPlayerWideLayout extends StatelessWidget {
   final Gradient? backgroundGradient;
   final Color? backgroundColor;
   final bool isLoading;
+
+  /// La pista nueva se esta abriendo, pero ya hay caratula que mostrar: se
+  /// atenua en vez de vaciar la pantalla.
+  final bool isBusy;
+
+  /// Identifica la cancion en pantalla, para animar el relevo de caratulas.
+  final String trackKey;
+
+  /// Sentido del cambio: adelante en la cola o de vuelta a la anterior.
+  final bool forward;
+
   final String? webEmbedVideoId;
   final String? videoTitle;
   final String? videoAuthor;
@@ -34,6 +46,9 @@ class ModernPlayerWideLayout extends StatelessWidget {
     this.backgroundGradient,
     this.backgroundColor,
     required this.isLoading,
+    this.isBusy = false,
+    this.trackKey = '',
+    this.forward = true,
     this.webEmbedVideoId,
     this.videoTitle,
     this.videoAuthor,
@@ -141,11 +156,37 @@ class ModernPlayerWideLayout extends StatelessWidget {
                 width: 300,
                 height: 300,
                 child: webEmbedVideoId == null
-                    ? ModernPlayerArtwork(
-                        theme: theme,
-                        videoController: videoController,
-                        thumbnailUrl: thumbnailUrl,
-                        borderRadius: 18,
+                    ? Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          AnimatedOpacity(
+                            duration: const Duration(milliseconds: 260),
+                            opacity: isBusy ? 0.5 : 1,
+                            child: TrackChangeTransition(
+                              trackKey: trackKey.isNotEmpty
+                                  ? trackKey
+                                  : (thumbnailUrl ?? ''),
+                              forward: forward,
+                              expandToParent: true,
+                              child: ModernPlayerArtwork(
+                                theme: theme,
+                                videoController: videoController,
+                                thumbnailUrl: thumbnailUrl,
+                                borderRadius: 18,
+                              ),
+                            ),
+                          ),
+                          if (isBusy)
+                            Center(
+                              child: SizedBox.square(
+                                dimension: 32,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.6,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ),
+                        ],
                       )
                     : _buildWebEmbed(webEmbedVideoId!),
               ),

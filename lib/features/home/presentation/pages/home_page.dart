@@ -1,5 +1,6 @@
 import 'package:flow_music/core/audio/now_playing_provider.dart';
 import 'package:flow_music/core/utils/adaptive_layout.dart';
+import 'package:flow_music/features/radio/presentation/widgets/radio_search_delegate.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_page_controller.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_view_controller.dart';
 import 'package:flow_music/features/home/presentation/widgets/home_desktop_sidebar.dart';
@@ -30,6 +31,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     final viewState = ref.watch(homeViewProvider);
     final viewCtr = ref.read(homeViewProvider.notifier);
     final currentPath = GoRouterState.of(context).uri.path;
+    // Radio y mapa comparten el shell, pero su busqueda es de emisoras.
+    final isRadioSection =
+        currentPath == '/radio' || currentPath == '/radio-map';
     final previousPath = _lastRoutePath;
     _lastRoutePath = currentPath;
     _pageController.clearSearchOnRouteChange(
@@ -77,10 +81,13 @@ class _HomePageState extends ConsumerState<HomePage> {
           children: [
             HomeDesktopTopBar(
               query: viewCtr.setQuery,
+              isRadioSection: isRadioSection,
               showSearch: () async {
                 await showSearch(
                   context: context,
-                  delegate: ViewSearchDelegate(),
+                  delegate: isRadioSection
+                      ? RadioSearchDelegate()
+                      : ViewSearchDelegate(),
                 );
               },
             ),
@@ -118,6 +125,14 @@ class _HomePageState extends ConsumerState<HomePage> {
               query: viewCtr.setQuery,
               showNowPlayingDetails: showNowPlayingDetails,
               showMiniPlayer: showMiniPlayer,
+              isRadioSection: isRadioSection,
+              // Lista de categoria / busqueda abierta dentro del propio shell:
+              // la flecha la cierra y devuelve las sugerencias.
+              showBack:
+                  widget.child == null &&
+                  !showNowPlayingDetails &&
+                  viewState is! Suggested,
+              onBack: viewCtr.back,
             ),
       body: HomePageContent(
         viewState: viewState,

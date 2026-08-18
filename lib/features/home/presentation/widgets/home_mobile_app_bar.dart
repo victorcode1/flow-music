@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/features/favorites/data/favorite_song.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:flow_music/features/home/presentation/widgets/app_bar.dart';
+import 'package:flow_music/features/radio/presentation/widgets/radio_search_delegate.dart';
 import 'package:flow_music/features/search/presentation/widgets/search_song.dart';
 import 'package:flutter/material.dart' hide SearchDelegate;
 import 'package:flutter/widget_previews.dart';
@@ -13,20 +14,36 @@ class HomeMobileAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.query,
     required this.showNowPlayingDetails,
     required this.showMiniPlayer,
+    this.isRadioSection = false,
+    this.showBack = false,
+    this.onBack,
   });
 
   final Function(String)? query;
   final bool showNowPlayingDetails;
   final bool showMiniPlayer;
 
+  /// Estando en Radio o en el mapa, el buscador es de emisoras: buscar
+  /// canciones de YouTube ahi no lleva a ninguna parte.
+  final bool isRadioSection;
+
+  /// Hay una lista abierta encima de las sugerencias: se muestra la flecha para
+  /// volver al home.
+  final bool showBack;
+  final VoidCallback? onBack;
+
   @override
   Widget build(BuildContext context) {
     return AppAbarMain(
       query: query,
-      showSearch: () =>
-          showSearch(context: context, delegate: ViewSearchDelegate()),
+      showSearch: () => showSearch(
+        context: context,
+        delegate: isRadioSection ? RadioSearchDelegate() : ViewSearchDelegate(),
+      ),
       showNowPlayingDetails: showNowPlayingDetails,
       showNowPlayingTitle: !showMiniPlayer,
+      showBack: showBack,
+      onBack: onBack,
     );
   }
 

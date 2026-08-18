@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
+import 'package:flow_music/features/autoplay/data/youtube_access_state.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/features/search/data/repositories/piped_video_duration.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +17,9 @@ Future<ResolvedAudio?> resolveAudioFor(
   if (videoId.isEmpty) return null;
 
   try {
-    if (!kIsWeb) {
+    // Con la IP marcada por YouTube, insistir solo alarga el castigo: se va
+    // directo a Piped hasta que pase el enfriamiento.
+    if (!kIsWeb && !isYoutubeRateLimited) {
       final resolved = await _tryResolveViaYoutubeExplode(suggestion);
       if (resolved != null) return resolved;
     }
@@ -35,10 +38,11 @@ Future<ResolvedAudio?> _tryResolveViaYoutubeExplode(
   try {
     return await _resolveViaYoutubeExplode(suggestion);
   } catch (error, stackTrace) {
+    final rateLimited = reportYoutubeFailure(error);
     debugPrint(
       'youtube_explode prefetch failed for ${suggestion.videoId}, falling back to Piped: $error',
     );
-    debugPrint('$stackTrace');
+    if (!rateLimited) debugPrint('$stackTrace');
     return null;
   }
 }

@@ -4,6 +4,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 
+import 'track_change_transition.dart';
+
 class ModernPlayerControls extends StatelessWidget {
   final ThemeData theme;
   final bool isDark;
@@ -27,6 +29,12 @@ class ModernPlayerControls extends StatelessWidget {
   final String? author;
   final bool isFavorite;
   final VoidCallback? onToggleFavorite;
+
+  /// Identifica la cancion, para animar el relevo de titulo y artista.
+  final String trackKey;
+
+  /// Sentido del cambio: adelante en la cola o de vuelta a la anterior.
+  final bool forward;
 
   const ModernPlayerControls({
     super.key,
@@ -52,6 +60,8 @@ class ModernPlayerControls extends StatelessWidget {
     this.author,
     this.isFavorite = false,
     this.onToggleFavorite,
+    this.trackKey = '',
+    this.forward = true,
   });
 
   @override
@@ -70,32 +80,40 @@ class ModernPlayerControls extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        title!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.4,
-                        ),
-                      ),
-                      if ((author ?? '').isNotEmpty) ...[
-                        const SizedBox(height: 2),
+                  child: TrackChangeTransition(
+                    trackKey: trackKey.isNotEmpty ? trackKey : (title ?? ''),
+                    forward: forward,
+                    alignment: Alignment.centerLeft,
+                    slide: 0.10,
+                    scaleFrom: 0.98,
+                    duration: const Duration(milliseconds: 360),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                         Text(
-                          author!,
+                          title!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w600,
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -0.4,
                           ),
                         ),
+                        if ((author ?? '').isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            author!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
                 if (onToggleFavorite != null)
@@ -347,13 +365,8 @@ class _WaveformPainter extends CustomPainter {
       // Patron determinista con varias frecuencias para que parezca una onda
       // real sin depender de aleatoriedad (que rompe el repintado estable).
       final wave =
-          0.5 +
-          0.30 * math.sin(i * 0.55) +
-          0.20 * math.sin(i * 1.7 + 0.9);
-      final factor = (minFactor + (1 - minFactor) * wave).clamp(
-        minFactor,
-        1.0,
-      );
+          0.5 + 0.30 * math.sin(i * 0.55) + 0.20 * math.sin(i * 1.7 + 0.9);
+      final factor = (minFactor + (1 - minFactor) * wave).clamp(minFactor, 1.0);
       final barHeight = maxBar * factor;
       final x = i * step;
       final filled = (i + 0.5) / barCount <= progress;

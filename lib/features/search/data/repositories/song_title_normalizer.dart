@@ -58,3 +58,31 @@ String normalizeSongTitle(String title) {
 
   return value;
 }
+
+/// Clave de deduplicacion para una pista de la cola.
+///
+/// [normalizeSongTitle] ya colapsa "(Official Video)" / "(Lyrics)" / "- Audio",
+/// pero la misma cancion aparece ademas subida como "Artista - Cancion" en el
+/// canal oficial y como "Cancion" en el canal "Artista - Topic". Quitamos el
+/// nombre del artista del titulo para que ambas caigan en la misma clave y la
+/// cola no repita la pista con otro videoId.
+String songDedupKey({required String title, required String artist}) {
+  final normalizedArtist = normalizeSongTitle(
+    artist.replaceAll(RegExp(r'\s*-\s*topic\s*$', caseSensitive: false), ''),
+  );
+  var normalizedTitle = normalizeSongTitle(title);
+
+  if (normalizedArtist.isNotEmpty) {
+    if (normalizedTitle.startsWith('$normalizedArtist ')) {
+      normalizedTitle = normalizedTitle
+          .substring(normalizedArtist.length + 1)
+          .trim();
+    } else if (normalizedTitle.endsWith(' $normalizedArtist')) {
+      normalizedTitle = normalizedTitle
+          .substring(0, normalizedTitle.length - normalizedArtist.length - 1)
+          .trim();
+    }
+  }
+
+  return normalizedTitle;
+}

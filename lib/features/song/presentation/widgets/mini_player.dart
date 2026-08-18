@@ -9,6 +9,7 @@ import 'package:flow_music/features/radio/presentation/controllers/radio_queue_c
 import 'package:flow_music/features/radio/presentation/pages/radio_player_page.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
+import 'package:flow_music/features/song/presentation/widgets/track_change_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -243,33 +244,50 @@ class _MiniPlayerBar extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: Row(
                       children: [
-                        _Artwork(artUri: item.artUri, color: colors.primary),
+                        // El relevo de cancion se desliza en vez de saltar,
+                        // igual que en el reproductor completo.
+                        TrackChangeTransition(
+                          trackKey: item.id,
+                          slide: 0.35,
+                          duration: const Duration(milliseconds: 320),
+                          child: _Artwork(
+                            artUri: item.artUri,
+                            color: colors.primary,
+                          ),
+                        ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                item.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              if (item.artist != null &&
-                                  item.artist!.isNotEmpty)
+                          child: TrackChangeTransition(
+                            trackKey: item.id,
+                            alignment: Alignment.centerLeft,
+                            slide: 0.12,
+                            scaleFrom: 0.98,
+                            duration: const Duration(milliseconds: 320),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
                                 Text(
-                                  item.artist!,
+                                  item.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colors.onSurfaceVariant,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w700,
                                   ),
                                 ),
-                            ],
+                                if (item.artist != null &&
+                                    item.artist!.isNotEmpty)
+                                  Text(
+                                    item.artist!,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colors.onSurfaceVariant,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
                         _MiniTransportButton(

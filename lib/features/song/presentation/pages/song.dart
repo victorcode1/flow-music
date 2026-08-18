@@ -3,6 +3,8 @@ import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/audio_tools/presentation/controllers/audio_tools_controller.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
+import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
+import 'package:flow_music/features/autoplay/presentation/widgets/now_playing_queue_view.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_app_bar_action_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/default_playback_mode_controller.dart';
@@ -10,6 +12,7 @@ import 'package:flow_music/features/song/presentation/controllers/repeat_mode_co
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_page_controller.dart';
 import 'package:flow_music/features/song/presentation/widgets/modern_player_widget.dart';
+import 'package:flow_music/features/song/presentation/widgets/share_song_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -198,6 +201,7 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
               ),
               onQueue: () =>
                   showNowPlayingQueueSheet(context: context, ref: ref),
+              onShare: () => showShareSongSheet(context: context, ref: ref),
             ),
         ],
       ),
@@ -239,17 +243,19 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   }
 }
 
-/// Fila de accesos rapidos al pie del reproductor: Video / Cola.
+/// Fila de accesos rapidos al pie del reproductor: Video / Cola / Compartir.
 class _PlayerActionChips extends StatelessWidget {
   const _PlayerActionChips({
     required this.isVideo,
     required this.onToggleVideo,
     required this.onQueue,
+    required this.onShare,
   });
 
   final bool isVideo;
   final VoidCallback onToggleVideo;
   final VoidCallback onQueue;
+  final VoidCallback onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -270,6 +276,11 @@ class _PlayerActionChips extends StatelessWidget {
               icon: Icons.queue_music_rounded,
               label: LocaleKeys.queue.tr(),
               onTap: onQueue,
+            ),
+            _PlayerActionChip(
+              icon: Icons.ios_share_rounded,
+              label: LocaleKeys.share.tr(),
+              onTap: onShare,
             ),
           ],
         ),
@@ -328,26 +339,23 @@ class _PlayerActionChip extends StatelessWidget {
 class _PlayerQueueRail extends ConsumerWidget {
   const _PlayerQueueRail();
 
-  void _playUpcoming(WidgetRef ref, int index) {
-    final notifier = ref.read(autoplayQueueControllerProvider.notifier);
-    SongWidget.pageController.playFromQueue(
-      controller: ref.read(songController),
-      track: notifier.playUpcomingAt(index),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final queue = ref.watch(autoplayQueueControllerProvider);
     final controller = ref.watch(songController);
 
-    final current = queue.current;
-    final curTitle = current?.displayText ?? controller.displayTitle ?? '';
-    final curSubtitle = current?.channelTitle ?? controller.displayAuthor ?? '';
-    final curThumb =
-        current?.thumbnailUrl ?? controller.displayThumbnailUrl ?? '';
+    // Respaldo para la fila "sonando" cuando la canción se abrió sin cola
+    // (favoritos, enlace directo…) y el autoplay todavía no la sembró.
+    final fallbackTitle = controller.displayTitle ?? '';
+    final currentFallback = fallbackTitle.isEmpty
+        ? null
+        : YouTubeSearchSuggestion(
+            videoId: controller.currentVideoId ?? '',
+            displayText: fallbackTitle,
+            channelTitle: controller.displayAuthor ?? '',
+            thumbnailUrl: controller.displayThumbnailUrl ?? '',
+          );
 
     return SafeArea(
       left: false,
@@ -366,146 +374,17 @@ class _PlayerQueueRail extends ConsumerWidget {
           ),
           Divider(height: 1, color: colors.outlineVariant),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 18),
-              children: [
-                if (curTitle.isNotEmpty)
-                  _QueueRow(
-                    title: curTitle,
-                    subtitle: curSubtitle,
-                    thumbnailUrl: curThumb,
-                    isCurrent: true,
-                    onTap: null,
-                  ),
-                for (var i = 0; i < queue.upcoming.length; i++)
-                  _QueueRow(
-                    title: queue.upcoming[i].displayText,
-                    subtitle: queue.upcoming[i].channelTitle,
-                    thumbnailUrl: queue.upcoming[i].thumbnailUrl,
-                    isCurrent: false,
-                    onTap: () => _playUpcoming(ref, i),
-                  ),
-                if (queue.isLoadingMore)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 16,
-                    ),
-                    child: Row(
-                      children: [
-                        const SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator.adaptive(
-                            strokeWidth: 2,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          LocaleKeys.loading.tr(),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colors.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
+            child: NowPlayingQueueView(
+              padding: const EdgeInsets.fromLTRB(4, 6, 4, 18),
+              reorderable: false,
+              currentFallback: currentFallback,
+              onPlay: (track) => SongWidget.pageController.playFromQueue(
+                controller: ref.read(songController),
+                track: track,
+              ),
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// Fila de la cola: carátula + título/artista. La pista actual va resaltada.
-class _QueueRow extends StatelessWidget {
-  const _QueueRow({
-    required this.title,
-    required this.subtitle,
-    required this.thumbnailUrl,
-    required this.isCurrent,
-    required this.onTap,
-  });
-
-  final String title;
-  final String subtitle;
-  final String thumbnailUrl;
-  final bool isCurrent;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    return Material(
-      color: isCurrent
-          ? colors.primary.withValues(alpha: 0.12)
-          : Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(9),
-                child: SizedBox.square(
-                  dimension: 44,
-                  child: thumbnailUrl.isEmpty
-                      ? DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: colors.surfaceContainerHigh,
-                          ),
-                          child: Icon(
-                            Icons.music_note_rounded,
-                            size: 20,
-                            color: colors.primary,
-                          ),
-                        )
-                      : Image.network(
-                          thumbnailUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, _, _) => DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: colors.surfaceContainerHigh,
-                            ),
-                          ),
-                        ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isCurrent ? colors.primary : colors.onSurface,
-                      ),
-                    ),
-                    if (subtitle.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

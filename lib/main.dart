@@ -6,6 +6,7 @@ import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
     if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
 import 'package:flow_music/features/favorites/data/favorites_repository.dart';
+import 'package:flow_music/features/home/data/home_suggestions_cache.dart';
 import 'package:flow_music/features/history/data/playback_history_repository.dart';
 import 'package:flow_music/features/playlists/data/playlists_repository.dart';
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
@@ -27,6 +28,7 @@ void main() async {
   await Hive.openBox(favoritesBoxName);
   await Hive.openBox(playlistsBoxName);
   await Hive.openBox(playbackHistoryBoxName);
+  await Hive.openBox(homeSuggestionsCacheBoxName);
   await Hive.openBox(radioFavoritesBoxName);
   await Hive.openBox(radioPlaylistsBoxName);
   await initFlowAudioHandler();
