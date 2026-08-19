@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/future_guard.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
@@ -101,7 +102,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
   @override
   void initState() {
     super.initState();
-    _tagsFuture = _repository.topTags();
+    _tagsFuture = _repository.topTags().guarded();
     _playerState = flowAudioHandler.player.state;
     _playerStateSubscription = flowAudioHandler.player.onPlayerStateChanged
         .listen((state) {
@@ -120,9 +121,11 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     _searchController.addListener(_onSearchChanged);
 
     if (_lastSearchText.isEmpty) {
-      _stationsFuture = _repository.topStations();
+      _stationsFuture = _repository.topStations().guarded();
     } else {
-      _stationsFuture = _repository.searchStations(name: _lastSearchText);
+      _stationsFuture = _repository
+          .searchStations(name: _lastSearchText)
+          .guarded();
     }
   }
 
@@ -160,12 +163,14 @@ class _RadioPageState extends ConsumerState<RadioPage> {
       _selectedCountryCode = nextCountryCode;
       _stationsFuture =
           (nextQuery.isEmpty && nextTag.isEmpty && nextCountryCode.isEmpty)
-          ? _repository.topStations()
-          : _repository.searchStations(
-              name: nextQuery,
-              tag: nextTag,
-              countryCode: nextCountryCode,
-            );
+          ? _repository.topStations().guarded()
+          : _repository
+                .searchStations(
+                  name: nextQuery,
+                  tag: nextTag,
+                  countryCode: nextCountryCode,
+                )
+                .guarded();
     });
   }
 
@@ -175,7 +180,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     setState(() {
       _selectedTag = '';
       _selectedCountryCode = '';
-      _stationsFuture = _repository.topStations();
+      _stationsFuture = _repository.topStations().guarded();
     });
   }
 
