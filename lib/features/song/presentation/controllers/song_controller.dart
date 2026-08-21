@@ -96,6 +96,7 @@ class _AudioDownloadSource {
     required this.totalBytes,
     required this.chunks,
     required this.dispose,
+    this.hasVideoTrack = false,
   });
 
   final String title;
@@ -104,6 +105,7 @@ class _AudioDownloadSource {
   final String extension;
   final int totalBytes;
   final Stream<List<int>> chunks;
+  final bool hasVideoTrack;
 
   /// Cierra el cliente que abrio el stream. Se llama una vez escrito el archivo
   /// (o si algo falla), nunca antes: los bytes siguen viniendo de ahi.
@@ -890,6 +892,7 @@ class SongController extends ChangeNotifier {
         extension: source.extension,
         totalBytes: source.totalBytes,
         chunks: source.chunks,
+        hasVideoTrack: source.hasVideoTrack,
         onProgress: (progress) {
           _offlineProgress = progress;
           notifyListeners();
@@ -976,6 +979,7 @@ class SongController extends ChangeNotifier {
         extension: source.extension,
         totalBytes: source.totalBytes,
         chunks: source.chunks,
+        hasVideoTrack: source.hasVideoTrack,
         onProgress: (progress) {
           _downloadProgress = progress;
           notifyListeners();
@@ -1253,28 +1257,43 @@ class SongController extends ChangeNotifier {
       _videoInfo = video;
 
       final manifest = await yt.videos.streamsClient.getManifest(videoId);
-      if (manifest.audioOnly.isEmpty) {
-        throw StateError(LocaleKeys.no_audio_streams.tr());
-      }
+      final StreamInfo downloadStream;
+      if (_isApplePlatform && manifest.muxed.isNotEmpty) {
+        downloadStream = pickYoutubePlaybackStream(
+          manifest,
+          preferMuxed: true,
+        )!;
+      } else {
+        if (manifest.audioOnly.isEmpty) {
+          throw StateError(LocaleKeys.no_audio_streams.tr());
+        }
 
-      final preferredAudioStreams = manifest.audioOnly.where(
-        (stream) =>
-            stream.container == StreamContainer.mp4 ||
-            stream.codec.subtype == 'mp4a.40.2',
+        final preferredAudioStreams = manifest.audioOnly.where(
+          (stream) =>
+              stream.container == StreamContainer.mp4 ||
+              stream.codec.subtype == 'mp4a.40.2',
+        );
+        final pool = preferredAudioStreams.isEmpty
+            ? manifest.audioOnly.toList()
+            : preferredAudioStreams.toList();
+        final quality = ref.read(audioDownloadQualityControllerProvider);
+        downloadStream = _pickAudioForQuality(pool, quality);
+      }
+      final hasVideoTrack = downloadStream is MuxedStreamInfo;
+
+      debugPrint(
+        'Downloading YouTube ${hasVideoTrack ? 'muxed MP4' : 'audio-only'} '
+        'stream for $videoId (${downloadStream.size.totalBytes} bytes).',
       );
-      final pool = preferredAudioStreams.isEmpty
-          ? manifest.audioOnly.toList()
-          : preferredAudioStreams.toList();
-      final quality = ref.read(audioDownloadQualityControllerProvider);
-      final audioStream = _pickAudioForQuality(pool, quality);
 
       return _AudioDownloadSource(
         title: video.title,
         author: video.author,
         thumbnailUrl: video.thumbnails.highResUrl,
-        extension: audioStream.container.name,
-        totalBytes: audioStream.size.totalBytes,
-        chunks: yt.videos.streamsClient.get(audioStream),
+        extension: downloadStream.container.name,
+        totalBytes: downloadStream.size.totalBytes,
+        chunks: yt.videos.streamsClient.get(downloadStream),
+        hasVideoTrack: hasVideoTrack,
         dispose: yt.close,
       );
     } catch (_) {

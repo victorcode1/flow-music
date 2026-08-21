@@ -19,6 +19,7 @@ class DownloadedAudio {
     required this.filePath,
     required this.downloadedAt,
     this.mediaType = DownloadedMediaType.audio,
+    this.hasVideoTrack = false,
   });
 
   factory DownloadedAudio.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,7 @@ class DownloadedAudio {
           DateTime.tryParse(json['downloadedAt'] as String? ?? '') ??
           DateTime.fromMillisecondsSinceEpoch(0),
       mediaType: DownloadedMediaType.fromName(json['mediaType'] as String?),
+      hasVideoTrack: json['hasVideoTrack'] as bool? ?? false,
     );
   }
 
@@ -42,6 +44,7 @@ class DownloadedAudio {
   final String filePath;
   final DateTime downloadedAt;
   final DownloadedMediaType mediaType;
+  final bool hasVideoTrack;
 
   bool get isVideo => mediaType == DownloadedMediaType.video;
 
@@ -54,6 +57,7 @@ class DownloadedAudio {
       'filePath': filePath,
       'downloadedAt': downloadedAt.toIso8601String(),
       'mediaType': mediaType.name,
+      'hasVideoTrack': hasVideoTrack,
     };
   }
 }

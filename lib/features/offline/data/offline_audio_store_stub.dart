@@ -9,6 +9,7 @@ Future<DownloadedAudio> saveOfflineAudioStream({
   required int totalBytes,
   required Stream<List<int>> chunks,
   required void Function(double progress) onProgress,
+  bool hasVideoTrack = false,
 }) {
   throw UnsupportedError('Offline audio is not supported on this platform.');
 }
