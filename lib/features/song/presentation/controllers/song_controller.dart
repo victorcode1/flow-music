@@ -31,6 +31,7 @@ import 'audio_download_writer_stub.dart'
     if (dart.library.io) 'audio_download_writer_io.dart';
 import 'local_video_controller_stub.dart'
     if (dart.library.io) 'local_video_controller_io.dart';
+import 'video_completion_guard.dart';
 
 final songController = ChangeNotifierProvider<SongController>((ref) {
   return SongController(ref: ref);
@@ -174,6 +175,10 @@ AudioOnlyStreamInfo _pickAudioForQuality(
 class SongController extends ChangeNotifier {
   Ref ref;
   VideoPlayerController? _videoPlayerController;
+
+  /// Wired by the app coordinator so video and audio completion follow the
+  /// same repeat/autoplay policy.
+  Future<void> Function()? onVideoComplete;
 
   PlaybackMode _currentMode = PlaybackMode.audio;
   bool _isLoading = false;
@@ -692,15 +697,7 @@ class SongController extends ChangeNotifier {
         final activeVideoController = nextVideoController;
         _videoPlayerController = activeVideoController;
 
-        // Add error listener
-        activeVideoController.addListener(() {
-          if (identical(_videoPlayerController, activeVideoController) &&
-              activeVideoController.value.hasError) {
-            debugPrint(
-              'Video player error: ${activeVideoController.value.errorDescription}',
-            );
-          }
-        });
+        _attachVideoPlayerListeners(activeVideoController, generation);
 
         await activeVideoController.play();
         if (!_isCurrentPlaybackRequest(generation)) {
@@ -795,6 +792,40 @@ class SongController extends ChangeNotifier {
           ),
     );
     notifyListeners();
+  }
+
+  void _attachVideoPlayerListeners(
+    VideoPlayerController controller,
+    int generation,
+  ) {
+    final completionGuard = VideoCompletionGuard();
+    controller.addListener(() {
+      if (!_isCurrentPlaybackRequest(generation) ||
+          !identical(_videoPlayerController, controller)) {
+        return;
+      }
+
+      final value = controller.value;
+      if (value.hasError) {
+        debugPrint('Video player error: ${value.errorDescription}');
+      }
+      if (!completionGuard.update(isCompleted: value.isCompleted)) return;
+
+      final callback = onVideoComplete;
+      if (callback != null) unawaited(callback());
+    });
+  }
+
+  Future<void> replayCurrentVideo() async {
+    final controller = _videoPlayerController;
+    if (_currentMode != PlaybackMode.video ||
+        controller == null ||
+        !controller.value.isInitialized) {
+      return;
+    }
+
+    await controller.seekTo(Duration.zero);
+    await controller.play();
   }
 
   void switchMode(PlaybackMode mode) {
@@ -1551,6 +1582,7 @@ class SongController extends ChangeNotifier {
         return;
       }
       _videoPlayerController = nextVideoController;
+      _attachVideoPlayerListeners(nextVideoController, generation);
       await nextVideoController.play();
 
       if (!_isCurrentPlaybackRequest(generation)) {
@@ -1657,6 +1689,7 @@ class SongController extends ChangeNotifier {
 
   @override
   void dispose() {
+    onVideoComplete = null;
     _videoPlayerController?.dispose();
     super.dispose();
   }

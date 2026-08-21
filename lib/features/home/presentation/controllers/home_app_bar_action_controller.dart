@@ -141,6 +141,10 @@ Future<void> showNowPlayingQueueSheet({
   Future<void> playFromQueue(NextTrack? track) async {
     if (track == null) return;
     final controller = ref.read(songController);
+    if (controller.currentMode == PlaybackMode.video) {
+      await controller.playVideo(id: track.suggestion.videoId);
+      return;
+    }
     final resolved = track.resolved;
     if (resolved != null) {
       await controller.playPrefetched(resolved);
