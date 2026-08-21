@@ -40,82 +40,85 @@ Future<void> showShareSongSheet({
   await showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
+    isScrollControlled: true,
     builder: (sheetContext) {
       final theme = Theme.of(sheetContext);
       return SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
-              child: Text(
-                LocaleKeys.share_song.tr(),
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-            if (title.isNotEmpty)
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
                 child: Text(
-                  author.isEmpty ? title : '$title · $author',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  LocaleKeys.share_song.tr(),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
-            ListTile(
-              leading: const Icon(Icons.link_rounded),
-              title: Text(LocaleKeys.share_youtube_link.tr()),
-              onTap: () async {
-                Navigator.of(sheetContext).pop();
-                await shareYoutubeLink(
-                  context: context,
-                  videoId: videoId,
-                  title: title,
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.content_copy_rounded),
-              title: Text(LocaleKeys.copy_link.tr()),
-              onTap: () async {
-                Navigator.of(sheetContext).pop();
-                await Clipboard.setData(
-                  ClipboardData(text: youtubeShareLink(videoId)),
-                );
-                messenger?.showSnackBar(
-                  SnackBar(content: Text(LocaleKeys.link_copied.tr())),
-                );
-              },
-            ),
-            ListTile(
-              enabled: shareableFile != null,
-              leading: const Icon(Icons.audio_file_rounded),
-              title: Text(LocaleKeys.share_audio_file.tr()),
-              subtitle: shareableFile == null
-                  ? Text(
-                      kIsWeb
-                          ? LocaleKeys.share_unavailable.tr()
-                          : LocaleKeys.share_audio_needs_download.tr(),
-                    )
-                  : null,
-              onTap: shareableFile == null
-                  ? null
-                  : () async {
-                      Navigator.of(sheetContext).pop();
-                      await shareDownloadedFile(
-                        context: context,
-                        audio: shareableFile,
-                      );
-                    },
-            ),
-            const SizedBox(height: 8),
-          ],
+              if (title.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  child: Text(
+                    author.isEmpty ? title : '$title · $author',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              ListTile(
+                leading: const Icon(Icons.link_rounded),
+                title: Text(LocaleKeys.share_youtube_link.tr()),
+                onTap: () async {
+                  Navigator.of(sheetContext).pop();
+                  await shareYoutubeLink(
+                    context: context,
+                    videoId: videoId,
+                    title: title,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.content_copy_rounded),
+                title: Text(LocaleKeys.copy_link.tr()),
+                onTap: () async {
+                  Navigator.of(sheetContext).pop();
+                  await Clipboard.setData(
+                    ClipboardData(text: youtubeShareLink(videoId)),
+                  );
+                  messenger?.showSnackBar(
+                    SnackBar(content: Text(LocaleKeys.link_copied.tr())),
+                  );
+                },
+              ),
+              ListTile(
+                enabled: shareableFile != null,
+                leading: const Icon(Icons.audio_file_rounded),
+                title: Text(LocaleKeys.share_audio_file.tr()),
+                subtitle: shareableFile == null
+                    ? Text(
+                        kIsWeb
+                            ? LocaleKeys.share_unavailable.tr()
+                            : LocaleKeys.share_audio_needs_download.tr(),
+                      )
+                    : null,
+                onTap: shareableFile == null
+                    ? null
+                    : () async {
+                        Navigator.of(sheetContext).pop();
+                        await shareDownloadedFile(
+                          context: context,
+                          audio: shareableFile,
+                        );
+                      },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       );
     },
