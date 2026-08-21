@@ -5,16 +5,12 @@ import 'package:flow_music/features/autoplay/data/autoplay_resolver.dart';
 import 'package:flow_music/features/autoplay/data/mix_playlist_repository.dart';
 import 'package:flow_music/features/autoplay/data/related_tracks_repository.dart';
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
-import 'package:flow_music/features/autoplay/presentation/controllers/cache_status_controller.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/features/search/data/repositories/song_title_normalizer.dart';
 import 'package:flow_music/features/search/data/repositories/youtube_suggestions_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
-    if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
 
 part 'autoplay_queue_controller.g.dart';
 
@@ -28,18 +24,10 @@ part 'autoplay_queue_controller.g.dart';
 /// Cuatro por delante ya cubren el "next" instantaneo.
 const int _resolveWindow = 4;
 
-/// Cuantas pistas proximas se bajan a disco por adelantado.
-const int _downloadWindow = 3;
-
-/// Las resoluciones y descargas van con cupo limitado y en orden de cola: la
-/// pista que sigue termina antes que las de mas atras en vez de competir con
-/// ellas por el ancho de banda (y sin disparar el limite de YouTube).
+/// Las resoluciones van con cupo limitado y en orden de cola: la pista que
+/// sigue termina antes que las de mas atras en vez de competir con ellas por el
+/// ancho de banda (y sin disparar el limite de YouTube).
 const int _maxConcurrentResolves = 2;
-const int _maxConcurrentDownloads = 2;
-
-/// Techo de archivos en la cache de disco (las pistas ya escuchadas se van
-/// borrando para dejar espacio a las que vienen).
-const int _maxCachedFiles = 24;
 
 /// Empezamos a buscar mas musica bastante antes de que la cola visible se
 /// vacie, para que el prefetch nunca se quede sin material.
@@ -223,11 +211,6 @@ class AutoplayQueueController extends _$AutoplayQueueController {
   /// historial acotado), para no volver a encolar la misma cancion.
   final Set<String> _sessionVideoIds = {};
   final Set<String> _sessionTrackKeys = {};
-
-  /// Descargas a disco en curso y ya intentadas, para respetar el cupo y no
-  /// reintentar en bucle una descarga que fallo.
-  final Set<String> _downloading = {};
-  final Set<String> _downloadAttempted = {};
 
   /// Pistas cuya resolucion fallo. Sin esto el prefetch las reintentaria en
   /// bucle cerrado. Se limpia al avanzar de cancion, asi un fallo pasajero de
@@ -492,8 +475,6 @@ class AutoplayQueueController extends _$AutoplayQueueController {
     _mixNextPageToken = null;
     _sessionVideoIds.clear();
     _sessionTrackKeys.clear();
-    _downloading.clear();
-    _downloadAttempted.clear();
     _resolveFailed.clear();
   }
 
@@ -610,6 +591,7 @@ class AutoplayQueueController extends _$AutoplayQueueController {
   /// 3. una busqueda por texto anclada, como ultimo recurso.
   Future<List<YouTubeSearchSuggestion>> _fetchMoreTracks(int generation) async {
     final fromMix = await _fetchFromMix(generation);
+    if (!_isCurrentQueue(generation)) return const [];
     if (fromMix.isNotEmpty) return fromMix;
 
     final seed = _nextSeed(_usedRelatedSeeds);
@@ -798,10 +780,14 @@ class AutoplayQueueController extends _$AutoplayQueueController {
 
   /// Motor del prefetch en segundo plano. Se llama cada vez que la cola cambia
   /// (next, prev, reordenar, relleno) y cada vez que una tarea termina, asi que
-  /// siempre hay pistas resolviendose y bajando por delante de la que suena.
+  /// siempre hay pistas resolviendose por delante de la que suena.
+  ///
+  /// No descarga los archivos de audio: una cola que baja canciones completas
+  /// en segundo plano compite con la pista elegida y consume datos moviles aun
+  /// cuando el usuario nunca llega a escuchar esas canciones. La URL resuelta
+  /// basta para que la siguiente pista empiece a transmitir rapidamente.
   void _pumpPrefetch() {
     _pumpResolves();
-    _pumpDownloads();
   }
 
   void _pumpResolves() {
@@ -814,27 +800,6 @@ class AutoplayQueueController extends _$AutoplayQueueController {
       if (state.inFlight.contains(id)) continue;
       if (_resolveFailed.contains(id)) continue;
       unawaited(_resolve(suggestion));
-    }
-  }
-
-  void _pumpDownloads() {
-    if (ref.read(cacheStatusControllerProvider).diskFull) return;
-
-    final targets = state.upcoming
-        .take(_downloadWindow)
-        .toList(growable: false);
-    for (final suggestion in targets) {
-      if (_downloading.length >= _maxConcurrentDownloads) return;
-      final id = suggestion.videoId;
-      if (id.isEmpty) continue;
-      if (_downloadAttempted.contains(id)) continue;
-      final resolved = state.resolved[id];
-      if (resolved == null) continue;
-      if (resolved.cacheFilePath != null) continue;
-
-      _downloading.add(id);
-      _downloadAttempted.add(id);
-      unawaited(_download(id, resolved));
     }
   }
 
@@ -865,42 +830,6 @@ class AutoplayQueueController extends _$AutoplayQueueController {
     );
     debugPrint('Autoplay prefetch ready for $id');
     _pumpPrefetch();
-  }
-
-  Future<void> _download(String id, ResolvedAudio resolved) async {
-    try {
-      final cacheResult = await cacheAudioToDisk(
-        videoId: id,
-        url: resolved.audioUrl,
-        requestHeaders: resolved.requestHeaders,
-        rangeEnd: resolved.rangeEnd,
-        fileExtension: resolved.fileExtension,
-      );
-      if (!ref.mounted) return;
-      if (cacheResult.diskFull) {
-        ref.read(cacheStatusControllerProvider.notifier).markDiskFull();
-        return;
-      }
-      final cachePath = cacheResult.filePath;
-      if (cachePath == null) return;
-
-      final snapshot = state;
-      if (!_isStillRelevant(snapshot, id)) return;
-      final existing = snapshot.resolved[id];
-      if (existing == null) return;
-
-      state = snapshot.copyWith(
-        resolved: {
-          ...snapshot.resolved,
-          id: existing.copyWith(cacheFilePath: cachePath),
-        },
-      );
-      unawaited(trimAudioCache(maxFiles: _maxCachedFiles));
-      debugPrint('Autoplay cache ready for $id at $cachePath');
-    } finally {
-      _downloading.remove(id);
-      if (ref.mounted) _pumpDownloads();
-    }
   }
 
   bool _isStillRelevant(AutoplayQueueState snapshot, String videoId) {

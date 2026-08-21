@@ -4,6 +4,9 @@ import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 
+import 'remote_audio_proxy_stub.dart'
+    if (dart.library.io) 'remote_audio_proxy_io.dart';
+
 late final FlowAudioHandler flowAudioHandler;
 
 Future<FlowAudioHandler> initFlowAudioHandler() async {
@@ -30,11 +33,16 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     _subscriptions.add(
       player.onPlayerStateChanged.listen((state) {
         _playerState = state;
+        // `stop()` forma parte del cambio de fuente. No debe reemplazar el
+        // estado `loading` de la pista nueva por un `idle` tardio de la pista
+        // anterior.
+        if (_isSwitchingSource && state == PlayerState.stopped) return;
         _broadcastPlaybackState();
       }),
     );
     _subscriptions.add(
       player.onPositionChanged.listen((position) {
+        if (_isSwitchingSource) return;
         // Si tenemos una duracion confiable (la cabecera del proveedor),
         // recortamos la posicion reportada por audioplayers para que la UI
         // nunca muestre tiempo "vacio" mas alla del final real del audio.
@@ -81,6 +89,13 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   Duration _duration = Duration.zero;
   bool _hasTrustedDuration = false;
   bool _completionFired = false;
+  bool _isSwitchingSource = false;
+
+  /// Identifica el cambio de fuente mas reciente. Los preparativos nativos de
+  /// una URL pueden terminar fuera de orden cuando el usuario toca varias
+  /// canciones rapidamente; solo la solicitud mas nueva puede publicar estado,
+  /// iniciar un fade o reportar un error.
+  int _sourceGeneration = 0;
 
   static const Duration _fadeOutDuration = Duration(milliseconds: 2500);
   static const Duration _fadeInDuration = Duration(milliseconds: 700);
@@ -147,10 +162,15 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     String? artUrl,
     String? mimeType,
     Duration? canonicalDuration,
+    Map<String, String> requestHeaders = const {},
+    bool proxyRemoteSource = false,
+    int? sourceContentLength,
   }) async {
-    await _resetForNewSource();
+    final generation = ++_sourceGeneration;
+    if (!await _resetForNewSource(generation)) return;
     if (canonicalDuration != null && canonicalDuration > Duration.zero) {
-      _applyDuration(canonicalDuration, trusted: true);
+      _duration = canonicalDuration;
+      _hasTrustedDuration = true;
     }
     _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
     playbackState.add(
@@ -162,10 +182,20 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
       ),
     );
     try {
-      await _playRemoteSource(url: url, mimeType: mimeType);
+      await _playRemoteSource(
+        url: url,
+        mimeType: mimeType,
+        requestHeaders: requestHeaders,
+        proxyRemoteSource: proxyRemoteSource,
+        sourceContentLength: sourceContentLength,
+      );
+      if (!_isCurrentSource(generation)) return;
+      _isSwitchingSource = false;
       _startFadeIn();
     } catch (error, stack) {
-      await _handlePlaybackError(error, stack);
+      if (!_isCurrentSource(generation)) return;
+      _isSwitchingSource = false;
+      await _handlePlaybackError(error, stack, generation);
       Error.throwWithStackTrace(error, stack);
     }
   }
@@ -178,9 +208,11 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     String? artUrl,
     Duration? canonicalDuration,
   }) async {
-    await _resetForNewSource();
+    final generation = ++_sourceGeneration;
+    if (!await _resetForNewSource(generation)) return;
     if (canonicalDuration != null && canonicalDuration > Duration.zero) {
-      _applyDuration(canonicalDuration, trusted: true);
+      _duration = canonicalDuration;
+      _hasTrustedDuration = true;
     }
     _setMediaItem(id: id, title: title, artist: artist, artUrl: artUrl);
     playbackState.add(
@@ -193,20 +225,28 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     );
     try {
       await player.play(DeviceFileSource(filePath));
+      if (!_isCurrentSource(generation)) return;
+      _isSwitchingSource = false;
       _startFadeIn();
     } catch (error, stack) {
-      await _handlePlaybackError(error, stack);
+      if (!_isCurrentSource(generation)) return;
+      _isSwitchingSource = false;
+      await _handlePlaybackError(error, stack, generation);
       Error.throwWithStackTrace(error, stack);
     }
   }
 
-  Future<void> _resetForNewSource() async {
+  Future<bool> _resetForNewSource(int generation) async {
+    _isSwitchingSource = true;
+    _completionFired = true;
+    _fadeGeneration++;
     // audioplayers can otherwise keep the previous MediaPlayer/AVPlayer alive
     // briefly, leaving two streams overlapping (most noticeable when the new
     // source is a live radio stream that takes longer to start).
     try {
       await player.stop().timeout(_nativeCleanupTimeout);
     } catch (_) {}
+    if (!_isCurrentSource(generation)) return false;
     _position = Duration.zero;
     _duration = Duration.zero;
     _hasTrustedDuration = false;
@@ -214,13 +254,32 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     _fadeGeneration++;
     _fadeOutStarted = false;
     await player.setVolume(_smoothTransitions ? 0 : 1);
+    return _isCurrentSource(generation);
   }
+
+  bool _isCurrentSource(int generation) => generation == _sourceGeneration;
 
   Future<void> _playRemoteSource({
     required String url,
     String? mimeType,
+    required Map<String, String> requestHeaders,
+    required bool proxyRemoteSource,
+    required int? sourceContentLength,
   }) async {
-    await player.play(UrlSource(url, mimeType: mimeType));
+    final playableUrl = proxyRemoteSource
+        ? await prepareRemoteAudioUrl(
+            url: url,
+            requestHeaders: requestHeaders,
+            mimeType: mimeType,
+            contentLength: sourceContentLength,
+          )
+        : url;
+    // El proxy ya entrega Content-Type y una extension real. Forzar el MIME
+    // mediante AVURLAssetOverrideMIMETypeKey hace que algunas versiones de
+    // AVPlayer marquen una fuente HTTP local valida como `.failed`.
+    await player.play(
+      UrlSource(playableUrl, mimeType: proxyRemoteSource ? null : mimeType),
+    );
   }
 
   void _startFadeIn() {
@@ -229,10 +288,12 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> _handleCompletion() async {
+    final generation = _sourceGeneration;
     // Detenemos audioplayers explicitamente para que no siga reproduciendo
     // padding/silencio detras del fin canonico cuando autoplay esta
     // desactivado o no hay siguiente cancion en la cola.
     await player.stop();
+    if (!_isCurrentSource(generation)) return;
     _position = Duration.zero;
     playbackState.add(
       playbackState.value.copyWith(
@@ -247,7 +308,12 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
-  Future<void> _handlePlaybackError(Object error, StackTrace stack) async {
+  Future<void> _handlePlaybackError(
+    Object error,
+    StackTrace stack,
+    int generation,
+  ) async {
+    if (!_isCurrentSource(generation)) return;
     debugPrint('Audio playback error: $error');
     // Evita que onPositionChanged dispare un "completion" fantasma sobre una
     // fuente que nunca llego a sonar.
@@ -256,6 +322,7 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     try {
       await player.stop();
     } catch (_) {}
+    if (!_isCurrentSource(generation)) return;
     // Restauramos volumen para que la proxima fuente no quede en silencio por
     // el fade-in que no llego a completarse.
     try {
@@ -298,13 +365,27 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> stop() async {
-    await player.stop();
+    final generation = ++_sourceGeneration;
+    _isSwitchingSource = true;
+    _completionFired = true;
+    _fadeGeneration++;
+    try {
+      await player.stop();
+    } catch (error) {
+      debugPrint('Could not stop previous audio source: $error');
+    }
+    if (!_isCurrentSource(generation)) return;
     _position = Duration.zero;
+    _duration = Duration.zero;
+    _hasTrustedDuration = false;
+    _playerState = PlayerState.stopped;
+    _isSwitchingSource = false;
     playbackState.add(
       playbackState.value.copyWith(
         processingState: AudioProcessingState.idle,
         playing: false,
         updatePosition: Duration.zero,
+        bufferedPosition: Duration.zero,
       ),
     );
     return super.stop();
@@ -399,7 +480,10 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
         processingState: processingState,
         playing: playing,
         updatePosition: _position,
-        bufferedPosition: _position,
+        // audioplayers no expone la cantidad de bytes/tiempo almacenados. La
+        // posicion de reproduccion no es un buffer y publicarla como tal hacia
+        // que algunas interfaces parecieran seguir cargando la pista anterior.
+        bufferedPosition: Duration.zero,
         speed: 1,
       ),
     );

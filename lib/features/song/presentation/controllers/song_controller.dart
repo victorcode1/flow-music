@@ -11,13 +11,13 @@ import 'package:flow_music/features/autoplay/data/audio_cache_stub.dart'
     if (dart.library.io) 'package:flow_music/features/autoplay/data/audio_cache_io.dart';
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
 import 'package:flow_music/features/autoplay/data/youtube_access_state.dart';
+import 'package:flow_music/features/autoplay/data/youtube_playback_stream.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/library/data/downloaded_audio.dart';
 import 'package:flow_music/features/offline/data/offline_audio_store_stub.dart'
     if (dart.library.io) 'package:flow_music/features/offline/data/offline_audio_store_io.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
-import 'package:flow_music/features/search/data/repositories/piped_video_duration.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/audio_download_quality_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -40,7 +40,7 @@ enum PlaybackMode { audio, video }
 
 const _pipedApiBaseUrl = 'https://api.piped.private.coffee';
 
-bool get _needsAppleLocalCache =>
+bool get _isApplePlatform =>
     !kIsWeb &&
     (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS);
@@ -192,6 +192,12 @@ class SongController extends ChangeNotifier {
   bool _isPlayingDownloadedVideo = false;
   bool _isPlayingOfflineAudio = false;
 
+  /// Cada seleccion invalida todo el trabajo asincrono de las selecciones
+  /// anteriores. La resolucion de YouTube/Piped puede tardar varios segundos en
+  /// una red movil y completar fuera de orden; sin esta compuerta, una cancion
+  /// vieja terminaba reemplazando a la ultima que el usuario habia tocado.
+  int _playbackGeneration = 0;
+
   PlaybackMode get currentMode => _currentMode;
   bool get isLoading => _isLoading;
   bool get isDownloading => _isDownloading;
@@ -282,12 +288,28 @@ class SongController extends ChangeNotifier {
 
   SongController({required this.ref});
 
+  int _beginPlaybackRequest() => ++_playbackGeneration;
+
+  bool _isCurrentPlaybackRequest(int generation) {
+    return generation == _playbackGeneration;
+  }
+
+  void _invalidatePlaybackRequests() {
+    _playbackGeneration++;
+  }
+
   /// Tear down the current song playback so a different audio source
   /// (e.g. a radio station) can take over the global audio handler without
   /// the previous video player keeping its own audio track alive in the
   /// background. Without this, starting a radio while a YouTube video plays
   /// leaves the video's audio overlapping the radio stream.
   Future<void> clearSongPlayback() async {
+    _invalidatePlaybackRequests();
+    try {
+      await _audioHandler.stop();
+    } catch (error) {
+      debugPrint('Could not interrupt previous audio source: $error');
+    }
     final video = _videoPlayerController;
     _videoPlayerController = null;
     if (video != null) {
@@ -325,6 +347,10 @@ class SongController extends ChangeNotifier {
     String? thumbnailUrl,
   }) {
     if (videoId.isEmpty) return;
+    // La pantalla que se abre a continuacion inicia y espera el cambio de
+    // fuente. Lanzar aqui otro `stop()` sin esperarlo puede completarse tarde y
+    // detener la cancion nueva justo despues de que empiece.
+    _invalidatePlaybackRequests();
     _currentVideoId = videoId;
     _videoInfo = null;
     _webVideoTitle = (title != null && title.isNotEmpty) ? title : null;
@@ -332,7 +358,6 @@ class SongController extends ChangeNotifier {
     _webVideoThumbnailUrl = (thumbnailUrl != null && thumbnailUrl.isNotEmpty)
         ? thumbnailUrl
         : null;
-    _ensureAutoplayQueueForCurrent(videoId);
     notifyListeners();
   }
 
@@ -348,6 +373,7 @@ class SongController extends ChangeNotifier {
   /// Piped / youtube_explode_dart resolution step. Used by the autoplay queue
   /// when advancing to the next prefetched track.
   Future<void> playPrefetched(ResolvedAudio resolved) async {
+    final generation = _beginPlaybackRequest();
     try {
       _isLoading = true;
       _currentMode = PlaybackMode.audio;
@@ -355,8 +381,6 @@ class SongController extends ChangeNotifier {
       _isPlayingDownloadedAudio = false;
       _isPlayingDownloadedVideo = false;
       _isPlayingOfflineAudio = false;
-      _downloadedAudio = await getDownloadedAudio(resolved.videoId);
-      _offlineAudio = await getOfflineAudio(resolved.videoId);
       _videoInfo = null;
       _webEmbedVideoId = kIsWeb ? resolved.videoId : null;
       _webVideoTitle = resolved.title;
@@ -364,27 +388,27 @@ class SongController extends ChangeNotifier {
       _webVideoThumbnailUrl = resolved.thumbnailUrl;
       notifyListeners();
 
+      await _audioHandler.stop();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      await _videoPlayerController?.pause();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+
+      final localCopies = await Future.wait<DownloadedAudio?>([
+        getDownloadedAudio(resolved.videoId),
+        getOfflineAudio(resolved.videoId),
+      ]);
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      _downloadedAudio = localCopies[0];
+      _offlineAudio = localCopies[1];
+
       await _videoPlayerController?.dispose();
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _videoPlayerController = null;
 
       final offlineAudio = _currentOfflineAudio;
-      var cachedPrefetchPath =
+      final cachedPrefetchPath =
           resolved.cacheFilePath ?? await cachedAudioPath(resolved.videoId);
-      if (cachedPrefetchPath == null && _needsAppleLocalCache) {
-        final cacheResult = await cacheAudioToDisk(
-          videoId: resolved.videoId,
-          url: resolved.audioUrl,
-          requestHeaders: resolved.requestHeaders,
-          rangeEnd: resolved.rangeEnd,
-          fileExtension: resolved.fileExtension,
-        );
-        cachedPrefetchPath = cacheResult.filePath;
-        if (cachedPrefetchPath == null) {
-          throw StateError(
-            'Could not cache prefetched Apple audio for: ${resolved.videoId}',
-          );
-        }
-      }
+      if (!_isCurrentPlaybackRequest(generation)) return;
       final cachePath = offlineAudio?.filePath ?? cachedPrefetchPath;
       if (cachePath != null && cachePath.isNotEmpty) {
         _isPlayingOfflineAudio = offlineAudio != null;
@@ -412,7 +436,7 @@ class SongController extends ChangeNotifier {
           debugPrint(
             'Prefetched URL for ${resolved.videoId} is expired, re-resolving',
           );
-          _isLoading = false;
+          if (!_isCurrentPlaybackRequest(generation)) return;
           await playAudio(id: resolved.videoId);
           return;
         }
@@ -424,9 +448,15 @@ class SongController extends ChangeNotifier {
           artUrl: resolved.thumbnailUrl ?? resolved.suggestion.thumbnailUrl,
           mimeType: resolved.mimeType,
           canonicalDuration: resolved.duration,
+          requestHeaders: resolved.requestHeaders,
+          proxyRemoteSource: _isApplePlatform,
+          sourceContentLength: resolved.rangeEnd == null
+              ? null
+              : resolved.rangeEnd! + 1,
         );
       }
 
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _isLoading = false;
       _ensureAutoplayQueueForCurrent(resolved.videoId);
       unawaited(
@@ -442,6 +472,7 @@ class SongController extends ChangeNotifier {
       );
       notifyListeners();
     } catch (e, stackTrace) {
+      if (!_isCurrentPlaybackRequest(generation)) return;
       debugPrint('Error playing prefetched audio: $e');
       debugPrint('$stackTrace');
       _isLoading = false;
@@ -452,10 +483,10 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> playAudio({required String id, Duration? knownDuration}) async {
+    final generation = _beginPlaybackRequest();
     try {
       _isLoading = true;
       _currentMode = PlaybackMode.audio;
-      notifyListeners();
 
       final extracted = extractVideoId(id);
       final videoId = extracted ?? id;
@@ -463,113 +494,99 @@ class SongController extends ChangeNotifier {
       _isPlayingDownloadedAudio = false;
       _isPlayingDownloadedVideo = false;
       _isPlayingOfflineAudio = false;
-      _downloadedAudio = await getDownloadedAudio(videoId);
-      _offlineAudio = await getOfflineAudio(videoId);
+      notifyListeners();
+
+      // Corta de inmediato lo que estaba sonando. Tambien invalida cualquier
+      // preparacion nativa anterior dentro del handler.
+      await _audioHandler.stop();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      await _videoPlayerController?.pause();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+
+      final localCopies = await Future.wait<DownloadedAudio?>([
+        getDownloadedAudio(videoId),
+        getOfflineAudio(videoId),
+      ]);
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      _downloadedAudio = localCopies[0];
+      _offlineAudio = localCopies[1];
 
       debugPrint('Attempting to play YouTube audio: $videoId');
       if (kIsWeb) {
-        await _playYoutubeEmbed(videoId);
+        await _playYoutubeEmbed(videoId, generation);
         return;
       }
       _webEmbedVideoId = null;
 
       final localAudio = _currentOfflineAudio ?? _currentDownloadedAudio;
       if (localAudio != null) {
-        await _playLocalAudio(localAudio);
+        await _playLocalAudio(localAudio, generation);
         return;
       }
 
       // Dispose video player if exists
       await _videoPlayerController?.dispose();
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _videoPlayerController = null;
 
       YoutubeExplode? yt;
-      Duration? pipedDuration;
       try {
         yt = YoutubeExplode();
 
         // Get video info
-        _videoInfo = await yt.videos.get(videoId);
+        final videoInfo = await yt.videos.get(videoId);
+        if (!_isCurrentPlaybackRequest(generation)) return;
+        _videoInfo = videoInfo;
 
         final manifest = await yt.videos.streamsClient.getManifest(videoId);
-        if (_needsAppleLocalCache) {
-          if (manifest.streams.isEmpty) {
-            throw StateError('No streams available for video: $videoId');
-          }
-          final stream = manifest.streams.first;
-          if (stream.container != StreamContainer.mp4 ||
-              (stream is! MuxedStreamInfo && stream is! AudioOnlyStreamInfo)) {
-            throw StateError(
-              'No Apple-compatible validated stream for video: $videoId',
-            );
-          }
-          final cacheResult = await cacheAudioToDisk(
-            videoId: videoId,
-            url: stream.url.toString(),
-            requestHeaders: YoutubeHttpClient.defaultHeaders,
-            rangeEnd: stream.size.totalBytes - 1,
-            fileExtension: stream.container.name,
-          );
-          final filePath = cacheResult.filePath;
-          if (filePath == null || filePath.isEmpty) {
-            throw StateError('Could not cache Apple audio for: $videoId');
-          }
-          debugPrint('Playing validated YouTube cache for $videoId');
-          await _audioHandler.playFile(
-            filePath: filePath,
-            id: videoId,
-            title: _videoInfo?.title ?? videoId,
-            artist: _videoInfo?.author ?? '',
-            artUrl: _videoInfo?.thumbnails.highResUrl,
-            canonicalDuration: knownDuration ?? _videoInfo?.duration,
-          );
-        } else {
-          if (manifest.audioOnly.isEmpty) {
-            throw StateError('No audio streams available for video: $videoId');
-          }
-          final preferredStreams = manifest.audioOnly.where(
-            (stream) =>
-                stream.container == StreamContainer.mp4 ||
-                stream.codec.subtype == 'mp4a.40.2',
-          );
-          final audioStream =
-              (preferredStreams.isEmpty ? manifest.audioOnly : preferredStreams)
-                  .withHighestBitrate();
-
-          final audioUri = audioStream.url;
-          final audioUrl = audioUri.toString();
-          final audioMimeType =
-              '${audioStream.codec.type}/${audioStream.codec.subtype}';
-          pipedDuration = knownDuration == null
-              ? await fetchPipedVideoDuration(videoId)
-              : null;
-          final canonicalDuration = _resolveAudioDuration(
-            streamUri: audioUri,
-            knownDuration: knownDuration ?? pipedDuration,
-            fallback: _videoInfo?.duration,
-          );
-          debugPrint('Resolved YouTube audio for $videoId ($audioMimeType)');
-
-          await _audioHandler.playUrl(
-            url: audioUrl,
-            id: videoId,
-            title: _videoInfo?.title ?? videoId,
-            artist: _videoInfo?.author ?? '',
-            artUrl: _videoInfo?.thumbnails.highResUrl,
-            mimeType: audioMimeType,
-            canonicalDuration: canonicalDuration,
-          );
+        if (!_isCurrentPlaybackRequest(generation)) return;
+        final playbackStream = pickYoutubePlaybackStream(
+          manifest,
+          preferMuxed: _isApplePlatform,
+        );
+        if (playbackStream == null) {
+          throw StateError('No audio streams available for video: $videoId');
         }
+
+        final audioUri = playbackStream.url;
+        final audioUrl = audioUri.toString();
+        final audioMimeType =
+            '${playbackStream.codec.type}/${playbackStream.codec.subtype}';
+        final canonicalDuration = _resolveAudioDuration(
+          streamUri: audioUri,
+          knownDuration: knownDuration,
+          fallback: _videoInfo?.duration,
+        );
+        debugPrint(
+          'Resolved YouTube ${playbackStream is MuxedStreamInfo ? 'muxed' : 'audio-only'} '
+          'stream for $videoId ($audioMimeType)',
+        );
+
+        await _audioHandler.playUrl(
+          url: audioUrl,
+          id: videoId,
+          title: _videoInfo?.title ?? videoId,
+          artist: _videoInfo?.author ?? '',
+          artUrl: _videoInfo?.thumbnails.highResUrl,
+          mimeType: audioMimeType,
+          canonicalDuration: canonicalDuration,
+          requestHeaders: YoutubeHttpClient.defaultHeaders,
+          proxyRemoteSource: _isApplePlatform,
+          sourceContentLength: playbackStream.size.totalBytes,
+        );
+        if (!_isCurrentPlaybackRequest(generation)) return;
         debugPrint('Audio player started');
       } catch (error, stackTrace) {
+        if (!_isCurrentPlaybackRequest(generation)) return;
         debugPrint(
           'Primary YouTube audio failed for $videoId, trying Piped fallback: $error',
         );
         debugPrint('Stack trace: $stackTrace');
         final fallbackStarted = await _tryPlayPipedAudioFallback(
           videoId: videoId,
-          knownDuration: knownDuration ?? pipedDuration,
+          knownDuration: knownDuration,
           fallbackDuration: _videoInfo?.duration,
+          generation: generation,
         );
         if (!fallbackStarted) rethrow;
         debugPrint('Audio player started via Piped fallback');
@@ -577,10 +594,12 @@ class SongController extends ChangeNotifier {
         yt?.close();
       }
 
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _isLoading = false;
       unawaited(_recordCurrentSong(videoId));
       notifyListeners();
     } catch (e, stackTrace) {
+      if (!_isCurrentPlaybackRequest(generation)) return;
       debugPrint('Error playing YouTube audio: $e');
       debugPrint('Stack trace: $stackTrace');
       _isLoading = false;
@@ -589,9 +608,9 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> playVideo({required String id}) async {
+    final generation = _beginPlaybackRequest();
     try {
       _isLoading = true;
-      notifyListeners();
 
       final extracted = extractVideoId(id);
       final videoId = extracted ?? id;
@@ -600,63 +619,105 @@ class SongController extends ChangeNotifier {
       _isPlayingDownloadedAudio = false;
       _isPlayingDownloadedVideo = false;
       _isPlayingOfflineAudio = false;
-      _downloadedVideo = await getDownloadedVideo(videoId);
-      _downloadedAudio = await getDownloadedAudio(videoId);
-      _offlineAudio = await getOfflineAudio(videoId);
+      notifyListeners();
+
+      await _audioHandler.stop();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      await _videoPlayerController?.pause();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+
+      final localCopies = await Future.wait<DownloadedAudio?>([
+        getDownloadedVideo(videoId),
+        getDownloadedAudio(videoId),
+        getOfflineAudio(videoId),
+      ]);
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      _downloadedVideo = localCopies[0];
+      _downloadedAudio = localCopies[1];
+      _offlineAudio = localCopies[2];
 
       debugPrint('Attempting to play YouTube video: $videoId');
       if (kIsWeb) {
-        await _playYoutubeEmbed(videoId);
+        await _playYoutubeEmbed(videoId, generation);
         return;
       }
       _webEmbedVideoId = null;
 
-      var yt = YoutubeExplode();
+      final yt = YoutubeExplode();
+      late final String videoUrl;
+      try {
+        // Get video info
+        final videoInfo = await yt.videos.get(videoId);
+        if (!_isCurrentPlaybackRequest(generation)) return;
+        _videoInfo = videoInfo;
 
-      // Get video info
-      _videoInfo = await yt.videos.get(videoId);
+        final manifest = await yt.videos.streamsClient.getManifest(videoId);
+        if (!_isCurrentPlaybackRequest(generation)) return;
 
-      var manifest = await yt.videos.streamsClient.getManifest(videoId);
+        // Get video and audio streams
+        videoUrl = manifest.muxed.withHighestBitrate().url.toString();
+      } finally {
+        yt.close();
+      }
 
-      // Get video and audio streams
-      var videoStream = manifest.muxed.withHighestBitrate();
-      yt.close();
-
-      final videoUrl = videoStream.url.toString();
       log('Got video URL: $videoUrl');
 
       // Pause audio player
       await _audioPlayer.pause();
+      if (!_isCurrentPlaybackRequest(generation)) return;
 
       // Dispose old video controller if exists
       try {
         await _videoPlayerController?.dispose();
+        if (!_isCurrentPlaybackRequest(generation)) return;
         _videoPlayerController = null;
       } catch (e) {
         debugPrint('Error disposing previous video controller: $e');
       }
 
       // Initialize new video player
+      VideoPlayerController? nextVideoController;
       try {
-        _videoPlayerController = VideoPlayerController.networkUrl(
+        nextVideoController = VideoPlayerController.networkUrl(
           Uri.parse(videoUrl),
         );
 
-        await _videoPlayerController!.initialize();
+        await nextVideoController.initialize();
+        if (!_isCurrentPlaybackRequest(generation)) {
+          await nextVideoController.dispose();
+          return;
+        }
+        final activeVideoController = nextVideoController;
+        _videoPlayerController = activeVideoController;
 
         // Add error listener
-        _videoPlayerController!.addListener(() {
-          if (_videoPlayerController!.value.hasError) {
+        activeVideoController.addListener(() {
+          if (identical(_videoPlayerController, activeVideoController) &&
+              activeVideoController.value.hasError) {
             debugPrint(
-              'Video player error: ${_videoPlayerController!.value.errorDescription}',
+              'Video player error: ${activeVideoController.value.errorDescription}',
             );
           }
         });
 
-        await _videoPlayerController!.play();
+        await activeVideoController.play();
+        if (!_isCurrentPlaybackRequest(generation)) {
+          if (identical(_videoPlayerController, activeVideoController)) {
+            _videoPlayerController = null;
+          }
+          await activeVideoController.dispose();
+          return;
+        }
 
         debugPrint('Video player started successfully');
       } catch (videoError) {
+        if (identical(_videoPlayerController, nextVideoController)) {
+          _videoPlayerController = null;
+        }
+        try {
+          await nextVideoController?.dispose();
+        } catch (_) {}
+        if (!_isCurrentPlaybackRequest(generation)) return;
         debugPrint('Failed to initialize video player: $videoError');
 
         // Fallback to audio mode
@@ -669,10 +730,12 @@ class SongController extends ChangeNotifier {
         return;
       }
 
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _isLoading = false;
       unawaited(_recordCurrentSong(videoId));
       notifyListeners();
     } catch (e, stackTrace) {
+      if (!_isCurrentPlaybackRequest(generation)) return;
       debugPrint('Error playing YouTube video: $e');
       debugPrint('Stack trace: $stackTrace');
 
@@ -684,6 +747,7 @@ class SongController extends ChangeNotifier {
 
       // Try to play audio as fallback
       try {
+        if (!_isCurrentPlaybackRequest(generation)) return;
         await playAudio(id: id);
       } catch (audioError) {
         debugPrint('Audio fallback also failed: $audioError');
@@ -691,7 +755,8 @@ class SongController extends ChangeNotifier {
     }
   }
 
-  Future<void> _playLocalAudio(DownloadedAudio audio) async {
+  Future<void> _playLocalAudio(DownloadedAudio audio, int generation) async {
+    if (!_isCurrentPlaybackRequest(generation)) return;
     _isPlayingOfflineAudio = audio == _currentOfflineAudio;
     _isPlayingDownloadedAudio = !_isPlayingOfflineAudio;
     _isPlayingDownloadedVideo = false;
@@ -701,6 +766,7 @@ class SongController extends ChangeNotifier {
     _webVideoThumbnailUrl = audio.thumbnailUrl;
 
     await _videoPlayerController?.dispose();
+    if (!_isCurrentPlaybackRequest(generation)) return;
     _videoPlayerController = null;
 
     await _audioHandler.playFile(
@@ -711,6 +777,7 @@ class SongController extends ChangeNotifier {
       artUrl: audio.thumbnailUrl,
     );
 
+    if (!_isCurrentPlaybackRequest(generation)) return;
     _isLoading = false;
     _ensureAutoplayQueueForCurrent(
       audio.videoId.isEmpty ? _currentVideoId ?? '' : audio.videoId,
@@ -1055,12 +1122,14 @@ class SongController extends ChangeNotifier {
     }
   }
 
-  Future<void> _playYoutubeEmbed(String videoId) async {
+  Future<void> _playYoutubeEmbed(String videoId, int generation) async {
     _webEmbedVideoId = videoId;
     try {
       final streamInfo = await _fetchPipedStreamInfo(videoId);
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _setWebVideoInfo(streamInfo);
     } catch (error) {
+      if (!_isCurrentPlaybackRequest(generation)) return;
       debugPrint('Error loading web video metadata: $error');
       _videoInfo = null;
       _webVideoTitle = videoId;
@@ -1069,7 +1138,9 @@ class SongController extends ChangeNotifier {
     }
 
     await _audioPlayer.stop();
+    if (!_isCurrentPlaybackRequest(generation)) return;
     await _videoPlayerController?.dispose();
+    if (!_isCurrentPlaybackRequest(generation)) return;
     _videoPlayerController = null;
 
     _isLoading = false;
@@ -1114,11 +1185,13 @@ class SongController extends ChangeNotifier {
 
   Future<bool> _tryPlayPipedAudioFallback({
     required String videoId,
+    required int generation,
     Duration? knownDuration,
     Duration? fallbackDuration,
   }) async {
     try {
       final streamInfo = await _fetchPipedStreamInfo(videoId);
+      if (!_isCurrentPlaybackRequest(generation)) return false;
       final audioUrl = streamInfo.audioUrl;
       if (audioUrl == null || audioUrl.isEmpty) return false;
 
@@ -1131,34 +1204,20 @@ class SongController extends ChangeNotifier {
               fallback: fallbackDuration,
             );
 
-      if (_needsAppleLocalCache) {
-        final cacheResult = await cacheAudioToDisk(
-          videoId: videoId,
-          url: audioUrl,
-        );
-        final filePath = cacheResult.filePath;
-        if (filePath == null || filePath.isEmpty) return false;
-        await _audioHandler.playFile(
-          filePath: filePath,
-          id: videoId,
-          title: _videoInfo?.title ?? streamInfo.title,
-          artist: _videoInfo?.author ?? streamInfo.uploader,
-          artUrl: _videoInfo?.thumbnails.highResUrl ?? streamInfo.thumbnailUrl,
-          canonicalDuration: canonicalDuration,
-        );
-      } else {
-        await _audioHandler.playUrl(
-          url: audioUrl,
-          id: videoId,
-          title: _videoInfo?.title ?? streamInfo.title,
-          artist: _videoInfo?.author ?? streamInfo.uploader,
-          artUrl: _videoInfo?.thumbnails.highResUrl ?? streamInfo.thumbnailUrl,
-          mimeType: streamInfo.audioMimeType,
-          canonicalDuration: canonicalDuration,
-        );
-      }
-      return true;
+      await _audioHandler.playUrl(
+        url: audioUrl,
+        id: videoId,
+        title: _videoInfo?.title ?? streamInfo.title,
+        artist: _videoInfo?.author ?? streamInfo.uploader,
+        artUrl: _videoInfo?.thumbnails.highResUrl ?? streamInfo.thumbnailUrl,
+        mimeType: streamInfo.audioMimeType,
+        canonicalDuration: canonicalDuration,
+        requestHeaders: YoutubeHttpClient.defaultHeaders,
+        proxyRemoteSource: _isApplePlatform,
+      );
+      return _isCurrentPlaybackRequest(generation);
     } catch (error, stackTrace) {
+      if (!_isCurrentPlaybackRequest(generation)) return false;
       debugPrint('Piped audio fallback failed for $videoId: $error');
       debugPrint('Stack trace: $stackTrace');
       return false;
@@ -1329,6 +1388,11 @@ class SongController extends ChangeNotifier {
     if (typedStreams.isEmpty) return null;
 
     typedStreams.sort((a, b) {
+      if (_isApplePlatform) {
+        final aIsM4a = _isPipedM4a(a) ? 1 : 0;
+        final bIsM4a = _isPipedM4a(b) ? 1 : 0;
+        if (aIsM4a != bIsM4a) return bIsM4a.compareTo(aIsM4a);
+      }
       final aIsOpus = a['format'] == 'WEBMA_OPUS' ? 1 : 0;
       final bIsOpus = b['format'] == 'WEBMA_OPUS' ? 1 : 0;
       if (aIsOpus != bIsOpus) return bIsOpus.compareTo(aIsOpus);
@@ -1342,6 +1406,12 @@ class SongController extends ChangeNotifier {
       url: stream['url'] as String,
       mimeType: stream['mimeType'] as String? ?? 'audio/webm',
     );
+  }
+
+  bool _isPipedM4a(Map<String, dynamic> stream) {
+    final format = (stream['format'] as String? ?? '').toUpperCase();
+    final mimeType = (stream['mimeType'] as String? ?? '').toLowerCase();
+    return format.contains('M4A') || mimeType.contains('mp4');
   }
 
   String _youtubeThumbnailUrl(String videoId) {
@@ -1374,6 +1444,7 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> playDownloadedAudio(DownloadedAudio downloadedAudio) async {
+    final generation = _beginPlaybackRequest();
     try {
       _isLoading = true;
       _currentMode = PlaybackMode.audio;
@@ -1385,7 +1456,12 @@ class SongController extends ChangeNotifier {
       _downloadedAudio = downloadedAudio;
       notifyListeners();
 
+      await _audioHandler.stop();
+      if (!_isCurrentPlaybackRequest(generation)) return;
+      await _videoPlayerController?.pause();
+      if (!_isCurrentPlaybackRequest(generation)) return;
       await _videoPlayerController?.dispose();
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _videoPlayerController = null;
       _webEmbedVideoId = null;
       await _audioHandler.playFile(
@@ -1398,6 +1474,7 @@ class SongController extends ChangeNotifier {
         artUrl: downloadedAudio.thumbnailUrl,
       );
 
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _isLoading = false;
       unawaited(
         ref
@@ -1413,6 +1490,7 @@ class SongController extends ChangeNotifier {
       );
       notifyListeners();
     } catch (e, stackTrace) {
+      if (!_isCurrentPlaybackRequest(generation)) return;
       debugPrint('Error playing downloaded audio: $e');
       debugPrint('Stack trace: $stackTrace');
       _isLoading = false;
@@ -1427,6 +1505,8 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> playDownloadedVideo(DownloadedAudio downloadedVideo) async {
+    final generation = _beginPlaybackRequest();
+    VideoPlayerController? nextVideoController;
     try {
       _isLoading = true;
       _currentMode = PlaybackMode.video;
@@ -1438,15 +1518,29 @@ class SongController extends ChangeNotifier {
       _downloadedVideo = downloadedVideo;
       notifyListeners();
 
-      await _audioPlayer.pause();
+      await _audioHandler.stop();
+      if (!_isCurrentPlaybackRequest(generation)) return;
       await _videoPlayerController?.dispose();
+      if (!_isCurrentPlaybackRequest(generation)) return;
       _webEmbedVideoId = null;
-      _videoPlayerController = createLocalVideoController(
+      nextVideoController = createLocalVideoController(
         downloadedVideo.filePath,
       );
-      await _videoPlayerController!.initialize();
-      await _videoPlayerController!.play();
+      await nextVideoController.initialize();
+      if (!_isCurrentPlaybackRequest(generation)) {
+        await nextVideoController.dispose();
+        return;
+      }
+      _videoPlayerController = nextVideoController;
+      await nextVideoController.play();
 
+      if (!_isCurrentPlaybackRequest(generation)) {
+        if (identical(_videoPlayerController, nextVideoController)) {
+          _videoPlayerController = null;
+        }
+        await nextVideoController.dispose();
+        return;
+      }
       _isLoading = false;
       unawaited(
         ref
@@ -1462,6 +1556,13 @@ class SongController extends ChangeNotifier {
       );
       notifyListeners();
     } catch (e, stackTrace) {
+      if (identical(_videoPlayerController, nextVideoController)) {
+        _videoPlayerController = null;
+      }
+      try {
+        await nextVideoController?.dispose();
+      } catch (_) {}
+      if (!_isCurrentPlaybackRequest(generation)) return;
       debugPrint('Error playing downloaded video: $e');
       debugPrint('Stack trace: $stackTrace');
       _isLoading = false;

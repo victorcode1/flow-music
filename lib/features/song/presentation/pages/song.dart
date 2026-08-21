@@ -58,6 +58,7 @@ class _PlaySongState extends ConsumerState<SongWidget> {
     }
 
     return ScreenPlay(
+      key: ValueKey(args.id),
       id: args.id,
       initialMode: args.initialMode,
       initialDuration: args.initialDuration,
@@ -88,10 +89,26 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
   @override
   void initState() {
     super.initState();
+    _schedulePlaybackInitialization();
+  }
+
+  @override
+  void didUpdateWidget(covariant ScreenPlay oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.id != widget.id ||
+        oldWidget.initialMode != widget.initialMode ||
+        oldWidget.initialDuration != widget.initialDuration) {
+      _schedulePlaybackInitialization();
+    }
+  }
+
+  void _schedulePlaybackInitialization() {
+    final requestedId = widget.id;
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || widget.id != requestedId) return;
       SongWidget.pageController.initializePlayback(
         controller: ref.read(songController),
-        id: widget.id,
+        id: requestedId,
         initialMode: widget.initialMode,
         defaultMode: ref.read(defaultPlaybackModeControllerProvider),
         initialDuration: widget.initialDuration,

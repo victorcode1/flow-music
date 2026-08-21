@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
+import 'package:flow_music/features/autoplay/data/youtube_playback_stream.dart';
 import 'package:flow_music/features/autoplay/data/youtube_access_state.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/features/search/data/repositories/piped_video_duration.dart';
@@ -56,47 +57,24 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
     final manifest = await yt.videos.streamsClient.getManifest(
       suggestion.videoId,
     );
-    if (_needsAppleLocalCache) {
-      if (manifest.streams.isEmpty) return null;
-      final firstStream = manifest.streams.first;
-      if (firstStream.container != StreamContainer.mp4 ||
-          (firstStream is! MuxedStreamInfo &&
-              firstStream is! AudioOnlyStreamInfo)) {
-        return null;
-      }
-      return ResolvedAudio(
-        suggestion: suggestion,
-        audioUrl: firstStream.url.toString(),
-        mimeType: '${firstStream.codec.type}/${firstStream.codec.subtype}',
-        requestHeaders: YoutubeHttpClient.defaultHeaders,
-        rangeEnd: firstStream.size.totalBytes - 1,
-        fileExtension: firstStream.container.name,
-        title: suggestion.displayText,
-        author: suggestion.channelTitle,
-        thumbnailUrl: suggestion.thumbnailUrl,
-        duration: suggestion.duration ?? video.duration,
-      );
-    }
-
-    if (manifest.audioOnly.isEmpty) return null;
-
-    final preferred = manifest.audioOnly.where(
-      (stream) =>
-          stream.container == StreamContainer.mp4 ||
-          stream.codec.subtype == 'mp4a.40.2',
+    final playbackStream = pickYoutubePlaybackStream(
+      manifest,
+      preferMuxed: _isApplePlatform,
     );
-    final audioStream = (preferred.isEmpty ? manifest.audioOnly : preferred)
-        .withHighestBitrate();
+    if (playbackStream == null) return null;
 
     return ResolvedAudio(
       suggestion: suggestion,
-      audioUrl: audioStream.url.toString(),
-      mimeType: '${audioStream.codec.type}/${audioStream.codec.subtype}',
+      audioUrl: playbackStream.url.toString(),
+      mimeType: '${playbackStream.codec.type}/${playbackStream.codec.subtype}',
+      requestHeaders: YoutubeHttpClient.defaultHeaders,
+      rangeEnd: playbackStream.size.totalBytes - 1,
+      fileExtension: playbackStream.container.name,
       title: suggestion.displayText,
       author: suggestion.channelTitle,
       thumbnailUrl: suggestion.thumbnailUrl,
       duration: _resolveAudioDuration(
-        streamUri: audioStream.url,
+        streamUri: playbackStream.url,
         knownDuration: suggestion.duration,
         fallback: video.duration,
       ),
@@ -106,7 +84,7 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
   }
 }
 
-bool get _needsAppleLocalCache =>
+bool get _isApplePlatform =>
     !kIsWeb &&
     (defaultTargetPlatform == TargetPlatform.iOS ||
         defaultTargetPlatform == TargetPlatform.macOS);
@@ -132,6 +110,11 @@ Future<ResolvedAudio?> _resolveViaPiped(
   if (typed.isEmpty) return null;
 
   typed.sort((a, b) {
+    if (_isApplePlatform) {
+      final aM4a = _isM4aStream(a) ? 1 : 0;
+      final bM4a = _isM4aStream(b) ? 1 : 0;
+      if (aM4a != bM4a) return bM4a.compareTo(aM4a);
+    }
     final aOpus = a['format'] == 'WEBMA_OPUS' ? 1 : 0;
     final bOpus = b['format'] == 'WEBMA_OPUS' ? 1 : 0;
     if (aOpus != bOpus) return bOpus.compareTo(aOpus);
@@ -150,6 +133,12 @@ Future<ResolvedAudio?> _resolveViaPiped(
     thumbnailUrl: 'https://i.ytimg.com/vi/${suggestion.videoId}/hqdefault.jpg',
     duration: suggestion.duration ?? parsePipedDuration(decoded['duration']),
   );
+}
+
+bool _isM4aStream(Map<String, dynamic> stream) {
+  final format = (stream['format'] as String? ?? '').toUpperCase();
+  final mimeType = (stream['mimeType'] as String? ?? '').toLowerCase();
+  return format.contains('M4A') || mimeType.contains('mp4');
 }
 
 Duration? _resolveAudioDuration({

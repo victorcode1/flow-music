@@ -11,6 +11,7 @@ import 'package:flow_music/features/history/data/playback_history_repository.dar
 import 'package:flow_music/features/playlists/data/playlists_repository.dart';
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
+import 'package:flow_music/features/search/data/search_history_repository.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/shared/custom_info_version/provider/info_version.dart';
 import 'package:flutter/material.dart';
@@ -31,6 +32,7 @@ void main() async {
   await Hive.openBox(homeSuggestionsCacheBoxName);
   await Hive.openBox(radioFavoritesBoxName);
   await Hive.openBox(radioPlaylistsBoxName);
+  await Hive.openBox(searchHistoryBoxName);
   await initFlowAudioHandler();
   // The autoplay cache is per-session. If a previous run left files behind
   // (e.g. crash before the detach lifecycle fired), drop them now so storage

@@ -17,6 +17,10 @@ abstract class LocaleKeys {
   static const open = 'open';
   static const back = 'back';
   static const type_to_search = 'type_to_search';
+  static const recent_searches = 'recent_searches';
+  static const no_recent_searches = 'no_recent_searches';
+  static const clear_search_history = 'clear_search_history';
+  static const remove_search_history_item = 'remove_search_history_item';
   static const profile = 'profile';
   static const home = 'home';
   static const library = 'library';

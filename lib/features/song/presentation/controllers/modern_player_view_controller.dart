@@ -24,6 +24,7 @@ class ModernPlayerViewController extends ValueNotifier<ModernPlayerViewState> {
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<PlayerState>? _playerStateSubscription;
   StreamSubscription<MediaItem?>? _mediaItemSubscription;
+  String? _mediaItemId;
   Timer? _videoUpdateTimer;
   bool _isDisposed = false;
 
@@ -151,7 +152,13 @@ class ModernPlayerViewController extends ValueNotifier<ModernPlayerViewState> {
       _emit(value.copyWith(position: _clampPosition(position)));
     });
 
+    _mediaItemId = flowAudioHandler.mediaItem.value?.id;
     _mediaItemSubscription = flowAudioHandler.mediaItem.listen((item) {
+      final nextId = item?.id;
+      if (nextId != _mediaItemId) {
+        _mediaItemId = nextId;
+        _resetTrackProgress();
+      }
       final duration = item?.duration;
       if (duration != null && duration > Duration.zero) {
         _emit(

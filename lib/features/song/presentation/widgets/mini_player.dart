@@ -45,12 +45,23 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
   StreamSubscription<Duration>? _positionSubscription;
   StreamSubscription<Duration>? _durationSubscription;
   StreamSubscription<PlayerState>? _playerStateSubscription;
+  StreamSubscription<MediaItem?>? _mediaItemSubscription;
+  String? _mediaItemId;
 
   @override
   void initState() {
     super.initState();
     final player = flowAudioHandler.player;
     _isPlaying = player.state == PlayerState.playing;
+    _mediaItemId = flowAudioHandler.mediaItem.value?.id;
+    _mediaItemSubscription = flowAudioHandler.mediaItem.listen((item) {
+      if (!mounted || item?.id == _mediaItemId) return;
+      setState(() {
+        _mediaItemId = item?.id;
+        _position = Duration.zero;
+        _duration = item?.duration;
+      });
+    });
     _positionSubscription = player.onPositionChanged.listen((p) {
       if (mounted) setState(() => _position = p);
     });
@@ -69,6 +80,7 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
     _positionSubscription?.cancel();
     _durationSubscription?.cancel();
     _playerStateSubscription?.cancel();
+    _mediaItemSubscription?.cancel();
     super.dispose();
   }
 

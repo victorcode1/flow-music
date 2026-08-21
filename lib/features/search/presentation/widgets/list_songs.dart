@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
+import 'package:flow_music/features/search/presentation/controllers/search_history_controller.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
@@ -24,6 +27,9 @@ class ListSongs extends ConsumerWidget {
     final asyncSongs = ref.watch(searchResultDataProvider(data));
 
     void onItemTap(List<YouTubeSearchSuggestion> items, int index) {
+      unawaited(
+        ref.read(searchHistoryControllerProvider.notifier).record(data),
+      );
       if (ref.read(autoplayEnabledControllerProvider)) {
         ref
             .read(autoplayQueueControllerProvider.notifier)

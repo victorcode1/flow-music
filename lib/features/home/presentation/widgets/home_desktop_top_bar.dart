@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
+import 'package:flow_music/features/search/data/search_history_repository.dart';
+import 'package:flow_music/features/search/presentation/controllers/search_history_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -48,6 +52,9 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final searchController = ref.watch(searchProvider);
+    final searchHistory = widget.isRadioSection
+        ? const <String>[]
+        : ref.watch(searchHistoryControllerProvider);
     final playlistItem = ref.watch(songController).currentPlaylistItem;
 
     return Container(
@@ -118,25 +125,19 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: TextField(
-                        focusNode: _focusNode,
-                        controller: searchController,
-                        style: theme.textTheme.bodyMedium,
-                        onChanged: widget.isRadioSection ? null : widget.query,
-                        decoration: InputDecoration(
-                          hintText: widget.isRadioSection
-                              ? LocaleKeys.search_radio.tr()
-                              : LocaleKeys.search_music.tr(),
-                          filled: false,
-                          border: InputBorder.none,
-                          isDense: true,
-                          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                            color: colors.onSurfaceVariant.withValues(
-                              alpha: 0.7,
+                      child: widget.isRadioSection
+                          ? _searchTextField(
+                              controller: searchController,
+                              theme: theme,
+                              colors: colors,
+                              hintText: LocaleKeys.search_radio.tr(),
+                            )
+                          : _musicSearchAutocomplete(
+                              controller: searchController,
+                              history: searchHistory,
+                              theme: theme,
+                              colors: colors,
                             ),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),
@@ -166,6 +167,157 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _musicSearchAutocomplete({
+    required TextEditingController controller,
+    required List<String> history,
+    required ThemeData theme,
+    required ColorScheme colors,
+  }) {
+    return RawAutocomplete<String>(
+      textEditingController: controller,
+      focusNode: _focusNode,
+      displayStringForOption: (option) => option,
+      optionsBuilder: (textEditingValue) {
+        final filter = normalizeSearchQuery(
+          textEditingValue.text,
+        ).toLowerCase();
+        if (filter.isEmpty) return history;
+        return history.where((query) => query.toLowerCase().contains(filter));
+      },
+      onSelected: (query) {
+        unawaited(
+          ref.read(searchHistoryControllerProvider.notifier).record(query),
+        );
+        widget.query(query);
+      },
+      fieldViewBuilder: (context, textController, focusNode, onSubmitted) {
+        return _searchTextField(
+          controller: textController,
+          focusNode: focusNode,
+          theme: theme,
+          colors: colors,
+          hintText: LocaleKeys.search_music.tr(),
+          onChanged: widget.query,
+          onSubmitted: (value) {
+            final query = normalizeSearchQuery(value);
+            if (query.isEmpty) return;
+            textController.value = TextEditingValue(
+              text: query,
+              selection: TextSelection.collapsed(offset: query.length),
+            );
+            unawaited(
+              ref.read(searchHistoryControllerProvider.notifier).record(query),
+            );
+            widget.query(query);
+            onSubmitted();
+          },
+        );
+      },
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 8,
+            color: colors.surfaceContainer,
+            shadowColor: colors.shadow.withValues(alpha: 0.24),
+            borderRadius: BorderRadius.circular(16),
+            clipBehavior: Clip.antiAlias,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 410, maxHeight: 360),
+              child: SizedBox(
+                width: 410,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 8, 2),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              LocaleKeys.recent_searches.tr(),
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => ref
+                                .read(searchHistoryControllerProvider.notifier)
+                                .clear(),
+                            child: Text(LocaleKeys.clear_search_history.tr()),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                      child: ListView(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        shrinkWrap: true,
+                        children: options
+                            .map(
+                              (query) => ListTile(
+                                dense: true,
+                                leading: const Icon(Icons.history_rounded),
+                                title: Text(
+                                  query,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                onTap: () => onSelected(query),
+                                trailing: IconButton(
+                                  tooltip: LocaleKeys.remove_search_history_item
+                                      .tr(),
+                                  onPressed: () => ref
+                                      .read(
+                                        searchHistoryControllerProvider
+                                            .notifier,
+                                      )
+                                      .remove(query),
+                                  icon: const Icon(Icons.close_rounded),
+                                ),
+                              ),
+                            )
+                            .toList(growable: false),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _searchTextField({
+    required TextEditingController controller,
+    required ThemeData theme,
+    required ColorScheme colors,
+    required String hintText,
+    FocusNode? focusNode,
+    ValueChanged<String>? onChanged,
+    ValueChanged<String>? onSubmitted,
+  }) {
+    return TextField(
+      focusNode: focusNode ?? _focusNode,
+      controller: controller,
+      style: theme.textTheme.bodyMedium,
+      onChanged: onChanged,
+      onSubmitted: onSubmitted,
+      decoration: InputDecoration(
+        hintText: hintText,
+        filled: false,
+        border: InputBorder.none,
+        isDense: true,
+        hintStyle: theme.textTheme.bodyMedium?.copyWith(
+          color: colors.onSurfaceVariant.withValues(alpha: 0.7),
         ),
       ),
     );
