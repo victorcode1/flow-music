@@ -29,5 +29,6 @@
   "dart.previewFlutterUiGuides": true,
   "dart.previewFlutterUiGuidesCustomTracking": true,
   "editor.suggestSelection": "first",
-  "dart.enableCompletionCommitCharacters": true
+  "dart.enableCompletionCommitCharacters": true,
+  "cmake.sourceDirectory": "/Users/victorflores/beats/frondend/linux"
 }
