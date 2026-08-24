@@ -49,6 +49,40 @@ void main() {
 
       expect(result, 'https://example.com/logo.png');
     });
+
+    test('returns null when HEAD and GET both respond with 403', () async {
+      final methods = <String>[];
+      final repository = RadioBrowserRepository(
+        client: MockClient((request) async {
+          methods.add(request.method);
+          return http.Response('', 403);
+        }),
+      );
+
+      final result = await repository.resolveArtworkUrl(
+        _buildStation(favicon: 'https://example.com/logo.png'),
+      );
+
+      expect(result, isNull);
+      expect(methods, ['HEAD', 'GET']);
+    });
+
+    test('keeps artwork when HEAD is unsupported but GET succeeds', () async {
+      final repository = RadioBrowserRepository(
+        client: MockClient((request) async {
+          if (request.method == 'HEAD') return http.Response('', 405);
+          expect(request.method, 'GET');
+          expect(request.headers['range'], 'bytes=0-0');
+          return http.Response('', 206);
+        }),
+      );
+
+      final result = await repository.resolveArtworkUrl(
+        _buildStation(favicon: 'https://example.com/logo.png'),
+      );
+
+      expect(result, 'https://example.com/logo.png');
+    });
   });
 }
 
