@@ -88,6 +88,9 @@ class _StreamingAuthRepository implements AuthRepository {
       throw UnimplementedError();
 
   @override
+  Future<AppUser> signInWithGoogle() => throw UnimplementedError();
+
+  @override
   Future<void> signOut() async {}
 
   @override

@@ -173,6 +173,14 @@ abstract class LocaleKeys {
   static const see_all = 'see_all';
   static const theme_and_appearance = 'theme_and_appearance';
   static const continuous_playback = 'continuous_playback';
+  static const daily_radio_recommendations = 'daily_radio_recommendations';
+  static const daily_radio_recommendations_subtitle =
+      'daily_radio_recommendations_subtitle';
+  static const daily_radio_recommendations_enabled =
+      'daily_radio_recommendations_enabled';
+  static const daily_radio_permission_denied = 'daily_radio_permission_denied';
+  static const daily_radio_schedule_failed = 'daily_radio_schedule_failed';
+  static const daily_radio_unavailable = 'daily_radio_unavailable';
   static const default_playback_mode = 'default_playback_mode';
   static const current_default_playback_mode = 'current_default_playback_mode';
   static const accent_color = 'accent_color';

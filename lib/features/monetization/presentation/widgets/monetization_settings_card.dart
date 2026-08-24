@@ -109,14 +109,39 @@ class _MonetizationSettingsCardState
             ),
           ],
           const SizedBox(height: 16),
-          if (!serviceAvailable)
+          if (!serviceAvailable) ...[
             Text(
               LocaleKeys.monetization_unavailable.tr(),
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-            )
-          else
+            ),
+            if (authAvailable && user == null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _busy ? null : _showAccountSheet,
+                icon: const Icon(Icons.login_rounded),
+                label: Text(LocaleKeys.auth_sign_in_button.tr()),
+              ),
+            ],
+            if (user != null) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: [
+                  TextButton(
+                    onPressed: _busy ? null : _signOut,
+                    child: Text(LocaleKeys.auth_sign_out.tr()),
+                  ),
+                  TextButton(
+                    onPressed: _busy ? null : _deleteAccount,
+                    style: TextButton.styleFrom(foregroundColor: colors.error),
+                    child: Text(LocaleKeys.auth_delete_account.tr()),
+                  ),
+                ],
+              ),
+            ],
+          ] else
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -290,11 +315,15 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
   final _passwordController = TextEditingController();
   bool _register = false;
   bool _busy = false;
+  bool _googleBusy = false;
   bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final googleAuthAvailable = ref.watch(
+      googleAuthGatewayProvider.select((gateway) => gateway.isAvailable),
+    );
     return SafeArea(
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + bottomInset),
@@ -320,6 +349,34 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
                 ),
               ),
               const SizedBox(height: 18),
+              if (googleAuthAvailable) ...[
+                OutlinedButton.icon(
+                  onPressed: _busy ? null : _signInWithGoogle,
+                  icon: _googleBusy
+                      ? const SizedBox.square(
+                          dimension: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.g_mobiledata_rounded, size: 28),
+                  label: Text(
+                    _register
+                        ? LocaleKeys.auth_register_with_google.tr()
+                        : LocaleKeys.auth_sign_in_with_google.tr(),
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(LocaleKeys.auth_alternative_divider.tr()),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+                const SizedBox(height: 14),
+              ],
               SegmentedButton<bool>(
                 segments: [
                   ButtonSegment(
@@ -399,7 +456,7 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
                 const SizedBox(height: 16),
               FilledButton(
                 onPressed: _busy ? null : _submit,
-                child: _busy
+                child: _busy && !_googleBusy
                     ? const SizedBox.square(
                         dimension: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
@@ -415,6 +472,27 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
         ),
       ),
     );
+  }
+
+  Future<void> _signInWithGoogle() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _googleBusy = true;
+    });
+    try {
+      await ref.read(authRepositoryProvider).signInWithGoogle();
+      if (mounted) Navigator.of(context).pop();
+    } on AuthFailure catch (error) {
+      if (mounted && error.code != 'cancelled') _showMessage(error.message);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _googleBusy = false;
+        });
+      }
+    }
   }
 
   String? _validateEmail(String? value) {

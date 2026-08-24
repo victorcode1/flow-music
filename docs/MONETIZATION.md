@@ -32,6 +32,10 @@ Copiar `config/monetization.example.json` a
 Los secretos `REVENUECAT_WEBHOOK_AUTH` y `SUPABASE_SERVICE_ROLE_KEY` viven solo
 en Supabase Edge Functions. Nunca deben incluirse en Flutter.
 
+`GOOGLE_WEB_CLIENT_ID` y `GOOGLE_IOS_CLIENT_ID` son identificadores OAuth
+públicos y pueden viajar en el binario. El secreto del cliente OAuth web se
+guarda únicamente en el proveedor Google de Supabase Auth.
+
 ## Supabase
 
 La migración versionada crea `profiles`, `subscription_entitlements` y el
@@ -45,6 +49,12 @@ explícitos. Las funciones son:
 
 Agregar `com.victorflores.streambeat://auth-callback` a las URL de redirección
 de Auth. Mantener confirmación de correo activada en producción.
+
+Para Google Sign-In, registrar en Google Auth Platform el paquete Android
+`com.victorflores.streambeat` con los SHA-1 de Play App Signing y de debug,
+crear un cliente OAuth web para obtener el ID token y habilitar Google en
+Supabase Auth. En iOS se agrega además el cliente del bundle y su esquema URL
+invertido.
 
 En el proyecto remoto, configurar también los secretos
 `REVENUECAT_WEBHOOK_AUTH` y `REVENUECAT_ENTITLEMENT_ID=remove_ads`. El webhook

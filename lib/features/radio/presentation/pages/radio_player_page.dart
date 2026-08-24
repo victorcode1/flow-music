@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -20,13 +22,27 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 /// boton de retroceso) porque se abre con `Navigator.push` desde el mini
 /// player, fuera del shell `HomePage`.
 class RadioPlayerPage extends ConsumerStatefulWidget {
-  const RadioPlayerPage({super.key});
+  const RadioPlayerPage({super.key, this.initialStation});
+
+  final RadioStation? initialStation;
 
   @override
   ConsumerState<RadioPlayerPage> createState() => _RadioPlayerPageState();
 }
 
 class _RadioPlayerPageState extends ConsumerState<RadioPlayerPage> {
+  @override
+  void initState() {
+    super.initState();
+    final station = widget.initialStation;
+    if (station == null) return;
+    ref.read(radioQueueControllerProvider.notifier).enqueue([station], 0);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(playRadioStation(context: context, ref: ref, station: station));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

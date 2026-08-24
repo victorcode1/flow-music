@@ -9,8 +9,9 @@ funciones opcionales de cuenta y monetización usan servicios desacoplados:
 
 - Favoritos, playlists y preferencias se guardan solamente en el dispositivo con Hive.
 - La ubicación se solicita solo mientras la app está abierta, para elegir el país de las recomendaciones y centrar el explorador de radio. No se guarda ni se envía a un servidor.
+- La recomendación diaria es opcional y se programa localmente a las 6:00 p. m. con una emisora aleatoria; no requiere un servidor ni ubicación en segundo plano.
 - Las compilaciones `release` envían a Sentry errores y una muestra de trazas de rendimiento para diagnóstico. Sentry permanece desactivado en debug y profile, y la integración no envía información personal por defecto.
-- Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos.
+- Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos. El acceso opcional con Google comparte con StreamBeat el correo, nombre, foto e identificador básico autorizados por el usuario.
 - RevenueCat valida la suscripción mensual de USD 1 mediante Google Play Billing o Apple In-App Purchase.
 - AdMob muestra como máximo un banner adaptativo; se oculta durante la reproducción y para suscriptores.
 
@@ -18,7 +19,7 @@ La rama main conserva las funciones de búsqueda y reproducción basadas en YouT
 
 ## Requisitos
 
-- Flutter SDK 3.8 o posterior
+- Flutter SDK 3.38.1 o posterior
 - Xcode y CocoaPods para iOS o macOS
 - Android SDK para Android
 
@@ -68,6 +69,7 @@ Para generar los archivos de Riverpod y Freezed:
 - Recomendaciones por país
 - Radios internacionales y explorador de radio
 - Reproducción en segundo plano
+- Recomendación local diaria mediante notificación, con acceso directo a la emisora
 - Favoritos, playlists y ajustes locales
 
 ## Aviso sobre contenido de terceros

@@ -38,6 +38,15 @@ class AppEnvironment {
     defaultValue: 'com.victorflores.streambeat://auth-callback',
   );
 
+  /// OAuth client identifiers are public configuration values. The matching
+  /// Google client secret stays only in the Supabase provider configuration.
+  static const googleWebClientId = String.fromEnvironment(
+    'GOOGLE_WEB_CLIENT_ID',
+  );
+  static const googleIosClientId = String.fromEnvironment(
+    'GOOGLE_IOS_CLIENT_ID',
+  );
+
   static bool get hasSupabaseConfiguration =>
       supabaseUrl.trim().isNotEmpty && supabasePublishableKey.trim().isNotEmpty;
 

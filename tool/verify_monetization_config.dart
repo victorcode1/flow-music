@@ -9,6 +9,7 @@ const _requiredAndroidKeys = <String>[
   'REVENUECAT_MONTHLY_PRODUCT_ID',
   'ADMOB_ANDROID_BANNER_ID',
   'AUTH_CALLBACK_URL',
+  'GOOGLE_WEB_CLIENT_ID',
 ];
 
 Future<void> main(List<String> arguments) async {
@@ -42,6 +43,7 @@ Future<void> main(List<String> arguments) async {
   final publishableKey = config['SUPABASE_PUBLISHABLE_KEY'] as String;
   final revenueCatKey = config['REVENUECAT_ANDROID_API_KEY'] as String;
   final bannerId = config['ADMOB_ANDROID_BANNER_ID'] as String;
+  final googleWebClientId = config['GOOGLE_WEB_CLIENT_ID'] as String;
 
   if (!supabaseUrl.startsWith('https://') ||
       !supabaseUrl.endsWith('.supabase.co')) {
@@ -56,6 +58,11 @@ Future<void> main(List<String> arguments) async {
   if (!RegExp(r'^ca-app-pub-\d{16}/\d{10}$').hasMatch(bannerId) ||
       bannerId.contains('3940256099942544')) {
     _fail('ADMOB_ANDROID_BANNER_ID no es una unidad de producción válida.');
+  }
+  if (!RegExp(
+    r'^\d+-[a-z0-9]+\.apps\.googleusercontent\.com$',
+  ).hasMatch(googleWebClientId)) {
+    _fail('GOOGLE_WEB_CLIENT_ID no parece un cliente OAuth web válido.');
   }
   if (config['REVENUECAT_ENTITLEMENT_ID'] != 'remove_ads' ||
       config['REVENUECAT_MONTHLY_PRODUCT_ID'] != 'remove_ads_monthly') {

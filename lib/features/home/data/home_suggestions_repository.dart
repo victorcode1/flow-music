@@ -28,12 +28,12 @@ class HomeSuggestionsRepository {
 
   void close() => _radioRepository.close();
 
-  Future<HomeRadioSuggestions> load() async {
+  Future<HomeRadioSuggestions> load({int limit = 12}) async {
     final country = await _locationService.resolveCountry();
     if (country.isResolved) {
       final localStations = await _radioRepository.searchStations(
         countryCode: country.countryCode!,
-        limit: 12,
+        limit: limit,
       );
       if (localStations.isNotEmpty) {
         return HomeRadioSuggestions(
@@ -45,7 +45,7 @@ class HomeSuggestionsRepository {
     }
 
     return HomeRadioSuggestions(
-      stations: await _radioRepository.topStations(limit: 12),
+      stations: await _radioRepository.topStations(limit: limit),
       usesFallback: true,
     );
   }

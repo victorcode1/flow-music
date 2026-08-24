@@ -1,12 +1,14 @@
 import 'package:flow_music/core/config/app_environment.dart';
+import 'package:flow_music/features/account/data/google_auth_gateway.dart';
 import 'package:flow_music/features/account/domain/entities/app_user.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseAuthRepository implements AuthRepository {
-  const SupabaseAuthRepository(this._client);
+  const SupabaseAuthRepository(this._client, this._googleAuth);
 
   final SupabaseClient _client;
+  final GoogleAuthGateway _googleAuth;
 
   @override
   AppUser? get currentUser => _mapUser(_client.auth.currentUser);
@@ -34,6 +36,27 @@ class SupabaseAuthRepository implements AuthRepository {
         throw const AuthFailure('No se pudo recuperar la cuenta.');
       }
       return user;
+    } on AuthException catch (error) {
+      throw AuthFailure(error.message, code: error.code);
+    }
+  }
+
+  @override
+  Future<AppUser> signInWithGoogle() async {
+    try {
+      final tokens = await _googleAuth.authenticate();
+      final response = await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: tokens.idToken,
+        accessToken: tokens.accessToken,
+      );
+      final user = _mapUser(response.user);
+      if (user == null) {
+        throw const AuthFailure('No se pudo recuperar la cuenta de Google.');
+      }
+      return user;
+    } on GoogleAuthGatewayFailure catch (error) {
+      throw AuthFailure(error.message, code: error.code);
     } on AuthException catch (error) {
       throw AuthFailure(error.message, code: error.code);
     }
@@ -111,11 +134,24 @@ class SupabaseAuthRepository implements AuthRepository {
     } on AuthException catch (error) {
       throw AuthFailure(error.message, code: error.code);
     }
+
+    // Supabase is the source of truth for the app session. Clearing Google's
+    // local account chooser is best-effort and must not turn a successful
+    // Supabase sign-out into a user-facing failure.
+    try {
+      await _googleAuth.signOut();
+    } on GoogleAuthGatewayFailure {
+      // The next Google authentication can still present the account chooser.
+    }
   }
 
   AppUser? _mapUser(User? user) {
     if (user == null) return null;
-    final displayName = user.userMetadata?['display_name'];
+    final metadata = user.userMetadata;
+    final displayName =
+        metadata?['display_name'] ??
+        metadata?['full_name'] ??
+        metadata?['name'];
     return AppUser(
       id: user.id,
       email: user.email ?? '',

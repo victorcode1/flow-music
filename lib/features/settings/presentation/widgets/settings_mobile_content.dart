@@ -4,6 +4,8 @@ import 'package:flow_music/features/settings/presentation/controllers/accent_col
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/settings_page_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
+import 'package:flow_music/features/daily_recommendations/domain/repositories/daily_recommendation_repository.dart';
+import 'package:flow_music/features/daily_recommendations/presentation/providers/daily_recommendation_providers.dart';
 import 'package:flow_music/features/settings/presentation/widgets/accent_color_palette.dart';
 import 'package:flow_music/features/settings/presentation/widgets/developer_contact_card.dart';
 import 'package:flow_music/features/monetization/presentation/widgets/monetization_settings_card.dart';
@@ -30,6 +32,12 @@ class SettingsMobileContent extends ConsumerWidget {
     final autoplayEnabled = ref.watch(autoplayEnabledControllerProvider);
     final autoplayController = ref.read(
       autoplayEnabledControllerProvider.notifier,
+    );
+    final dailyRecommendations = ref.watch(
+      dailyRecommendationControllerProvider,
+    );
+    final dailyRecommendationController = ref.read(
+      dailyRecommendationControllerProvider.notifier,
     );
 
     return Scaffold(
@@ -94,6 +102,23 @@ class SettingsMobileContent extends ConsumerWidget {
                     onChanged: autoplayController.setEnabled,
                   ),
                 ),
+                if (dailyRecommendationController.isSupported) ...[
+                  const _RowDivider(),
+                  _SettingsRow(
+                    icon: Icons.notifications_active_rounded,
+                    title: LocaleKeys.daily_radio_recommendations.tr(),
+                    subtitle: LocaleKeys.daily_radio_recommendations_subtitle
+                        .tr(),
+                    trailing: Switch.adaptive(
+                      value: dailyRecommendations,
+                      onChanged: (enabled) => _setDailyRecommendations(
+                        context,
+                        dailyRecommendationController,
+                        enabled,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -102,6 +127,33 @@ class SettingsMobileContent extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _setDailyRecommendations(
+    BuildContext context,
+    DailyRecommendationController controller,
+    bool enabled,
+  ) async {
+    final result = await controller.setEnabled(
+      enabled,
+      languageCode: context.locale.languageCode,
+    );
+    if (!context.mounted) return;
+    final message = switch (result) {
+      DailyRecommendationToggleResult.enabled =>
+        LocaleKeys.daily_radio_recommendations_enabled.tr(),
+      DailyRecommendationToggleResult.permissionDenied =>
+        LocaleKeys.daily_radio_permission_denied.tr(),
+      DailyRecommendationToggleResult.failed =>
+        LocaleKeys.daily_radio_schedule_failed.tr(),
+      DailyRecommendationToggleResult.unavailable =>
+        LocaleKeys.daily_radio_unavailable.tr(),
+      DailyRecommendationToggleResult.disabled => null,
+    };
+    if (message == null) return;
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _showLanguagePicker(BuildContext context, WidgetRef ref) {
