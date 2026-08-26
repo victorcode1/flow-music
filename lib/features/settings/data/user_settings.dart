@@ -19,7 +19,7 @@ class UserSettings {
   /// `system` | `light` | `dark`.
   final String? themeMode;
 
-  /// Codigo ISO del idioma activo, p.ej. `es` o `en`.
+  /// Etiqueta BCP-47 del idioma activo, p.ej. `es`, `en` o `pt-BR`.
   final String? locale;
 
   final bool? autoplayEnabled;

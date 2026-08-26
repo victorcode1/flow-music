@@ -1,13 +1,13 @@
 App name
-StreamBeat
+StreamBeat: Live Radio
 
 Short description
-Live radio worldwide with a map, favorites, and playlists in one place.
+Live radio worldwide: explore by map, save favorites, and build playlists.
 
 Full description
-Explore the world through radio with StreamBeat.
+Explore the world through live radio with StreamBeat.
 
-Discover live stations from different countries, find music and shows by genre, and play your favorites in a fast, visual experience.
+Discover stations from different countries, find music and shows by genre, and listen in a fast, visual experience.
 
 With StreamBeat you can:
 • Listen to internet radio stations from around the world.
@@ -15,12 +15,15 @@ With StreamBeat you can:
 • Browse an interactive map to discover new sounds.
 • Save favorite stations and organize your own playlists.
 • Review your playback history.
+• Share stations with friends using direct links.
 • Personalize the theme, accent color, and continuous playback.
-• Use the app in English or Spanish.
+• Use the app in English, Spanish, or Brazilian Portuguese.
 
 Location is optional and is used only while you use the app to provide country-based suggestions and center the map. You can listen to radio without granting this permission.
 
-StreamBeat has no ads and does not require an account. Some stations may be temporarily unavailable due to their streaming providers.
+StreamBeat may show one compact banner while no station is playing. An optional monthly subscription removes ads. Creating an account is optional and is used to access subscription benefits across compatible devices.
+
+Station availability and audio quality depend on each station's streaming provider. Some stations may be temporarily unavailable.
 
 Recommended category
 Music & Audio

@@ -44,6 +44,17 @@ class RadioBrowserRepository {
     });
   }
 
+  Future<RadioStation?> stationByUuid(String rawUuid) async {
+    final uuid = rawUuid.trim();
+    if (!isRadioStationUuid(uuid)) return null;
+    final stations = await _getStations('/json/stations/byuuid', {
+      'uuids': uuid,
+      'hidebroken': 'true',
+      if (_requireHttps) 'is_https': 'true',
+    });
+    return stations.isEmpty ? null : stations.first;
+  }
+
   Future<List<RadioStation>> searchStations({
     String name = '',
     String tag = '',
@@ -315,6 +326,13 @@ class RadioBrowserRepository {
       'The station does not provide a stream compatible with this platform',
     );
   }
+}
+
+bool isRadioStationUuid(String value) {
+  return RegExp(
+    r'^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+    caseSensitive: false,
+  ).hasMatch(value.trim());
 }
 
 class RadioBrowserException implements Exception {

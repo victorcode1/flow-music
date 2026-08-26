@@ -106,6 +106,7 @@ abstract class LocaleKeys {
   static const current_language = 'current_language';
   static const english = 'english';
   static const spanish = 'spanish';
+  static const portuguese_brazil = 'portuguese_brazil';
   static const info_version = 'info_version';
   static const build_number = 'build_number';
   static const no_suggestions = 'no_suggestions';
@@ -162,6 +163,44 @@ abstract class LocaleKeys {
   static const radio_map_error = 'radio_map_error';
   static const radio_map_retry = 'radio_map_retry';
   static const radio_map_back_world = 'radio_map_back_world';
+  static const home_stations_load_error_title =
+      'home_stations_load_error_title';
+  static const home_stations_load_error_subtitle =
+      'home_stations_load_error_subtitle';
+  static const home_no_stations_title = 'home_no_stations_title';
+  static const home_no_stations_subtitle = 'home_no_stations_subtitle';
+  static const popular_radio = 'popular_radio';
+  static const popular_stations_fallback = 'popular_stations_fallback';
+  static const more_stations_for_you = 'more_stations_for_you';
+  static const view_my_favorite_stations = 'view_my_favorite_stations';
+  static const library_saved_on_device = 'library_saved_on_device';
+  static const location_enable_title = 'location_enable_title';
+  static const location_enable_message = 'location_enable_message';
+  static const location_open_settings = 'location_open_settings';
+  static const location_allow_title = 'location_allow_title';
+  static const location_allow_message = 'location_allow_message';
+  static const location_allow_action = 'location_allow_action';
+  static const location_blocked_title = 'location_blocked_title';
+  static const location_blocked_message = 'location_blocked_message';
+  static const not_now = 'not_now';
+  static const location_permission_still_denied =
+      'location_permission_still_denied';
+  static const filter_nearby = 'filter_nearby';
+  static const filter_news = 'filter_news';
+  static const filter_sports = 'filter_sports';
+  static const filter_top = 'filter_top';
+  static const filter_favorites = 'filter_favorites';
+  static const explore_by_region = 'explore_by_region';
+  static const region_central_america = 'region_central_america';
+  static const region_caribbean = 'region_caribbean';
+  static const region_south_america = 'region_south_america';
+  static const region_north_america = 'region_north_america';
+  static const region_europe = 'region_europe';
+  static const section_most_listened = 'section_most_listened';
+  static const section_new_stations = 'section_new_stations';
+  static const section_best_quality = 'section_best_quality';
+  static const section_recommended_for_you = 'section_recommended_for_you';
+  static const section_your_favorites = 'section_your_favorites';
   static const theme_mode = 'theme_mode';
   static const theme_mode_light = 'theme_mode_light';
   static const theme_mode_dark = 'theme_mode_dark';
@@ -224,6 +263,10 @@ abstract class LocaleKeys {
   static const delete = 'delete';
   static const delete_download = 'delete_download';
   static const share = 'share';
+  static const share_station = 'share_station';
+  static const share_station_message = 'share_station_message';
+  static const share_station_subject = 'share_station_subject';
+  static const shared_station_not_found = 'shared_station_not_found';
   static const share_file = 'share_file';
   static const view_file_location = 'view_file_location';
   static const file_location = 'file_location';

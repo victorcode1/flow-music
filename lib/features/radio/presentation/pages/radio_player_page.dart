@@ -4,6 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
+import 'package:flow_music/core/sharing/station_share_service.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_favorites_controller.dart';
@@ -74,6 +75,18 @@ class _RadioPlayerPageState extends ConsumerState<RadioPlayerPage> {
         ),
         actions: [
           if (station != null) ...[
+            Builder(
+              builder: (shareContext) => IconButton(
+                tooltip: LocaleKeys.share_station.tr(),
+                icon: Icon(Icons.share_rounded, color: colors.onSurface),
+                onPressed: () => ref
+                    .read(stationShareServiceProvider)
+                    .shareStation(
+                      originContext: shareContext,
+                      station: station,
+                    ),
+              ),
+            ),
             IconButton(
               tooltip: LocaleKeys.add_to_playlist.tr(),
               icon: Icon(Icons.playlist_add_rounded, color: colors.onSurface),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flow_music/core/audio/background_audio_handler.dart';
+import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
@@ -181,6 +182,16 @@ Future<bool> _resolveAndPlay({
       // Persistence should never turn successful audio into a playback error.
       debugPrint('Unable to record radio playback history: $error');
     }
+
+    unawaited(
+      ref
+          .read(reviewPromptCoordinatorProvider)
+          .recordSuccessfulPlay(
+            stationId: station.stationUuid,
+            countryCode: station.countryCode,
+            source: 'selection',
+          ),
+    );
 
     return true;
   } catch (error) {

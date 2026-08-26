@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flow_music/core/utils/search_text_normalizer.dart';
 import 'dart:math' as math;
@@ -22,10 +23,73 @@ import 'package:flow_music/features/radio/presentation/widgets/radio_playlist_ac
 import 'package:flow_music/shared/widgets/optimized_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 final RegExp _countryCodePattern = RegExp(r'^[A-Z]{2}$');
+const String _naturalEarthMapAsset =
+    'assets/maps/ne_110m_admin_0_countries.geojson';
+
+class _WorldPolygon {
+  const _WorldPolygon({required this.points, required this.holes});
+
+  final List<LatLng> points;
+  final List<List<LatLng>> holes;
+}
+
+Future<List<_WorldPolygon>> _loadWorldPolygons() async {
+  final source = await rootBundle.loadString(_naturalEarthMapAsset);
+  final collection = jsonDecode(source) as Map<String, dynamic>;
+  final features = collection['features'] as List<dynamic>? ?? const [];
+  final polygons = <_WorldPolygon>[];
+
+  for (final feature in features.whereType<Map<String, dynamic>>()) {
+    final geometry = feature['geometry'] as Map<String, dynamic>?;
+    if (geometry == null) continue;
+
+    final coordinates = geometry['coordinates'];
+    switch (geometry['type']) {
+      case 'Polygon':
+        _appendWorldPolygon(polygons, coordinates);
+      case 'MultiPolygon':
+        if (coordinates is List<dynamic>) {
+          for (final polygonCoordinates in coordinates) {
+            _appendWorldPolygon(polygons, polygonCoordinates);
+          }
+        }
+    }
+  }
+
+  return List.unmodifiable(polygons);
+}
+
+void _appendWorldPolygon(List<_WorldPolygon> polygons, dynamic rawCoordinates) {
+  if (rawCoordinates is! List<dynamic> || rawCoordinates.isEmpty) return;
+
+  final points = _decodeGeoJsonRing(rawCoordinates.first);
+  if (points.length < 3) return;
+
+  final holes = rawCoordinates
+      .skip(1)
+      .map(_decodeGeoJsonRing)
+      .where((ring) => ring.length >= 3)
+      .toList(growable: false);
+  polygons.add(_WorldPolygon(points: points, holes: holes));
+}
+
+List<LatLng> _decodeGeoJsonRing(dynamic rawRing) {
+  if (rawRing is! List<dynamic>) return const [];
+
+  return rawRing
+      .whereType<List<dynamic>>()
+      .where((pair) => pair.length >= 2)
+      .map(
+        (pair) =>
+            LatLng((pair[1] as num).toDouble(), (pair[0] as num).toDouble()),
+      )
+      .toList(growable: false);
+}
 
 String _countryFlagEmoji(String countryCode) {
   final normalized = countryCode.trim().toUpperCase();
@@ -55,8 +119,8 @@ class RadioMapExplorerPage extends ConsumerStatefulWidget {
 }
 
 class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
-  static const _initialCenter = LatLng(18, -30);
-  static const _initialZoom = 3.55;
+  static const _initialCenter = LatLng(12, 0);
+  static const _initialZoom = 1.62;
   static const _locationZoom = 5.65;
   static const _maxVisibleCountries = 14;
   static const _stationsPerCountry = 30;
@@ -85,6 +149,7 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
   bool _isSearching = false;
   bool _didResolveInitialLocation = false;
   bool _isMapReady = false;
+  double _mapZoom = _initialZoom;
   String? _errorMessage;
   RadioCountry? _selectedCountry;
   List<RadioCountry> _visibleCountries = const [];
@@ -186,22 +251,19 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
 
     final copy = switch (status) {
       LocationAccessStatus.serviceDisabled => (
-        title: 'Activa tu ubicación',
-        message:
-            'Explorar por mapa funciona mejor cuando la ubicación del dispositivo está activa. Así podemos mostrarte radios cercanas desde el inicio.',
-        action: 'Abrir ajustes',
+        title: LocaleKeys.location_enable_title.tr(),
+        message: LocaleKeys.location_enable_message.tr(),
+        action: LocaleKeys.location_open_settings.tr(),
       ),
       LocationAccessStatus.permissionDenied => (
-        title: 'Permite usar tu ubicación',
-        message:
-            'Para una mejor experiencia en Explorar por mapa, permite la ubicación. Solo la usamos para centrar el mapa cerca de ti.',
-        action: 'Permitir ubicación',
+        title: LocaleKeys.location_allow_title.tr(),
+        message: LocaleKeys.location_allow_message.tr(),
+        action: LocaleKeys.location_allow_action.tr(),
       ),
       LocationAccessStatus.permissionDeniedForever => (
-        title: 'Habilita la ubicación',
-        message:
-            'El permiso de ubicación está bloqueado para StreamBeat. Puedes habilitarlo desde los ajustes de la app.',
-        action: 'Abrir ajustes',
+        title: LocaleKeys.location_blocked_title.tr(),
+        message: LocaleKeys.location_blocked_message.tr(),
+        action: LocaleKeys.location_open_settings.tr(),
       ),
       LocationAccessStatus.available || LocationAccessStatus.webUnsupported => (
         title: '',
@@ -220,7 +282,7 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Ahora no'),
+              child: Text(LocaleKeys.not_now.tr()),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
@@ -238,10 +300,8 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
         if (!mounted) return;
         if (result != LocationAccessStatus.available) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                'La ubicación sigue sin permiso. Puedes activarla luego desde Configuración.',
-              ),
+            SnackBar(
+              content: Text(LocaleKeys.location_permission_still_denied.tr()),
             ),
           );
         }
@@ -256,6 +316,9 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
   }
 
   void _onPositionChanged(MapCamera camera, bool hasGesture) {
+    if ((camera.zoom - _mapZoom).abs() >= 0.05 && mounted) {
+      setState(() => _mapZoom = camera.zoom);
+    }
     if (_searchController.text.trim().isNotEmpty) return;
 
     _mapDebounce?.cancel();
@@ -627,20 +690,16 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(18, 10, 18, 0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            LocaleKeys.radio_map_explorer.tr(),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.headlineSmall?.copyWith(
-                              fontWeight: FontWeight.w900,
-                              color: colors.onSurface,
-                            ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final title = Text(
+                          LocaleKeys.radio_map_explorer.tr(),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w900,
+                            color: colors.onSurface,
                           ),
-                        ),
-                        TextButton.icon(
+                        );
+                        final resetButton = TextButton.icon(
                           onPressed: _resetWorld,
                           icon: const Icon(Icons.public_rounded),
                           label: Text(LocaleKeys.radio_map_back_world.tr()),
@@ -650,8 +709,26 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
                               fontWeight: FontWeight.w800,
                             ),
                           ),
-                        ),
-                      ],
+                        );
+                        if (constraints.maxWidth < 560) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              title,
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: resetButton,
+                              ),
+                            ],
+                          );
+                        }
+                        return Row(
+                          children: [
+                            Expanded(child: title),
+                            resetButton,
+                          ],
+                        );
+                      },
                     ),
                   ),
                   Expanded(
@@ -756,6 +833,8 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
   }
 
   List<Marker> _buildMarkers(BuildContext context) {
+    if (_mapZoom < 2.65 && _selectedCountry == null) return const [];
+
     return _markerCountries
         .map((country) {
           final stations =
@@ -800,7 +879,7 @@ class _RadioMapExplorerPageState extends ConsumerState<RadioMapExplorerPage> {
   }
 }
 
-class _GlobeMap extends StatelessWidget {
+class _GlobeMap extends StatefulWidget {
   const _GlobeMap({
     required this.mapController,
     required this.markers,
@@ -814,15 +893,23 @@ class _GlobeMap extends StatelessWidget {
   final void Function(MapCamera camera, bool hasGesture) onPositionChanged;
 
   @override
+  State<_GlobeMap> createState() => _GlobeMapState();
+}
+
+class _GlobeMapState extends State<_GlobeMap> {
+  late final Future<List<_WorldPolygon>> _worldPolygons = _loadWorldPolygons();
+
+  @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final tileUrl = isDark
-        ? 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png';
     final mapBackground = isDark
         ? const Color(0xFF071A1B)
         : const Color(0xFFEAF7F8);
+    final landColor = isDark
+        ? const Color(0xFF164B4D)
+        : const Color(0xFFB5E1DE);
+    final borderColor = colors.primary.withValues(alpha: isDark ? 0.38 : 0.5);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -861,31 +948,70 @@ class _GlobeMap extends StatelessWidget {
                       ),
                     ),
                   ),
-                  FlutterMap(
-                    mapController: mapController,
-                    options: MapOptions(
-                      initialCenter: _RadioMapExplorerPageState._initialCenter,
-                      initialZoom: _RadioMapExplorerPageState._initialZoom,
-                      minZoom: 2,
-                      maxZoom: 12,
-                      backgroundColor: mapBackground,
-                      interactionOptions: const InteractionOptions(
-                        flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                  RepaintBoundary(
+                    child: FlutterMap(
+                      mapController: widget.mapController,
+                      options: MapOptions(
+                        initialCenter:
+                            _RadioMapExplorerPageState._initialCenter,
+                        initialZoom: _RadioMapExplorerPageState._initialZoom,
+                        minZoom: 1.1,
+                        maxZoom: 12,
+                        backgroundColor: mapBackground,
+                        interactionOptions: const InteractionOptions(
+                          flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
+                        ),
+                        onMapReady: widget.onMapReady,
+                        onPositionChanged: widget.onPositionChanged,
                       ),
-                      onMapReady: onMapReady,
-                      onPositionChanged: onPositionChanged,
+                      children: [
+                        FutureBuilder<List<_WorldPolygon>>(
+                          future: _worldPolygons,
+                          builder: (context, snapshot) {
+                            final worldPolygons = snapshot.data;
+                            if (worldPolygons == null) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return PolygonLayer<Object>(
+                              polygonLabels: false,
+                              drawInSingleWorld: true,
+                              polygons: worldPolygons
+                                  .map(
+                                    (polygon) => Polygon<Object>(
+                                      points: polygon.points,
+                                      holePointsList: polygon.holes.isEmpty
+                                          ? null
+                                          : polygon.holes,
+                                      color: landColor,
+                                      borderColor: borderColor,
+                                      borderStrokeWidth: 0.55,
+                                    ),
+                                  )
+                                  .toList(growable: false),
+                            );
+                          },
+                        ),
+                        MarkerLayer(markers: widget.markers),
+                      ],
                     ),
-                    children: [
-                      Opacity(
-                        opacity: isDark ? 0.9 : 0.93,
-                        child: TileLayer(
-                          urlTemplate: tileUrl,
-                          subdomains: const ['a', 'b', 'c', 'd'],
-                          userAgentPackageName: 'com.flowmusic.app',
+                  ),
+                  const Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 20,
+                    child: IgnorePointer(
+                      child: Center(
+                        child: Text(
+                          'Natural Earth',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      MarkerLayer(markers: markers),
-                    ],
+                    ),
                   ),
                   IgnorePointer(
                     child: DecoratedBox(
@@ -1177,15 +1303,15 @@ enum _RegionFilter {
   europe,
 }
 
-const _quickStationFilterLabels = {
-  _QuickStationFilter.nearby: 'Cerca de mí',
-  _QuickStationFilter.pop: 'Pop',
-  _QuickStationFilter.salsa: 'Salsa',
-  _QuickStationFilter.reggaeton: 'Reggaetón',
-  _QuickStationFilter.news: 'Noticias',
-  _QuickStationFilter.sports: 'Deportes',
-  _QuickStationFilter.top: 'Top 50',
-  _QuickStationFilter.favorites: 'Favoritas',
+String _quickStationFilterLabel(_QuickStationFilter filter) => switch (filter) {
+  _QuickStationFilter.nearby => LocaleKeys.filter_nearby.tr(),
+  _QuickStationFilter.pop => LocaleKeys.category_pop.tr(),
+  _QuickStationFilter.salsa => 'Salsa',
+  _QuickStationFilter.reggaeton => LocaleKeys.category_reggaeton.tr(),
+  _QuickStationFilter.news => LocaleKeys.filter_news.tr(),
+  _QuickStationFilter.sports => LocaleKeys.filter_sports.tr(),
+  _QuickStationFilter.top => LocaleKeys.filter_top.tr(),
+  _QuickStationFilter.favorites => LocaleKeys.filter_favorites.tr(),
 };
 
 const _quickStationFilterIcons = {
@@ -1199,12 +1325,12 @@ const _quickStationFilterIcons = {
   _QuickStationFilter.favorites: Icons.favorite_rounded,
 };
 
-const _regionFilterLabels = {
-  _RegionFilter.centralAmerica: 'Centroamérica',
-  _RegionFilter.caribbean: 'Caribe',
-  _RegionFilter.southAmerica: 'Sudamérica',
-  _RegionFilter.northAmerica: 'Norteamérica',
-  _RegionFilter.europe: 'Europa',
+String _regionFilterLabel(_RegionFilter filter) => switch (filter) {
+  _RegionFilter.centralAmerica => LocaleKeys.region_central_america.tr(),
+  _RegionFilter.caribbean => LocaleKeys.region_caribbean.tr(),
+  _RegionFilter.southAmerica => LocaleKeys.region_south_america.tr(),
+  _RegionFilter.northAmerica => LocaleKeys.region_north_america.tr(),
+  _RegionFilter.europe => LocaleKeys.region_europe.tr(),
 };
 
 const _regionCountryCodes = {
@@ -1705,7 +1831,7 @@ class _QuickFiltersBar extends StatelessWidget {
                     size: 18,
                     color: selected ? colors.onPrimary : colors.primary,
                   ),
-                  label: Text(_quickStationFilterLabels[filter] ?? ''),
+                  label: Text(_quickStationFilterLabel(filter)),
                   labelStyle: theme.textTheme.labelLarge?.copyWith(
                     color: selected ? colors.onPrimary : colors.onSurface,
                     fontWeight: FontWeight.w800,
@@ -1745,7 +1871,7 @@ class _RegionFiltersBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Explorar por región',
+          LocaleKeys.explore_by_region.tr(),
           style: theme.textTheme.labelLarge?.copyWith(
             color: colors.onSurfaceVariant,
             fontWeight: FontWeight.w800,
@@ -1768,7 +1894,7 @@ class _RegionFiltersBar extends StatelessWidget {
                         size: 17,
                         color: selected ? colors.onSecondary : colors.secondary,
                       ),
-                      label: Text(_regionFilterLabels[filter] ?? ''),
+                      label: Text(_regionFilterLabel(filter)),
                       labelStyle: theme.textTheme.labelMedium?.copyWith(
                         color: selected ? colors.onSecondary : colors.onSurface,
                         fontWeight: FontWeight.w800,
@@ -1909,12 +2035,18 @@ class _DiscoverySections extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sections = [
-      ('Más escuchadas', _topStations(stations)),
-      ('Nuevas emisoras', _discoveryStations(stations)),
-      ('Mejor calidad', _qualityStations(stations)),
-      ('Recomendadas para ti', _recommendedStations(stations)),
+      (LocaleKeys.section_most_listened.tr(), _topStations(stations)),
+      (LocaleKeys.section_new_stations.tr(), _discoveryStations(stations)),
+      (LocaleKeys.section_best_quality.tr(), _qualityStations(stations)),
+      (
+        LocaleKeys.section_recommended_for_you.tr(),
+        _recommendedStations(stations),
+      ),
       if (favoriteStations.isNotEmpty)
-        ('Tus favoritas', favoriteStations.take(8).toList()),
+        (
+          LocaleKeys.section_your_favorites.tr(),
+          favoriteStations.take(8).toList(),
+        ),
     ].where((section) => section.$2.isNotEmpty).toList(growable: false);
 
     if (sections.isEmpty) return const SizedBox.shrink();

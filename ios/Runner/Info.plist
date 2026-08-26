@@ -24,6 +24,7 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.victorflores.streambeat</string>
+				<string>streambeat</string>
 			</array>
 		</dict>
 		<dict>

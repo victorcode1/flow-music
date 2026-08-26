@@ -226,8 +226,11 @@ class LocalDailyRecommendationRepository
     }
   }
 
-  String _titleFor(String languageCode) =>
-      languageCode == 'es' ? 'Una emisora para ti 🎧' : 'A station for you 🎧';
+  String _titleFor(String languageCode) => switch (languageCode) {
+    'es' => 'Una emisora para ti 🎧',
+    'pt' => 'Uma estação para você 🎧',
+    _ => 'A station for you 🎧',
+  };
 
   String _bodyFor(RadioStation station, String languageCode) {
     final country = station.country.trim();
@@ -235,6 +238,11 @@ class LocalDailyRecommendationRepository
       return country.isEmpty
           ? 'Descubre ${station.name} y empieza a escuchar.'
           : 'Descubre ${station.name}, una radio de $country.';
+    }
+    if (languageCode == 'pt') {
+      return country.isEmpty
+          ? 'Descubra ${station.name} e comece a ouvir.'
+          : 'Descubra ${station.name}, uma rádio de $country.';
     }
     return country.isEmpty
         ? 'Discover ${station.name} and start listening.'

@@ -71,10 +71,10 @@ class SettingsDesktopContent extends ConsumerWidget {
                         icon: Icons.language_rounded,
                         title: LocaleKeys.language.tr(),
                         subtitle:
-                            '${LocaleKeys.current_language.tr()}: ${pageController.languageName(context.locale.languageCode)}',
-                        trailing: DropdownButton<String>(
-                          value: context.locale.languageCode,
-                          onChanged: (String? newValue) {
+                            '${LocaleKeys.current_language.tr()}: ${pageController.languageName(context.locale)}',
+                        trailing: DropdownButton<Locale>(
+                          value: context.locale,
+                          onChanged: (Locale? newValue) {
                             if (newValue != null) {
                               pageController.persistLocale(
                                 context,
@@ -85,12 +85,16 @@ class SettingsDesktopContent extends ConsumerWidget {
                           },
                           items: [
                             DropdownMenuItem(
-                              value: 'en',
+                              value: Locale('en'),
                               child: Text(LocaleKeys.english.tr()),
                             ),
                             DropdownMenuItem(
-                              value: 'es',
+                              value: Locale('es'),
                               child: Text(LocaleKeys.spanish.tr()),
+                            ),
+                            DropdownMenuItem(
+                              value: Locale('pt', 'BR'),
+                              child: Text(LocaleKeys.portuguese_brazil.tr()),
                             ),
                           ],
                         ),

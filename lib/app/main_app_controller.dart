@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
+import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/monetization/application/monetization_coordinator.dart';
@@ -32,6 +34,8 @@ class MainAppController {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
     flowAudioHandler.onSkipToNext = handleSkipToNext;
     flowAudioHandler.onSkipToPrevious = handleSkipToPrevious;
+    unawaited(ref.read(productAnalyticsProvider).track('app_open'));
+    unawaited(ref.read(reviewPromptCoordinatorProvider).initialize());
     unawaited(_monetizationCoordinator.initialize());
   }
 
@@ -161,6 +165,15 @@ class MainAppController {
             country: station.country,
             artworkUrl: artUrl ?? station.artworkUrl,
           );
+      unawaited(
+        ref
+            .read(reviewPromptCoordinatorProvider)
+            .recordSuccessfulPlay(
+              stationId: station.stationUuid,
+              countryCode: station.countryCode,
+              source: 'queue',
+            ),
+      );
     } catch (error) {
       debugPrint('Unable to advance the radio queue: $error');
       if (isCurrentRequest()) {

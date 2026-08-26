@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// Un unico banner adaptativo. Nunca cubre contenido y desaparece en cuanto se
+/// Un unico banner compacto. Nunca cubre contenido y desaparece en cuanto se
 /// inicia una sesion de audio o se confirma la suscripcion sin anuncios.
 class RespectfulBannerSlot extends ConsumerWidget {
   const RespectfulBannerSlot({super.key});
@@ -84,14 +84,14 @@ class _AdaptiveBannerState extends ConsumerState<_AdaptiveBanner> {
     );
   }
 
-  Future<void> _load(int width) async {
+  Future<void> _load(int _) async {
     if (!mounted || _loading) return;
     _loading = true;
     final previous = _banner;
     _banner = null;
     await previous?.dispose();
-    final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
-    if (!mounted || size == null) {
+    const size = AdSize.banner;
+    if (!mounted) {
       _loading = false;
       return;
     }

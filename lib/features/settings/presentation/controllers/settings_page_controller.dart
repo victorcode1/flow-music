@@ -8,9 +8,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 class SettingsPageController {
   const SettingsPageController();
 
-  String languageName(String languageCode) {
-    return switch (languageCode) {
+  String languageName(Locale locale) {
+    return switch (locale.languageCode) {
       'es' => LocaleKeys.spanish.tr(),
+      'pt' => LocaleKeys.portuguese_brazil.tr(),
       _ => LocaleKeys.english.tr(),
     };
   }
@@ -34,13 +35,13 @@ class SettingsPageController {
   Future<void> persistLocale(
     BuildContext context,
     WidgetRef ref,
-    String languageCode,
+    Locale locale,
   ) async {
-    await context.setLocale(Locale(languageCode));
+    await context.setLocale(locale);
     final stored = const SettingsLocalDataSource().read();
     await const SettingsLocalDataSource().write(
       stored.copyWith(
-        locale: languageCode,
+        locale: locale.toLanguageTag(),
         updatedAtMs: DateTime.now().millisecondsSinceEpoch,
       ),
     );

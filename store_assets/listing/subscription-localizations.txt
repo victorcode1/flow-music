@@ -1,0 +1,20 @@
+Product ID
+remove_ads_monthly
+
+en-US title
+Monthly ad-free listening
+
+en-US description
+Removes StreamBeat advertising while your monthly subscription remains active.
+
+es-419 title
+Sin anuncios mensual
+
+es-419 description
+Elimina la publicidad de StreamBeat mientras tu suscripción mensual esté activa.
+
+pt-BR title
+Sem anúncios mensal
+
+pt-BR description
+Remove os anúncios do StreamBeat enquanto sua assinatura mensal estiver ativa.

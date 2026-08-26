@@ -84,9 +84,7 @@ class SettingsMobileContent extends ConsumerWidget {
                 _SettingsRow(
                   icon: Icons.language_rounded,
                   title: LocaleKeys.language.tr(),
-                  subtitle: pageController.languageName(
-                    context.locale.languageCode,
-                  ),
+                  subtitle: pageController.languageName(context.locale),
                   trailing: Icon(
                     Icons.chevron_right_rounded,
                     color: theme.colorScheme.onSurfaceVariant,
@@ -175,21 +173,21 @@ class SettingsMobileContent extends ConsumerWidget {
                   ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                 ),
               ),
-              for (final entry in const [('es', 'spanish'), ('en', 'english')])
+              for (final locale in const [
+                Locale('es'),
+                Locale('en'),
+                Locale('pt', 'BR'),
+              ])
                 ListTile(
-                  title: Text(
-                    entry.$2 == 'spanish'
-                        ? LocaleKeys.spanish.tr()
-                        : LocaleKeys.english.tr(),
-                  ),
-                  trailing: context.locale.languageCode == entry.$1
+                  title: Text(pageController.languageName(locale)),
+                  trailing: context.locale == locale
                       ? Icon(
                           Icons.check_rounded,
                           color: Theme.of(sheetContext).colorScheme.primary,
                         )
                       : null,
                   onTap: () {
-                    pageController.persistLocale(context, ref, entry.$1);
+                    pageController.persistLocale(context, ref, locale);
                     Navigator.of(sheetContext).pop();
                   },
                 ),

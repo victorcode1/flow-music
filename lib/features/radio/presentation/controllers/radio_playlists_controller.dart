@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:flow_music/core/analytics/product_analytics.dart';
+import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
 import 'package:flow_music/features/radio/data/models/radio_playlist.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
@@ -29,6 +33,12 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
     );
     await _repository.save(playlist);
     state = [playlist, ...state];
+    unawaited(ref.read(productAnalyticsProvider).track('playlist_created'));
+    unawaited(
+      ref
+          .read(reviewPromptCoordinatorProvider)
+          .considerReviewAfterPositiveMoment('playlist_created'),
+    );
     return playlist;
   }
 
@@ -76,6 +86,19 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
       updated,
       ...state.where((candidate) => candidate.id != playlistId),
     ];
+    unawaited(
+      ref
+          .read(productAnalyticsProvider)
+          .track(
+            'station_added_to_playlist',
+            properties: {
+              if (station.stationUuid.isNotEmpty)
+                'station_id': station.stationUuid,
+              if (station.countryCode.isNotEmpty)
+                'country_code': station.countryCode.toUpperCase(),
+            },
+          ),
+    );
   }
 
   Future<void> removeStation(String playlistId, RadioStation station) async {

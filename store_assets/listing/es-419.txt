@@ -1,8 +1,8 @@
 Nombre de la app
-StreamBeat
+StreamBeat: Radio en vivo
 
 Descripción breve
-Radio en vivo de todo el mundo, mapa, favoritos y listas en un solo lugar.
+Radio mundial en vivo, mapa interactivo, favoritos y listas personales.
 
 Descripción completa
 Explora el mundo a través de la radio con StreamBeat.
@@ -15,12 +15,15 @@ Con StreamBeat puedes:
 • Navegar un mapa interactivo para descubrir nuevos sonidos.
 • Guardar emisoras favoritas y organizar tus propias listas.
 • Consultar tu historial de reproducción.
+• Compartir emisoras con tus amigos mediante enlaces directos.
 • Personalizar el tema, el color y la reproducción continua.
-• Usar la aplicación en español o inglés.
+• Usar la aplicación en español, inglés o portugués de Brasil.
 
 La ubicación es opcional y solo se utiliza mientras usas la app para ofrecer sugerencias por país y centrar el mapa. Puedes escuchar radio sin conceder ese permiso.
 
-StreamBeat no tiene anuncios ni requiere crear una cuenta. Algunas emisoras pueden no estar disponibles temporalmente debido a sus proveedores de transmisión.
+StreamBeat puede mostrar un banner compacto cuando no hay una emisora reproduciéndose. Una suscripción mensual opcional elimina los anuncios. Crear una cuenta es opcional y permite acceder a los beneficios de la suscripción en dispositivos compatibles.
+
+La disponibilidad y la calidad del audio dependen del proveedor de cada emisora. Algunas emisoras pueden no estar disponibles temporalmente.
 
 Categoría recomendada
 Música y audio

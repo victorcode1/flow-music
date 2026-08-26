@@ -1,0 +1,11 @@
+pt-BR/home-pt.png
+Tela inicial do StreamBeat em português, com descoberta de rádios internacionais, estações recentes e player compacto.
+
+pt-BR/radio-pt.png
+Lista de rádios ao vivo com filtros por país e gênero, favoritos e controles de reprodução.
+
+pt-BR/map-pt.png
+Mapa-múndi interativo do StreamBeat para explorar estações por país e região.
+
+pt-BR/settings-pt.png
+Configurações do StreamBeat em português, com temas, cores, idioma e reprodução contínua.

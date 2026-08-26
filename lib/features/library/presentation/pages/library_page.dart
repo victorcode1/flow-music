@@ -126,7 +126,7 @@ class LibraryPage extends ConsumerWidget {
             const SizedBox(height: 28),
             LibraryEmptyCard(
               icon: Icons.cloud_queue_rounded,
-              message: 'Tus emisoras y listas se guardan en este dispositivo.',
+              message: LocaleKeys.library_saved_on_device.tr(),
               colors: colors,
               minHeight: 120,
             ),

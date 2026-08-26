@@ -6,6 +6,7 @@ import 'package:flow_music/features/home/presentation/pages/home_page.dart';
 import 'package:flow_music/features/library/presentation/pages/library_page.dart';
 import 'package:flow_music/features/radio/presentation/pages/radio_map_explorer_page.dart';
 import 'package:flow_music/features/radio/presentation/pages/radio_page.dart';
+import 'package:flow_music/features/radio/presentation/pages/shared_station_page.dart';
 import 'package:flow_music/features/settings/presentation/pages/settings_page.dart';
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
@@ -63,6 +64,13 @@ class Route extends _$Route {
           path: '/favorites',
           pageBuilder: (context, state) =>
               _noTransitionPage(state, const HomePage(child: FavoritesPage())),
+        ),
+        GoRoute(
+          path: '/station',
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            SharedStationPage(stationId: state.uri.queryParameters['id'] ?? ''),
+          ),
         ),
       ],
     );

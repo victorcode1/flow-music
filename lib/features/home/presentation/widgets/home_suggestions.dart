@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/home/presentation/providers/home_suggestions_provider.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
@@ -18,18 +20,18 @@ class HomeSuggestions extends ConsumerWidget {
       loading: () => const Center(child: CircularProgressIndicator.adaptive()),
       error: (_, _) => _HomeMessage(
         icon: Icons.wifi_off_rounded,
-        title: 'No pudimos cargar emisoras',
-        subtitle: 'Revisa tu conexión e inténtalo de nuevo.',
-        actionLabel: 'Reintentar',
+        title: LocaleKeys.home_stations_load_error_title.tr(),
+        subtitle: LocaleKeys.home_stations_load_error_subtitle.tr(),
+        actionLabel: LocaleKeys.retry.tr(),
         onAction: () => ref.invalidate(homeSuggestionsProvider),
       ),
       data: (data) {
         if (data.stations.isEmpty) {
           return _HomeMessage(
             icon: Icons.radio_outlined,
-            title: 'Todavía no hay emisoras disponibles',
-            subtitle: 'Puedes explorar el catálogo completo de radio.',
-            actionLabel: 'Explorar radio',
+            title: LocaleKeys.home_no_stations_title.tr(),
+            subtitle: LocaleKeys.home_no_stations_subtitle.tr(),
+            actionLabel: LocaleKeys.radio.tr(),
             onAction: () => context.go('/radio'),
           );
         }
@@ -63,10 +65,10 @@ class _DiscoverContent extends ConsumerWidget {
     final colors = theme.colorScheme;
     final hour = DateTime.now().hour;
     final greeting = hour < 12
-        ? 'Buenos días'
+        ? LocaleKeys.greeting_morning.tr()
         : hour < 19
-        ? 'Buenas tardes'
-        : 'Buenas noches';
+        ? LocaleKeys.greeting_afternoon.tr()
+        : LocaleKeys.greeting_evening.tr();
     final featured = stations.first;
     final recent = stations.skip(1).take(4).toList(growable: false);
     final more = stations.skip(5).take(6).toList(growable: false);
@@ -96,7 +98,7 @@ class _DiscoverContent extends ConsumerWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            'Descubre',
+            LocaleKeys.discover.tr(),
             style: theme.textTheme.displaySmall?.copyWith(
               fontWeight: FontWeight.w900,
               letterSpacing: -1.2,
@@ -108,18 +110,22 @@ class _DiscoverContent extends ConsumerWidget {
             child: Row(
               children: [
                 _FilterChip(
-                  label: countryName == null ? 'Para ti' : 'En $countryName',
+                  label: countryName == null
+                      ? LocaleKeys.category_for_you.tr()
+                      : LocaleKeys.suggestions_for_country.tr(
+                          args: [countryName!],
+                        ),
                   selected: true,
                   onTap: onRefresh,
                 ),
                 const SizedBox(width: 10),
                 _FilterChip(
-                  label: 'Radio popular',
+                  label: LocaleKeys.popular_radio.tr(),
                   onTap: () => context.go('/radio'),
                 ),
                 const SizedBox(width: 10),
                 _FilterChip(
-                  label: 'Explorar mapa',
+                  label: LocaleKeys.radio_map_explorer.tr(),
                   onTap: () => context.go('/radio-map'),
                 ),
               ],
@@ -128,7 +134,7 @@ class _DiscoverContent extends ConsumerWidget {
           if (usesFallback) ...[
             const SizedBox(height: 12),
             Text(
-              'Mostrando emisoras populares. Puedes permitir la ubicación para sugerencias por país.',
+              LocaleKeys.popular_stations_fallback.tr(),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: colors.onSurfaceVariant,
               ),
@@ -139,7 +145,7 @@ class _DiscoverContent extends ConsumerWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Escuchado recientemente',
+                  LocaleKeys.recently_played.tr(),
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -147,7 +153,7 @@ class _DiscoverContent extends ConsumerWidget {
               ),
               TextButton(
                 onPressed: () => context.go('/radio'),
-                child: const Text('Ver todo'),
+                child: Text(LocaleKeys.see_all.tr()),
               ),
             ],
           ),
@@ -172,7 +178,7 @@ class _DiscoverContent extends ConsumerWidget {
           if (more.isNotEmpty) ...[
             const SizedBox(height: 22),
             Text(
-              'Más emisoras para ti',
+              LocaleKeys.more_stations_for_you.tr(),
               style: theme.textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w800,
               ),
@@ -198,7 +204,7 @@ class _DiscoverContent extends ConsumerWidget {
           OutlinedButton.icon(
             onPressed: () => context.go('/favorites'),
             icon: const Icon(Icons.favorite_border_rounded),
-            label: const Text('Ver mis emisoras favoritas'),
+            label: Text(LocaleKeys.view_my_favorite_stations.tr()),
           ),
         ],
       ),
