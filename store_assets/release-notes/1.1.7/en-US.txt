@@ -1,0 +1,1 @@
+Improved map stability across more devices and fixed daily recommendations.

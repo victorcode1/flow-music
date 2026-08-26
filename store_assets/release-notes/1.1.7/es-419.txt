@@ -1,0 +1,1 @@
+Mejoramos la estabilidad del mapa en más dispositivos y corregimos las recomendaciones diarias.

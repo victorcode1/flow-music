@@ -15,6 +15,15 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round">
+        <!--
+             Use Skia on Android while the map renderer is validated across
+             low-end devices. Google Play's Android 11 test devices reported
+             repeatable native SIGSEGV crashes when opening the map with the
+             default Impeller OpenGL backend.
+        -->
+        <meta-data
+            android:name="io.flutter.embedding.android.EnableImpeller"
+            android:value="false" />
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7471220027528882~6944234131" />
