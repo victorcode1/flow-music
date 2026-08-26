@@ -72,6 +72,15 @@ class Route extends _$Route {
             SharedStationPage(stationId: state.uri.queryParameters['id'] ?? ''),
           ),
         ),
+        GoRoute(
+          path: '/flow-music/share',
+          pageBuilder: (context, state) => _noTransitionPage(
+            state,
+            SharedStationPage(
+              stationId: state.uri.queryParameters['station'] ?? '',
+            ),
+          ),
+        ),
       ],
     );
   }

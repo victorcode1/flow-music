@@ -39,7 +39,9 @@
       const storeUrl = 'https://play.google.com/store/apps/details?id=com.victorflores.streambeat';
       const stationId = new URLSearchParams(window.location.search).get('station') || '';
       const validStationId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(stationId);
-      const english = (navigator.language || '').toLowerCase().startsWith('en');
+      const language = (navigator.language || '').toLowerCase();
+      const english = language.startsWith('en');
+      const portuguese = language.startsWith('pt');
       const openButton = document.getElementById('open-app');
 
       if (english) {
@@ -49,13 +51,22 @@
         document.getElementById('description').textContent = 'Open it in StreamBeat and start listening live.';
         openButton.textContent = 'Open in StreamBeat';
         document.getElementById('install-app').textContent = 'Get it on Google Play';
+      } else if (portuguese) {
+        document.documentElement.lang = 'pt-BR';
+        document.title = 'Estação compartilhada · StreamBeat';
+        document.getElementById('title').textContent = 'Compartilharam uma estação com você';
+        document.getElementById('description').textContent = 'Abra no StreamBeat e comece a ouvir ao vivo.';
+        openButton.textContent = 'Abrir no StreamBeat';
+        document.getElementById('install-app').textContent = 'Instalar pelo Google Play';
       }
 
       if (!validStationId) {
         openButton.setAttribute('aria-disabled', 'true');
         document.getElementById('description').textContent = english
           ? 'This shared station link is not valid, but you can still install StreamBeat.'
-          : 'Este enlace de emisora no es válido, pero aún puedes instalar StreamBeat.';
+          : portuguese
+            ? 'Este link de estação não é válido, mas você ainda pode instalar o StreamBeat.'
+            : 'Este enlace de emisora no es válido, pero aún puedes instalar StreamBeat.';
         return;
       }
 

@@ -1,0 +1,1 @@
+Los enlaces de emisoras compartidas ahora se abren directamente en StreamBeat cuando la app está instalada. También mejoramos la página web de respaldo y el diagnóstico de estabilidad en Android.

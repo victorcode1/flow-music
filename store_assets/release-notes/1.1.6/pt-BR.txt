@@ -1,0 +1,1 @@
+Links de estações compartilhadas agora abrem diretamente no StreamBeat quando o app está instalado. Também melhoramos a página web de apoio e o diagnóstico de estabilidade no Android.

@@ -10,7 +10,7 @@ void main() {
 
     expect(
       url.toString(),
-      'https://victorcode1.github.io/flow-music/share/?station=3f9b44a0-fafd-4ff4-a4fb-6ea83a4fc85a',
+      'https://victorcode1.github.io/flow-music/share?station=3f9b44a0-fafd-4ff4-a4fb-6ea83a4fc85a',
     );
   });
 

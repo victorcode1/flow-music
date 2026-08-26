@@ -1,0 +1,1 @@
+Shared station links now open directly in StreamBeat when the app is installed. We also improved the web fallback and Android stability diagnostics.

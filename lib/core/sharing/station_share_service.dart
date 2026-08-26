@@ -30,7 +30,7 @@ class StationShareService {
     ).hasMatch(stationId)) {
       return null;
     }
-    return Uri.https('victorcode1.github.io', '/flow-music/share/', {
+    return Uri.https('victorcode1.github.io', '/flow-music/share', {
       'station': stationId,
     });
   }

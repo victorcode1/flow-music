@@ -26,6 +26,10 @@ abstract final class SentryConfig {
         ..dsn = _dsn
         ..environment = _environment.isEmpty ? 'production' : _environment
         ..tracesSampleRate = _resolveTracesSampleRate()
+        // Native Android crashes can otherwise arrive with only an unknown
+        // address. Tombstones add thread and loaded-library context without
+        // enabling PII collection.
+        ..enableTombstone = true
         ..sendDefaultPii = false
         ..debug = _debug;
     }, appRunner: appRunner);
