@@ -1,9 +1,26 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Abre una emisora compartida en StreamBeat.">
+  <meta name="robots" content="noindex,follow">
+  <meta name="theme-color" content="#071019">
+  <link rel="icon" href="../assets/icon.png">
+  <link rel="apple-touch-icon" href="../assets/icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="StreamBeat">
+  <meta property="og:locale" content="es_419">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:locale:alternate" content="pt_BR">
+  <meta property="og:title" content="Te compartieron una emisora en StreamBeat">
+  <meta property="og:description" content="Abre StreamBeat y empieza a escuchar esta radio en vivo.">
+  <meta property="og:image" content="https://victorcode1.github.io/flow-music/assets/icon.png">
+  <meta property="og:image:alt" content="Icono de StreamBeat">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Escucha una emisora en StreamBeat">
+  <meta name="twitter:description" content="Descubre radio en vivo de todo el mundo.">
+  <meta name="twitter:image" content="https://victorcode1.github.io/flow-music/assets/icon.png">
   <title>Emisora compartida · StreamBeat</title>
   <style>
     :root { color-scheme: dark; --accent: #18d6be; --panel: #101c2a; --muted: #9dafbd; }
@@ -29,14 +46,14 @@
       <p id="description">Ábrela en StreamBeat y empieza a escucharla en vivo.</p>
       <nav aria-label="Acciones">
         <a id="open-app" href="#">Abrir en StreamBeat</a>
-        <a id="install-app" class="secondary" href="https://play.google.com/store/apps/details?id=com.victorflores.streambeat">Instalar desde Google Play</a>
+        <a id="install-app" class="secondary" href="https://play.google.com/store/apps/details?id=com.victorflores.streambeat&amp;referrer=utm_source%3Dstation_share%26utm_medium%3Dreferral%26utm_campaign%3Dorganic_sharing">Instalar desde Google Play</a>
       </nav>
       <footer>StreamBeat · Radio en vivo de todo el mundo</footer>
     </article>
   </main>
   <script>
     (() => {
-      const storeUrl = 'https://play.google.com/store/apps/details?id=com.victorflores.streambeat';
+      const storeUrl = 'https://play.google.com/store/apps/details?id=com.victorflores.streambeat&referrer=utm_source%3Dstation_share%26utm_medium%3Dreferral%26utm_campaign%3Dorganic_sharing';
       const stationId = new URLSearchParams(window.location.search).get('station') || '';
       const validStationId = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(stationId);
       const language = (navigator.language || '').toLowerCase();
