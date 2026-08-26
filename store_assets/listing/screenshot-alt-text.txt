@@ -1,3 +1,27 @@
+en-US/home-en.png
+StreamBeat home screen in English, featuring international radio discovery, recent stations, and a compact player.
+
+en-US/radio-en.png
+Live radio directory with country and genre filters, favorites, and playback controls.
+
+en-US/map-en.png
+Interactive StreamBeat world map for exploring radio stations by country and region.
+
+en-US/settings-en.png
+StreamBeat settings in English, with themes, colors, language, and continuous playback.
+
+es-419/home-es.png
+Pantalla de inicio de StreamBeat en español, con descubrimiento de radios internacionales, emisoras recientes y reproductor compacto.
+
+es-419/radio-es.png
+Directorio de radios en vivo con filtros por país y género, favoritos y controles de reproducción.
+
+es-419/map-es.png
+Mapa mundial interactivo de StreamBeat para explorar emisoras por país y región.
+
+es-419/settings-es.png
+Ajustes de StreamBeat en español, con temas, colores, idioma y reproducción continua.
+
 pt-BR/home-pt.png
 Tela inicial do StreamBeat em português, com descoberta de rádios internacionais, estações recentes e player compacto.
 
