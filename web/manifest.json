@@ -1,11 +1,11 @@
 {
-    "name": "Flow Music",
-    "short_name": "Flow Music",
+    "name": "StreamBeat",
+    "short_name": "StreamBeat",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#101010",
     "theme_color": "#16B7B6",
-    "description": "Flow Music",
+    "description": "Discover and listen to live radio stations from around the world.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

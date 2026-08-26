@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://victorcode1.github.io/flow-music/sitemap.xml
