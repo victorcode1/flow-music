@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
 abstract final class SentryConfig {
@@ -31,8 +32,41 @@ abstract final class SentryConfig {
         // enabling PII collection.
         ..enableTombstone = true
         ..sendDefaultPii = false
+        // Radio streams are third-party resources. audioplayers reports an
+        // unavailable/unsupported stream as AndroidAudioError before our
+        // playback retry layer can refresh the URL and show recoverable UI.
+        // Do not report those expected failures as fatal production crashes.
+        ..beforeSend = _beforeSend
         ..debug = _debug;
     }, appRunner: appRunner);
+  }
+
+  static SentryEvent? _beforeSend(SentryEvent event, Hint hint) {
+    return isRecoverableRadioPlaybackError(event) ? null : event;
+  }
+
+  @visibleForTesting
+  static bool isRecoverableRadioPlaybackError(SentryEvent event) {
+    final throwable = event.throwable;
+    if (throwable is PlatformException &&
+        throwable.code == 'AndroidAudioError' &&
+        _isFailedRadioSource('${throwable.message} ${throwable.details}')) {
+      return true;
+    }
+
+    return event.exceptions?.any((exception) {
+          final description = '${exception.type} ${exception.value}';
+          return description.contains('PlatformException') &&
+              description.contains('AndroidAudioError') &&
+              _isFailedRadioSource(description);
+        }) ??
+        false;
+  }
+
+  static bool _isFailedRadioSource(String description) {
+    return description.contains('Failed to set source') &&
+        (description.contains('MEDIA_ERROR_UNKNOWN') ||
+            description.contains('MEDIA_ERROR_SYSTEM'));
   }
 
   static double _resolveTracesSampleRate() {
