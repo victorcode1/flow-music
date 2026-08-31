@@ -6,6 +6,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/sharing/station_share_service.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/features/flow_mix/presentation/controllers/flow_mix_controller.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_favorites_controller.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
@@ -49,6 +50,7 @@ class _RadioPlayerPageState extends ConsumerState<RadioPlayerPage> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final radioQueue = ref.watch(radioQueueControllerProvider);
+    final flowMix = ref.watch(flowMixControllerProvider);
     final station = radioQueue.current;
     final appBarTitle =
         station?.name ?? flowAudioHandler.mediaItem.value?.title ?? '';
@@ -142,7 +144,21 @@ class _RadioPlayerPageState extends ConsumerState<RadioPlayerPage> {
                     ),
                   ],
                   const SizedBox(height: 20),
-                  _LiveBadge(colors: colors),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _LiveBadge(colors: colors),
+                      if (station != null &&
+                          flowMix.ownsQueue(radioQueue.stations) &&
+                          flowMix.contains(station)) ...[
+                        const SizedBox(width: 8),
+                        _FlowMixFeedbackButton(
+                          station: station,
+                          hasNext: radioQueue.hasNext,
+                        ),
+                      ],
+                    ],
+                  ),
                   const Spacer(),
                   _Controls(
                     hasNext: radioQueue.hasNext,
@@ -174,6 +190,60 @@ class _RadioPlayerPageState extends ConsumerState<RadioPlayerPage> {
       if (station.codec.isNotEmpty) station.codec,
       if (station.bitrate > 0) '${station.bitrate} kbps',
     ].join(' · ');
+  }
+}
+
+class _FlowMixFeedbackButton extends ConsumerStatefulWidget {
+  const _FlowMixFeedbackButton({required this.station, required this.hasNext});
+
+  final RadioStation station;
+  final bool hasNext;
+
+  @override
+  ConsumerState<_FlowMixFeedbackButton> createState() =>
+      _FlowMixFeedbackButtonState();
+}
+
+class _FlowMixFeedbackButtonState
+    extends ConsumerState<_FlowMixFeedbackButton> {
+  bool _isSaving = false;
+
+  Future<void> _submit() async {
+    if (_isSaving || !widget.hasNext) return;
+    setState(() => _isSaving = true);
+    await ref
+        .read(flowMixControllerProvider.notifier)
+        .lessLikeThis(widget.station);
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    messenger?.hideCurrentSnackBar();
+    messenger?.showSnackBar(
+      SnackBar(
+        content: Text(LocaleKeys.flow_mix_less_confirmation.tr()),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+    await playNextRadioStation(context: context, ref: ref);
+    if (mounted) setState(() => _isSaving = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton.tonalIcon(
+      key: const Key('flow-mix-less-like-this'),
+      onPressed: _isSaving || !widget.hasNext ? null : _submit,
+      style: FilledButton.styleFrom(
+        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      ),
+      icon: _isSaving
+          ? const SizedBox.square(
+              dimension: 16,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : const Icon(Icons.thumb_down_alt_outlined),
+      label: Text(LocaleKeys.flow_mix_less_like_this.tr()),
+    );
   }
 }
 

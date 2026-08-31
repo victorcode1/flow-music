@@ -177,6 +177,7 @@ Future<bool> _resolveAndPlay({
             name: station.name,
             country: station.country,
             artworkUrl: artUrl ?? '',
+            stationData: station.rawData,
           );
     } catch (error) {
       // Persistence should never turn successful audio into a playback error.

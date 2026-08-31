@@ -164,6 +164,7 @@ class MainAppController {
             name: station.name,
             country: station.country,
             artworkUrl: artUrl ?? station.artworkUrl,
+            stationData: station.rawData,
           );
       unawaited(
         ref

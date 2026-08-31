@@ -19,6 +19,7 @@ class PlaybackHistoryController extends Notifier<List<PlaybackHistoryEntry>> {
     required String name,
     required String country,
     required String artworkUrl,
+    Map<String, dynamic> stationData = const {},
   }) async {
     await _record(
       PlaybackHistoryEntry(
@@ -29,6 +30,7 @@ class PlaybackHistoryController extends Notifier<List<PlaybackHistoryEntry>> {
         playedAt: DateTime.now(),
         playCount: 1,
         kind: PlaybackHistoryKind.radio,
+        stationData: Map<String, dynamic>.unmodifiable(stationData),
       ),
     );
   }

@@ -70,6 +70,7 @@ Para generar los archivos de Riverpod y Freezed:
 - Radios internacionales y explorador de radio
 - Reproducción en segundo plano
 - Recomendación local diaria mediante notificación, con acceso directo a la emisora
+- Flow Mix por estado de ánimo, personalizado localmente con historial, favoritos y feedback
 - Favoritos, playlists y ajustes locales
 
 ## Aviso sobre contenido de terceros

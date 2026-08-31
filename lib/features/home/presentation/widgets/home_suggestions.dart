@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/features/flow_mix/presentation/widgets/flow_mix_card.dart';
 import 'package:flow_music/features/home/presentation/providers/home_suggestions_provider.dart';
+import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
 import 'package:flow_music/shared/widgets/optimized_network_image.dart';
@@ -38,6 +40,7 @@ class HomeSuggestions extends ConsumerWidget {
         return _DiscoverContent(
           stations: data.stations,
           countryName: data.countryName,
+          countryCode: data.countryCode,
           usesFallback: data.usesFallback,
           onRefresh: () => ref.invalidate(homeSuggestionsProvider),
         );
@@ -50,12 +53,14 @@ class _DiscoverContent extends ConsumerWidget {
   const _DiscoverContent({
     required this.stations,
     required this.countryName,
+    required this.countryCode,
     required this.usesFallback,
     required this.onRefresh,
   });
 
   final List<RadioStation> stations;
   final String? countryName;
+  final String? countryCode;
   final bool usesFallback;
   final VoidCallback onRefresh;
 
@@ -64,14 +69,32 @@ class _DiscoverContent extends ConsumerWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final hour = DateTime.now().hour;
+    final playbackHistory = ref.watch(playbackHistoryControllerProvider);
     final greeting = hour < 12
         ? LocaleKeys.greeting_morning.tr()
         : hour < 19
         ? LocaleKeys.greeting_afternoon.tr()
         : LocaleKeys.greeting_evening.tr();
     final featured = stations.first;
-    final recent = stations.skip(1).take(4).toList(growable: false);
-    final more = stations.skip(5).take(6).toList(growable: false);
+    final stationsById = {
+      for (final station in stations) _stationId(station): station,
+    };
+    final recent = playbackHistory
+        .map((entry) {
+          if (entry.stationData.isNotEmpty) {
+            try {
+              final station = RadioStation.fromJson(entry.stationData);
+              if (station.isPlayable) return station;
+            } catch (_) {
+              // A malformed legacy history item should not break Home.
+            }
+          }
+          return stationsById[entry.id];
+        })
+        .whereType<RadioStation>()
+        .take(4)
+        .toList(growable: false);
+    final more = stations.skip(1).take(6).toList(growable: false);
 
     void play(RadioStation station, List<RadioStation> queue) {
       playRadioStation(
@@ -140,37 +163,41 @@ class _DiscoverContent extends ConsumerWidget {
               ),
             ),
           ],
+          const SizedBox(height: 22),
+          FlowMixCard(countryCode: countryCode ?? ''),
           const SizedBox(height: 28),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  LocaleKeys.recently_played.tr(),
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w800,
+          if (recent.isNotEmpty) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    LocaleKeys.recently_played.tr(),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
                   ),
                 ),
-              ),
-              TextButton(
-                onPressed: () => context.go('/radio'),
-                child: Text(LocaleKeys.see_all.tr()),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            height: 100,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: recent.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (context, index) => _RecentStationCard(
-                station: recent[index],
-                onTap: () => play(recent[index], stations),
+                TextButton(
+                  onPressed: () => context.go('/radio'),
+                  child: Text(LocaleKeys.see_all.tr()),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 100,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: recent.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 12),
+                itemBuilder: (context, index) => _RecentStationCard(
+                  station: recent[index],
+                  onTap: () => play(recent[index], recent),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 28),
+            const SizedBox(height: 28),
+          ],
           _FeaturedStationCard(
             station: featured,
             onTap: () => play(featured, stations),
@@ -210,6 +237,9 @@ class _DiscoverContent extends ConsumerWidget {
       ),
     );
   }
+
+  String _stationId(RadioStation station) =>
+      station.stationUuid.isEmpty ? station.streamUrl : station.stationUuid;
 }
 
 class _FilterChip extends StatelessWidget {

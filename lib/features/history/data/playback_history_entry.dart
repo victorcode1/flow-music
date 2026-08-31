@@ -18,6 +18,7 @@ class PlaybackHistoryEntry {
     required this.playedAt,
     required this.playCount,
     required this.kind,
+    this.stationData = const {},
   });
 
   factory PlaybackHistoryEntry.fromJson(Map<String, dynamic> json) {
@@ -31,6 +32,11 @@ class PlaybackHistoryEntry {
           DateTime.fromMillisecondsSinceEpoch(0),
       playCount: json['playCount'] as int? ?? 1,
       kind: PlaybackHistoryKind.fromName(json['kind'] as String?),
+      stationData: json['stationData'] is Map<String, dynamic>
+          ? Map<String, dynamic>.unmodifiable(
+              json['stationData'] as Map<String, dynamic>,
+            )
+          : const {},
     );
   }
 
@@ -41,6 +47,7 @@ class PlaybackHistoryEntry {
   final DateTime playedAt;
   final int playCount;
   final PlaybackHistoryKind kind;
+  final Map<String, dynamic> stationData;
 
   PlaybackHistoryEntry copyWith({
     String? id,
@@ -50,6 +57,7 @@ class PlaybackHistoryEntry {
     DateTime? playedAt,
     int? playCount,
     PlaybackHistoryKind? kind,
+    Map<String, dynamic>? stationData,
   }) {
     return PlaybackHistoryEntry(
       id: id ?? this.id,
@@ -59,6 +67,7 @@ class PlaybackHistoryEntry {
       playedAt: playedAt ?? this.playedAt,
       playCount: playCount ?? this.playCount,
       kind: kind ?? this.kind,
+      stationData: stationData ?? this.stationData,
     );
   }
 
@@ -71,6 +80,7 @@ class PlaybackHistoryEntry {
       'playedAt': playedAt.toIso8601String(),
       'playCount': playCount,
       'kind': kind.name,
+      if (stationData.isNotEmpty) 'stationData': stationData,
     };
   }
 }

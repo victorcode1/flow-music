@@ -225,6 +225,17 @@ abstract class LocaleKeys {
   static const accent_color = 'accent_color';
   static const settings_short = 'settings_short';
   static const discover = 'discover';
+  static const flow_mix_title = 'flow_mix_title';
+  static const flow_mix_subtitle = 'flow_mix_subtitle';
+  static const flow_mix_mood_relax = 'flow_mix_mood_relax';
+  static const flow_mix_mood_energy = 'flow_mix_mood_energy';
+  static const flow_mix_mood_focus = 'flow_mix_mood_focus';
+  static const flow_mix_mood_local = 'flow_mix_mood_local';
+  static const flow_mix_mood_surprise = 'flow_mix_mood_surprise';
+  static const flow_mix_loading = 'flow_mix_loading';
+  static const flow_mix_error = 'flow_mix_error';
+  static const flow_mix_less_like_this = 'flow_mix_less_like_this';
+  static const flow_mix_less_confirmation = 'flow_mix_less_confirmation';
   static const greeting_morning = 'greeting_morning';
   static const greeting_afternoon = 'greeting_afternoon';
   static const greeting_evening = 'greeting_evening';

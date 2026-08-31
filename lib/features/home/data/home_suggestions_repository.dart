@@ -6,11 +6,13 @@ class HomeRadioSuggestions {
   const HomeRadioSuggestions({
     required this.stations,
     this.countryName,
+    this.countryCode,
     required this.usesFallback,
   });
 
   final List<RadioStation> stations;
   final String? countryName;
+  final String? countryCode;
   final bool usesFallback;
 }
 
@@ -39,6 +41,7 @@ class HomeSuggestionsRepository {
         return HomeRadioSuggestions(
           stations: localStations,
           countryName: country.countryName,
+          countryCode: country.countryCode,
           usesFallback: false,
         );
       }
@@ -46,6 +49,8 @@ class HomeSuggestionsRepository {
 
     return HomeRadioSuggestions(
       stations: await _radioRepository.topStations(limit: limit),
+      countryName: country.countryName,
+      countryCode: country.countryCode,
       usesFallback: true,
     );
   }

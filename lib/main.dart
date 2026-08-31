@@ -7,6 +7,7 @@ import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
 import 'package:flow_music/core/monitoring/sentry_config.dart';
 import 'package:flow_music/features/history/data/playback_history_repository.dart';
+import 'package:flow_music/features/flow_mix/data/flow_mix_feedback_repository.dart';
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
 import 'package:flow_music/features/radio/data/radio_station_health_repository.dart';
@@ -29,6 +30,7 @@ Future<void> _bootstrap() async {
   await Hive.initFlutter();
   await Hive.openBox(settingsBoxName);
   await Hive.openBox(playbackHistoryBoxName);
+  await Hive.openBox(flowMixFeedbackBoxName);
   await Hive.openBox(radioFavoritesBoxName);
   await Hive.openBox(radioPlaylistsBoxName);
   await Hive.openBox(radioStationHealthBoxName);
