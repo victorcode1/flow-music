@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
   flutter_hooks: ^0.21.3+1
   freezed_annotation: ^3.1.0
-  go_router: ^17.2.3
+  go_router: ^18.0.0
   hive_ce: ^2.14.0
   hive_flutter: ^1.1.0
   hive_ce_flutter: ^2.3.2
@@ -34,7 +34,7 @@ dependencies:
   flutter_email_sender: ^10.0.1
   latlong2: ^0.10.1
   google_fonts: ^8.1.0
-  cached_network_image: ^3.4.1
+  cached_network_image: ^4.0.0
   google_mobile_ads: ^9.1.0
   purchases_flutter: ^10.9.0
   supabase_flutter: ^2.17.2
