@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/future_guard.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
@@ -79,14 +80,12 @@ class _RadioStationSearchViewState
 
   Future<List<RadioStation>> _fetchStations() {
     if (_query.isEmpty && _countryCode.isEmpty) {
-      return _repository.topStations(limit: 40);
+      return _repository.topStations(limit: 40).guarded();
     }
 
-    return _repository.searchStations(
-      name: _query,
-      countryCode: _countryCode,
-      limit: 60,
-    );
+    return _repository
+        .searchStations(name: _query, countryCode: _countryCode, limit: 60)
+        .guarded();
   }
 
   void _reload() {
