@@ -73,6 +73,7 @@
   "loading": "Loading...",
   "error": "An error occurred",
   "retry": "Retry",
+  "radio_play_interrupted": "Playback interrupted. Check your connection and press play to retry.",
   "no_id_song": "No song ID",
   "configure_source": "Configure source",
   "play_button": "Play",

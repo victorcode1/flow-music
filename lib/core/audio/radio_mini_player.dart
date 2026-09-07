@@ -34,6 +34,8 @@ class RadioMiniPlayer extends ConsumerWidget {
             final playback =
                 playbackSnapshot.data ?? flowAudioHandler.playbackState.value;
             final isLoading = isRadioPlaybackLoading(playback.processingState);
+            final hasError =
+                playback.processingState == AudioProcessingState.error;
             final isPlaying = playback.playing && !isLoading;
 
             return Padding(
@@ -70,7 +72,9 @@ class RadioMiniPlayer extends ConsumerWidget {
                                     ?.copyWith(fontWeight: FontWeight.w800),
                               ),
                               Text(
-                                item.artist ?? 'Radio en directo',
+                                hasError
+                                    ? LocaleKeys.radio_play_interrupted.tr()
+                                    : item.artist ?? 'Radio en directo',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall
@@ -94,6 +98,8 @@ class RadioMiniPlayer extends ConsumerWidget {
                           isPlaying: isPlaying,
                           tooltip: isLoading
                               ? LocaleKeys.loading.tr()
+                              : hasError
+                              ? LocaleKeys.retry.tr()
                               : isPlaying
                               ? LocaleKeys.pause.tr()
                               : LocaleKeys.play.tr(),

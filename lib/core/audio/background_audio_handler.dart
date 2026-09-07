@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 late final FlowAudioHandler flowAudioHandler;
 
@@ -57,21 +58,23 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
       }),
     );
     _subscriptions.add(
-      player.onDurationChanged.listen((duration) {
-        // Cuando el caller declara una duracion confiable, ignoramos la
-        // duracion reportada
-        // por audioplayers porque a veces excede el audio real por unos
-        // segundos. Esto evita el "tail" vacio en la barra de progreso.
-        if (_hasTrustedDuration) return;
-        _applyDuration(duration);
-      }),
-    );
-    _subscriptions.add(
-      player.onPlayerComplete.listen((_) {
-        if (_completionFired) return;
-        _completionFired = true;
-        unawaited(_handleCompletion());
-      }),
+      // Duration and completion are projections of the same broadcast stream.
+      // Each listener without onError used to leak AndroidAudioError into the
+      // app's uncaught-error handler when a playing stream lost connectivity.
+      player.eventStream.listen((event) {
+        switch (event.eventType) {
+          case AudioEventType.duration:
+            if (!_hasTrustedDuration && event.duration != null) {
+              _applyDuration(event.duration!);
+            }
+          case AudioEventType.complete:
+            if (_completionFired) return;
+            _completionFired = true;
+            unawaited(_handleCompletion());
+          default:
+            break;
+        }
+      }, onError: _onNativePlaybackError),
     );
   }
 
@@ -83,6 +86,9 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   bool _hasTrustedDuration = false;
   bool _completionFired = false;
   bool _isPreparingSource = false;
+  Object? _playbackError;
+  Source? _failedSource;
+  Future<void>? _errorHandling;
 
   static const Duration _nativeCleanupTimeout = Duration(seconds: 2);
   static const Duration _sourceStartTimeout = Duration(seconds: 20);
@@ -159,6 +165,11 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> _resetForNewSource() async {
+    // A user can retry or choose another station before native error cleanup
+    // finishes. Complete that cleanup before starting the replacement source.
+    await _errorHandling;
+    _playbackError = null;
+    _failedSource = null;
     // audioplayers can otherwise keep the previous MediaPlayer/AVPlayer alive
     // briefly, leaving two streams overlapping (most noticeable when the new
     // source is a live radio stream that takes longer to start).
@@ -218,26 +229,65 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     }
   }
 
-  Future<void> _handlePlaybackError(Object error, StackTrace stack) async {
+  void _onNativePlaybackError(Object error, StackTrace stack) {
+    // setSource/play already receive preparation errors through their Future,
+    // and the caller owns the single automatic retry for those failures.
+    if (_isPreparingSource || _playbackError != null) return;
+    unawaited(_handlePlaybackError(error, stack));
+    if (error is! PlatformException && error is! TimeoutException) {
+      FlutterError.reportError(
+        FlutterErrorDetails(
+          exception: error,
+          stack: stack,
+          library: 'StreamBeat audio',
+        ),
+      );
+    }
+  }
+
+  Future<void> _handlePlaybackError(Object error, StackTrace stack) {
+    final pending = _errorHandling;
+    if (pending != null) return pending;
+    _playbackError = error;
+    _failedSource = player.source;
+    _isPreparingSource = false;
+    _playerState = PlayerState.stopped;
+    _completionFired = true;
+    _broadcastPlaybackState();
+    final cleanup = _cleanupPlaybackError(error, stack).whenComplete(() {
+      _errorHandling = null;
+    });
+    _errorHandling = cleanup;
+    return cleanup;
+  }
+
+  Future<void> _cleanupPlaybackError(Object error, StackTrace stack) async {
     debugPrint('Audio playback error: $error');
     // Evita que onPositionChanged dispare un "completion" fantasma sobre una
     // fuente que nunca llego a sonar.
     _completionFired = true;
     try {
-      await player.stop();
-      await player.setVolume(1);
+      await player.stop().timeout(_nativeCleanupTimeout);
+      await player.setVolume(1).timeout(_nativeCleanupTimeout);
     } catch (_) {}
-    _isPreparingSource = false;
-    playbackState.add(
-      playbackState.value.copyWith(
-        processingState: AudioProcessingState.error,
-        playing: false,
-        errorMessage: error.toString(),
-      ),
-    );
     final hook = onPlaybackError;
     if (hook != null) {
-      unawaited(hook(error));
+      // A hook may itself start a retry, which waits for this cleanup. Observe
+      // hook failures without making cleanup wait for its own retry.
+      unawaited(
+        Future<void>.sync(() => hook(error)).catchError((
+          Object hookError,
+          StackTrace hookStack,
+        ) {
+          FlutterError.reportError(
+            FlutterErrorDetails(
+              exception: hookError,
+              stack: hookStack,
+              library: 'StreamBeat audio',
+            ),
+          );
+        }),
+      );
     }
   }
 
@@ -252,13 +302,50 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   @override
-  Future<void> play() => player.resume();
+  Future<void> play() async {
+    if (_isPreparingSource) return;
+    await _errorHandling;
+    if (_isPreparingSource) return;
+    final failedSource = _failedSource;
+    try {
+      if (failedSource != null) {
+        _isPreparingSource = true;
+        _emitLoadingState();
+        await _resetForNewSource();
+        await player.play(failedSource).timeout(_sourceStartTimeout);
+        await _confirmPlaybackStarted();
+        _isPreparingSource = false;
+        _playerState = player.state;
+        _broadcastPlaybackState();
+      } else {
+        await player.resume();
+      }
+    } catch (error, stack) {
+      await _handlePlaybackError(error, stack);
+      // Notification and button callbacks cannot await/retry playback errors.
+      // Unexpected programming failures must remain visible to monitoring.
+      if (error is! PlatformException &&
+          error is! TimeoutException &&
+          error is! PlaybackStartException) {
+        FlutterError.reportError(
+          FlutterErrorDetails(
+            exception: error,
+            stack: stack,
+            library: 'StreamBeat audio',
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Future<void> pause() => player.pause();
 
   @override
   Future<void> stop() async {
+    await _errorHandling;
+    _playbackError = null;
+    _failedSource = null;
     _isPreparingSource = false;
     await player.stop();
     _position = Duration.zero;
@@ -314,6 +401,7 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
     for (final subscription in _subscriptions) {
       await subscription.cancel();
     }
+    await _errorHandling;
     await player.dispose();
   }
 
@@ -357,6 +445,7 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
   /// Completes preparation when resolving a source fails before playback.
   void failMediaPreparation(Object error) {
     _isPreparingSource = false;
+    _playbackError = error;
     playbackState.add(
       playbackState.value.copyWith(
         processingState: AudioProcessingState.error,
@@ -373,6 +462,8 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
         playing: false,
         updatePosition: Duration.zero,
         bufferedPosition: Duration.zero,
+        errorCode: null,
+        errorMessage: null,
       ),
     );
   }
@@ -389,12 +480,15 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
       return;
     }
 
-    final playing = _playerState == PlayerState.playing;
-    final processingState = switch (_playerState) {
-      PlayerState.stopped => AudioProcessingState.idle,
-      PlayerState.completed => AudioProcessingState.completed,
-      _ => AudioProcessingState.ready,
-    };
+    final playing =
+        _playbackError == null && _playerState == PlayerState.playing;
+    final processingState = _playbackError != null
+        ? AudioProcessingState.error
+        : switch (_playerState) {
+            PlayerState.stopped => AudioProcessingState.idle,
+            PlayerState.completed => AudioProcessingState.completed,
+            _ => AudioProcessingState.ready,
+          };
 
     playbackState.add(
       playbackState.value.copyWith(
@@ -408,6 +502,8 @@ class FlowAudioHandler extends BaseAudioHandler with SeekHandler {
         systemActions: const {MediaAction.seek},
         processingState: processingState,
         playing: playing,
+        errorCode: null,
+        errorMessage: _playbackError?.toString(),
         updatePosition: _position,
         bufferedPosition: _position,
         speed: 1,
