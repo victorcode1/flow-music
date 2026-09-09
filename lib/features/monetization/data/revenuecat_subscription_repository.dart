@@ -150,11 +150,20 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
       PremiumOfferKind.monthly => offering.monthly,
       PremiumOfferKind.lifetime => offering.lifetime,
     };
-    if (predefined != null && predefined.storeProduct.identifier == productId) {
+    if (predefined != null &&
+        revenueCatProductIdentifierMatches(
+          predefined.storeProduct.identifier,
+          productId,
+        )) {
       return predefined;
     }
     return offering.availablePackages.cast<Package?>().firstWhere(
-      (item) => item?.storeProduct.identifier == productId,
+      (item) =>
+          item != null &&
+          revenueCatProductIdentifierMatches(
+            item.storeProduct.identifier,
+            productId,
+          ),
       orElse: () => null,
     );
   }
@@ -223,4 +232,13 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
     }
     _updates.close();
   }
+}
+
+@visibleForTesting
+bool revenueCatProductIdentifierMatches(
+  String storeIdentifier,
+  String configuredProductId,
+) {
+  return storeIdentifier == configuredProductId ||
+      storeIdentifier.startsWith('$configuredProductId:');
 }
