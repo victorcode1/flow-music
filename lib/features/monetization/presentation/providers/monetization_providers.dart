@@ -20,10 +20,8 @@ final subscriptionAccessProvider = StreamProvider<SubscriptionAccess>((ref) {
   return ref.watch(subscriptionRepositoryProvider).watchAccess();
 });
 
-final monthlySubscriptionOfferProvider = FutureProvider<SubscriptionOffer>((
-  ref,
-) {
-  return ref.watch(subscriptionRepositoryProvider).loadMonthlyOffer();
+final premiumOffersProvider = FutureProvider<List<PremiumOffer>>((ref) {
+  return ref.watch(subscriptionRepositoryProvider).loadOffers();
 });
 
 final subscriptionActionsProvider = Provider<SubscriptionActions>((ref) {

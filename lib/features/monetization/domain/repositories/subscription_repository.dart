@@ -9,9 +9,9 @@ abstract interface class SubscriptionRepository {
 
   Future<SubscriptionAccess> identify(String? userId);
 
-  Future<SubscriptionOffer> loadMonthlyOffer();
+  Future<List<PremiumOffer>> loadOffers();
 
-  Future<SubscriptionAccess> purchaseMonthly();
+  Future<SubscriptionAccess> purchase(PremiumOfferKind kind);
 
   Future<SubscriptionAccess> restore();
 

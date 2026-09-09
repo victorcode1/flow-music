@@ -334,6 +334,7 @@ abstract class LocaleKeys {
   static const remove_ads_subtitle = 'remove_ads_subtitle';
   static const remove_ads_action = 'remove_ads_action';
   static const subscribe_monthly_action = 'subscribe_monthly_action';
+  static const buy_lifetime_action = 'buy_lifetime_action';
   static const premium_active_title = 'premium_active_title';
   static const premium_active_subtitle = 'premium_active_subtitle';
   static const premium_badge = 'premium_badge';

@@ -12,7 +12,7 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
 
   final _updates = StreamController<SubscriptionAccess>.broadcast();
   SubscriptionAccess _current = const SubscriptionAccess.loading();
-  Package? _monthlyPackage;
+  final _packages = <PremiumOfferKind, Package>{};
   bool _initialized = false;
   String? _identifiedUserId;
 
@@ -78,7 +78,7 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
   }
 
   @override
-  Future<SubscriptionOffer> loadMonthlyOffer() async {
+  Future<List<PremiumOffer>> loadOffers() async {
     await initialize(userId: _identifiedUserId);
     if (!_initialized) {
       throw const SubscriptionFailure(
@@ -88,41 +88,75 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
     try {
       final offerings = await Purchases.getOfferings();
       final offering = offerings.current;
-      final monthly =
-          offering?.monthly ??
-          offering?.availablePackages.cast<Package?>().firstWhere(
-            (item) =>
-                item?.storeProduct.identifier ==
-                AppEnvironment.revenueCatMonthlyProductId,
-            orElse: () => null,
-          );
-      if (monthly == null) {
+      final monthly = _findPackage(
+        offering,
+        kind: PremiumOfferKind.monthly,
+        productId: AppEnvironment.revenueCatMonthlyProductId,
+      );
+      final lifetime = _findPackage(
+        offering,
+        kind: PremiumOfferKind.lifetime,
+        productId: AppEnvironment.revenueCatLifetimeProductId,
+      );
+      _packages.clear();
+      if (monthly != null) _packages[PremiumOfferKind.monthly] = monthly;
+      if (lifetime != null) _packages[PremiumOfferKind.lifetime] = lifetime;
+      if (_packages.isEmpty) {
         throw const SubscriptionFailure(
-          'El plan mensual no esta disponible en esta tienda.',
+          'Las opciones Premium no estan disponibles en esta tienda.',
         );
       }
-      _monthlyPackage = monthly;
-      return SubscriptionOffer(
-        productId: monthly.storeProduct.identifier,
-        priceLabel: monthly.storeProduct.priceString,
-        period: monthly.storeProduct.subscriptionPeriod ?? 'P1M',
-      );
+      return _packages.entries
+          .map(
+            (entry) => PremiumOffer(
+              kind: entry.key,
+              productId: entry.value.storeProduct.identifier,
+              priceLabel: entry.value.storeProduct.priceString,
+              period: entry.value.storeProduct.subscriptionPeriod,
+            ),
+          )
+          .toList(growable: false);
     } on PlatformException catch (error) {
       throw _failure(error);
     }
   }
 
   @override
-  Future<SubscriptionAccess> purchaseMonthly() async {
+  Future<SubscriptionAccess> purchase(PremiumOfferKind kind) async {
     try {
-      if (_monthlyPackage == null) await loadMonthlyOffer();
-      final result = await Purchases.purchase(
-        PurchaseParams.package(_monthlyPackage!),
-      );
+      if (!_packages.containsKey(kind)) await loadOffers();
+      final selected = _packages[kind];
+      if (selected == null) {
+        throw SubscriptionFailure(
+          kind == PremiumOfferKind.lifetime
+              ? 'La compra de por vida no esta disponible en esta tienda.'
+              : 'El plan mensual no esta disponible en esta tienda.',
+        );
+      }
+      final result = await Purchases.purchase(PurchaseParams.package(selected));
       return _map(result.customerInfo);
     } on PlatformException catch (error) {
       throw _failure(error);
     }
+  }
+
+  Package? _findPackage(
+    Offering? offering, {
+    required PremiumOfferKind kind,
+    required String productId,
+  }) {
+    if (offering == null) return null;
+    final predefined = switch (kind) {
+      PremiumOfferKind.monthly => offering.monthly,
+      PremiumOfferKind.lifetime => offering.lifetime,
+    };
+    if (predefined != null && predefined.storeProduct.identifier == productId) {
+      return predefined;
+    }
+    return offering.availablePackages.cast<Package?>().firstWhere(
+      (item) => item?.storeProduct.identifier == productId,
+      orElse: () => null,
+    );
   }
 
   @override

@@ -27,14 +27,18 @@ class SubscriptionAccess {
   final String? store;
 }
 
-class SubscriptionOffer {
-  const SubscriptionOffer({
+enum PremiumOfferKind { monthly, lifetime }
+
+class PremiumOffer {
+  const PremiumOffer({
+    required this.kind,
     required this.productId,
     required this.priceLabel,
-    required this.period,
+    this.period,
   });
 
+  final PremiumOfferKind kind;
   final String productId;
   final String priceLabel;
-  final String period;
+  final String? period;
 }

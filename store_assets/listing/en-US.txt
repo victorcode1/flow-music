@@ -21,7 +21,7 @@ With StreamBeat you can:
 
 Location is optional and is used only while you use the app to provide country-based suggestions and center the map. You can listen to radio without granting this permission.
 
-StreamBeat may show one compact banner while you use the app, including while listening to radio, without covering playback controls. An optional monthly subscription removes ads. Creating an account is optional and is used to access subscription benefits across compatible devices.
+StreamBeat may show one compact banner while you use the app, including while listening to radio, without covering playback controls. You can remove its ads with an optional monthly subscription or a one-time lifetime purchase. Creating an account is optional and is used to keep Premium benefits across compatible devices.
 
 Station availability and audio quality depend on each station's streaming provider. Some stations may be temporarily unavailable.
 

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:flow_music/features/account/presentation/providers/account_providers.dart';
+import 'package:flow_music/features/monetization/domain/entities/subscription_access.dart';
 import 'package:flow_music/features/monetization/domain/repositories/subscription_repository.dart';
 import 'package:flow_music/features/monetization/presentation/providers/ad_providers.dart';
 import 'package:flow_music/features/monetization/presentation/providers/monetization_providers.dart';
@@ -25,12 +26,14 @@ class _MonetizationSettingsCardState
     final colors = Theme.of(context).colorScheme;
     final user = ref.watch(authUserProvider).value;
     final access = ref.watch(subscriptionAccessProvider).value;
-    final offer = ref.watch(monthlySubscriptionOfferProvider).value;
+    final offersState = ref.watch(premiumOffersProvider);
+    final offers = offersState.value ?? const <PremiumOffer>[];
+    final monthly = _offer(offers, PremiumOfferKind.monthly);
+    final lifetime = _offer(offers, PremiumOfferKind.lifetime);
     final authAvailable = ref.watch(authRepositoryProvider).isAvailable;
     final active = access?.isActive ?? false;
     final serviceAvailable =
         authAvailable && (access?.serviceAvailable ?? false);
-    final price = offer?.priceLabel ?? r'$1';
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -80,9 +83,7 @@ class _MonetizationSettingsCardState
                     Text(
                       active
                           ? LocaleKeys.premium_active_subtitle.tr()
-                          : LocaleKeys.remove_ads_subtitle.tr(
-                              namedArgs: {'price': price},
-                            ),
+                          : LocaleKeys.remove_ads_subtitle.tr(),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: colors.onSurfaceVariant,
                       ),
@@ -146,26 +147,58 @@ class _MonetizationSettingsCardState
               spacing: 8,
               runSpacing: 8,
               children: [
-                if (!active)
+                if (!active && user == null)
                   FilledButton.icon(
-                    onPressed: _busy
-                        ? null
-                        : user == null
-                        ? _showAccountSheet
-                        : _purchase,
+                    onPressed: _busy ? null : _showAccountSheet,
                     icon: _busy
                         ? const SizedBox.square(
                             dimension: 18,
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.workspace_premium_rounded),
+                    label: Text(LocaleKeys.remove_ads_action.tr()),
+                  ),
+                if (!active && user != null && offersState.isLoading)
+                  const SizedBox.square(
+                    dimension: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                if (!active && user != null && monthly != null)
+                  FilledButton.icon(
+                    onPressed: _busy
+                        ? null
+                        : () => _purchase(PremiumOfferKind.monthly),
+                    icon: const Icon(Icons.autorenew_rounded),
                     label: Text(
-                      user == null
-                          ? LocaleKeys.remove_ads_action.tr()
-                          : LocaleKeys.subscribe_monthly_action.tr(
-                              namedArgs: {'price': price},
-                            ),
+                      LocaleKeys.subscribe_monthly_action.tr(
+                        namedArgs: {'price': monthly.priceLabel},
+                      ),
                     ),
+                  ),
+                if (!active && user != null && lifetime != null)
+                  OutlinedButton.icon(
+                    onPressed: _busy
+                        ? null
+                        : () => _purchase(PremiumOfferKind.lifetime),
+                    icon: const Icon(Icons.all_inclusive_rounded),
+                    label: Text(
+                      LocaleKeys.buy_lifetime_action.tr(
+                        namedArgs: {'price': lifetime.priceLabel},
+                      ),
+                    ),
+                  ),
+                if (!active &&
+                    user != null &&
+                    !offersState.isLoading &&
+                    (offersState.hasError ||
+                        monthly == null ||
+                        lifetime == null))
+                  TextButton.icon(
+                    onPressed: _busy
+                        ? null
+                        : () => ref.invalidate(premiumOffersProvider),
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(LocaleKeys.retry.tr()),
                   ),
                 if (user != null)
                   OutlinedButton(
@@ -200,10 +233,17 @@ class _MonetizationSettingsCardState
     );
   }
 
-  Future<void> _purchase() async {
+  PremiumOffer? _offer(List<PremiumOffer> offers, PremiumOfferKind kind) {
+    for (final offer in offers) {
+      if (offer.kind == kind) return offer;
+    }
+    return null;
+  }
+
+  Future<void> _purchase(PremiumOfferKind kind) async {
     setState(() => _busy = true);
     try {
-      await ref.read(subscriptionActionsProvider).purchaseMonthly();
+      await ref.read(subscriptionActionsProvider).purchase(kind);
       if (mounted) _showMessage(LocaleKeys.subscription_success.tr());
     } on SubscriptionFailure catch (error) {
       if (mounted && !error.cancelled) _showMessage(error.message);

@@ -12,8 +12,8 @@ funciones opcionales de cuenta y monetización usan servicios desacoplados:
 - La recomendación diaria es opcional y se programa localmente a las 6:00 p. m. con una emisora aleatoria; no requiere un servidor ni ubicación en segundo plano.
 - Las compilaciones `release` envían a Sentry errores y una muestra de trazas de rendimiento para diagnóstico. Sentry permanece desactivado en debug y profile, y la integración no envía información personal por defecto.
 - Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos. El acceso opcional con Google comparte con StreamBeat el correo, nombre, foto e identificador básico autorizados por el usuario.
-- RevenueCat valida la suscripción mensual de USD 1 mediante Google Play Billing o Apple In-App Purchase.
-- AdMob muestra como máximo un banner compacto, separado de los controles, también durante la reproducción con la app en primer plano. Se oculta para suscriptores y libera el anuncio al pasar a segundo plano.
+- RevenueCat valida la suscripción mensual y la compra Premium de por vida mediante Google Play Billing o Apple In-App Purchase.
+- AdMob muestra como máximo un banner compacto, separado de los controles, también durante la reproducción con la app en primer plano. Se oculta para usuarios Premium y libera el anuncio al pasar a segundo plano.
 
 La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
 
@@ -28,7 +28,7 @@ La rama main conserva las funciones de búsqueda y reproducción basadas en YouT
     flutter pub get
     flutter run
 
-Para habilitar cuenta, suscripción y anuncios usa el archivo de ejemplo en
+Para habilitar cuenta, compras Premium y anuncios usa el archivo de ejemplo en
 `config/monetization.example.json`:
 
     cp config/monetization.example.json config/monetization.local.json
