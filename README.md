@@ -13,7 +13,7 @@ funciones opcionales de cuenta y monetización usan servicios desacoplados:
 - Las compilaciones `release` envían a Sentry errores y una muestra de trazas de rendimiento para diagnóstico. Sentry permanece desactivado en debug y profile, y la integración no envía información personal por defecto.
 - Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos. El acceso opcional con Google comparte con StreamBeat el correo, nombre, foto e identificador básico autorizados por el usuario.
 - RevenueCat valida la suscripción mensual de USD 1 mediante Google Play Billing o Apple In-App Purchase.
-- AdMob muestra como máximo un banner adaptativo; se oculta durante la reproducción y para suscriptores.
+- AdMob muestra como máximo un banner compacto, separado de los controles, también durante la reproducción con la app en primer plano. Se oculta para suscriptores y libera el anuncio al pasar a segundo plano.
 
 La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
 
