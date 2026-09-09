@@ -7,6 +7,7 @@ import 'package:flow_music/features/account/data/user_data_local_store.dart';
 import 'package:flow_music/features/account/data/unavailable_auth_repository.dart';
 import 'package:flow_music/features/account/domain/entities/app_user.dart';
 import 'package:flow_music/features/account/domain/entities/cloud_sync_access.dart';
+import 'package:flow_music/features/account/domain/entities/cloud_library_status.dart';
 import 'package:flow_music/features/account/domain/entities/synced_user_data.dart';
 import 'package:flow_music/features/account/domain/repositories/cloud_sync_access_repository.dart';
 import 'package:flow_music/features/account/domain/repositories/user_data_sync_repository.dart';
@@ -263,6 +264,52 @@ void main() {
     },
   );
 
+  test(
+    'rate limit preserves local edits and throttles repeated requests',
+    () async {
+      await start();
+      final last = local.lastSuccessfulSync;
+      remote.failureCode = 'rate_limited';
+      await local.favorites.toggle(station('pending-limit'));
+      await sync.favoritesChanged();
+      await sync.synchronizeNow();
+      final checks = remote.checks;
+      expect(sync.state, CloudSyncState.rateLimited);
+      expect(local.isDirty(SyncedDataSection.favorites), isTrue);
+      await sync.synchronizeNow();
+      expect(remote.checks, checks);
+      expect(local.lastSuccessfulSync, last);
+      await AccountSessionActions(auth, sync).signOut();
+      auth.setUser(user);
+      await settle(sync);
+      expect(local.read().favorites.single.stationUuid, 'pending-limit');
+    },
+  );
+
+  test('oversized backup stays local and reports quota failure', () async {
+    await start();
+    remote.failureCode = 'quota_exceeded';
+    await local.favorites.toggle(station('too-large'));
+    await sync.favoritesChanged();
+    await sync.synchronizeNow();
+    expect(sync.state, CloudSyncState.quotaExceeded);
+    expect(local.read().favorites.single.stationUuid, 'too-large');
+    expect(local.isDirty(SyncedDataSection.favorites), isTrue);
+  });
+
+  test('last successful sync belongs to its account only', () async {
+    await start();
+    final last = local.lastSuccessfulSync;
+    expect(last, isNotNull);
+    auth.setUser(other);
+    await settle(sync);
+    expect(local.lastSuccessfulSync, isNull);
+    subscriptions.emit(const SubscriptionAccess.free());
+    auth.setUser(user);
+    await settle(sync);
+    expect(local.lastSuccessfulSync, last);
+  });
+
   test('deleting account removes only that account local data', () async {
     await start(paid: false);
     await local.favorites.toggle(station('to-delete'));
@@ -391,12 +438,16 @@ class _Remote implements UserDataSyncRepository {
   final rows = <String, SyncedUserData>{};
   int reads = 0, writes = 0;
   bool fail = false;
+  String? failureCode;
+  int checks = 0;
   Completer<void>? gate;
   Completer<void>? saveGate;
   Completer<void>? saveStarted;
   @override
   bool get isAvailable => true;
   void check() {
+    checks++;
+    if (failureCode != null) throw CloudLibraryFailure(failureCode!);
     if (fail) throw StateError('Network offline');
   }
 

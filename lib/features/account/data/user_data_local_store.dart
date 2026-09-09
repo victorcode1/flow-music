@@ -17,6 +17,7 @@ class UserDataLocalStore {
   static const _ownerKey = 'user_data_sync_owner_id';
   static const _dirtyPrefix = 'user_data_sync_dirty_';
   static const _baselineKey = 'user_data_sync_has_cloud_baseline';
+  static const _lastSuccessKey = 'user_data_sync_last_success';
   static String _archiveKey(String? userId) =>
       'user_data_local_account_${userId ?? "guest"}';
 
@@ -61,6 +62,12 @@ class UserDataLocalStore {
 
   bool get hasCloudBaseline => _metadata.get(_baselineKey) == true;
 
+  DateTime? get lastSuccessfulSync =>
+      DateTime.tryParse(_metadata.get(_lastSuccessKey) as String? ?? '');
+
+  Future<void> recordSuccessfulSync(DateTime at) =>
+      _metadata.put(_lastSuccessKey, at.toUtc().toIso8601String());
+
   Future<void> setCloudBaseline() => _metadata.put(_baselineKey, true);
 
   Future<void> archiveCurrent() => _metadata.put(_archiveKey(ownerId), {
@@ -70,6 +77,7 @@ class UserDataLocalStore {
         if (isDirty(section)) section.name,
     ],
     'baseline': hasCloudBaseline,
+    'last_success': lastSuccessfulSync?.toUtc().toIso8601String(),
   });
 
   Future<bool> switchUser(String? userId) async {
@@ -91,6 +99,10 @@ class UserDataLocalStore {
         }
       }
       if (archived['baseline'] == true) await setCloudBaseline();
+      final lastSuccess = DateTime.tryParse(
+        archived['last_success'] as String? ?? '',
+      );
+      if (lastSuccess != null) await recordSuccessfulSync(lastSuccess);
     } else if (guest != null && userId != null) {
       // First account may adopt guest data, but a second account never inherits
       // the first account's library.
@@ -126,6 +138,7 @@ class UserDataLocalStore {
     await preferences.clear();
     await _metadata.delete(_ownerKey);
     await _metadata.delete(_baselineKey);
+    await _metadata.delete(_lastSuccessKey);
     await clearAllDirty();
   }
 

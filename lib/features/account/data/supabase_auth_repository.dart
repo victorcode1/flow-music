@@ -1,14 +1,16 @@
 import 'package:flow_music/core/config/app_environment.dart';
 import 'package:flow_music/features/account/data/google_auth_gateway.dart';
+import 'package:flow_music/features/account/data/auth_attempt_guard.dart';
 import 'package:flow_music/features/account/domain/entities/app_user.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseAuthRepository implements AuthRepository {
-  const SupabaseAuthRepository(this._client, this._googleAuth);
+  SupabaseAuthRepository(this._client, this._googleAuth);
 
   final SupabaseClient _client;
   final GoogleAuthGateway _googleAuth;
+  final _attempts = AuthAttemptGuard();
 
   @override
   AppUser? get currentUser => _mapUser(_client.auth.currentUser);
@@ -27,6 +29,7 @@ class SupabaseAuthRepository implements AuthRepository {
     required String password,
   }) async {
     try {
+      _attempts.check('sign_in');
       final response = await _client.auth.signInWithPassword(
         email: email.trim(),
         password: password,
@@ -44,6 +47,7 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<AppUser> signInWithGoogle() async {
     try {
+      _attempts.check('sign_in');
       final tokens = await _googleAuth.authenticate();
       final response = await _client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
@@ -69,6 +73,7 @@ class SupabaseAuthRepository implements AuthRepository {
     String? displayName,
   }) async {
     try {
+      _attempts.check('sign_up');
       final response = await _client.auth.signUp(
         email: email.trim(),
         password: password,
@@ -94,6 +99,7 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<void> sendPasswordReset(String email) async {
     try {
+      _attempts.check('password_reset');
       await _client.auth.resetPasswordForEmail(
         email.trim(),
         redirectTo: AppEnvironment.authCallbackUrl,

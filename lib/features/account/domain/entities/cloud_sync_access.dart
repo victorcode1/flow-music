@@ -9,4 +9,12 @@ class CloudSyncAccess {
       allowed && accessUntil != null && accessUntil!.isAfter(DateTime.now());
 }
 
-enum CloudSyncState { localOnly, verifying, synced, pending, unavailable }
+enum CloudSyncState {
+  localOnly,
+  verifying,
+  synced,
+  pending,
+  unavailable,
+  rateLimited,
+  quotaExceeded,
+}

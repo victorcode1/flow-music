@@ -61,17 +61,44 @@ vence su permiso. El webhook consulta el estado actual de RevenueCat, incluidas
 ambas cuentas en transferencias, y no interpreta un evento viejo como un pago nuevo.
 
 `user_data_sync_requires_paid_monthly` es una política RLS restrictiva y se
-combina con la propiedad de la fila. Una cuenta gratuita no puede subir ni
-descargar su biblioteca, aunque use un cliente antiguo o modificado.
+combina con la propiedad de la fila. El acceso directo de clientes a
+`user_data_sync` está revocado: la app usa `cloud_library`, que obtiene el
+propietario de `auth.uid()` y aplica autorización y límites en el servidor.
+Una cuenta gratuita no puede sincronizar su biblioteca, aunque use un cliente
+antiguo o modificado. La exportación explícita de una copia propia existente
+se permite sin renovar como función de portabilidad, con su propio límite.
 Los cambios locales se agrupan durante dos segundos. No se mantiene un listener
 Realtime ni se suben snapshots sin cambios. Auth, perfiles y analítica conservan
 su funcionamiento previo; esta restricción no elimina sus costos de operación.
 
-Las copias ya guardadas se conservan al vencer la suscripción para permitir la
-restauración al renovar. Eliminar la cuenta las borra por cascada. El historial
-de reproducción siempre permanece local. Cerrar sesión archiva localmente la
-biblioteca bajo el UID para no perder cambios sin conexión ni mezclarlos con
-otra cuenta.
+Las copias admiten 500 favoritos, 200 playlists y 2 MiB por cuenta. Los límites
+de lectura son 120/hora y 1000/día; escritura 60/hora y 300/día; gestión y
+verificación 30/hora y 120/día; exportación 3/hora y 10/día. Los contadores
+privados tienen una fila por cuenta/operación, no un registro ilimitado de cada
+petición. El cliente conserva cambios locales al alcanzar un límite.
+
+Al vencer la suscripción se pausa la sincronización. La limpieza diaria a las
+07:15 UTC solo puede borrar copias con pago vencido hace 90 días o más, aviso
+confirmado en la app hace al menos 30 días y verificación de acceso menor a
+24 horas. Si falta cualquiera de estas condiciones, no se borra la copia.
+No existe un proceso que renueve por sí solo esa verificación: la limpieza
+puede aplazarse indefinidamente cuando no hay una verificación reciente.
+Renovar cancela la retención; eliminar la cuenta borra sus datos por cascada.
+El historial de reproducción siempre permanece local. Cerrar sesión archiva
+localmente la biblioteca bajo el UID para no perder cambios sin conexión ni
+mezclarlos con otra cuenta.
+
+Configuración muestra la última sincronización correcta y permite exportar
+la biblioteca local como JSON. Consultar la copia remota requiere una acción
+explícita; no hay sondeo automático para cuentas gratuitas. Las peticiones
+fijan el token de la cuenta capturada para evitar cruces al cambiar de sesión.
+La exportación advierte que las URLs de emisoras personalizadas pueden incluir
+información privada antes de abrir el menú de compartir.
+
+El límite de intentos de login de la app es solo una protección local; no
+sustituye los límites de Supabase Auth ni un CAPTCHA. CAPTCHA y el panel de
+rentabilidad siguen pendientes de integración/acceso a fuentes reales. No
+se han habilitado planes de pago ni se han usado ingresos sandbox como reales.
 
 La función usa la clave SDK **pública** de StreamBeat, que solo se utiliza para
 consultar Customer Info; puede reemplazarse mediante `REVENUECAT_CLOUD_API_KEY`.

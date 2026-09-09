@@ -24,6 +24,11 @@ Deno.serve(async (request) => {
     // No app-supplied user id or paid flag is accepted.
     let access = await readCloudAccess(client, user.id);
     if (!access || Date.now() - Date.parse(access.verified_at) >= 15000) {
+      const budget = await client.rpc("consume_cloud_verification_budget", { p_user_id: user.id });
+      if (budget.error) throw new Error("Cloud verification quota unavailable");
+      if (budget.data !== true) {
+        return Response.json({ error: "rate_limited" }, { status: 429, headers: { ...headers, "Retry-After": "300" } });
+      }
       await reconcileCloudAccess(client, user.id);
       access = await readCloudAccess(client, user.id);
     }

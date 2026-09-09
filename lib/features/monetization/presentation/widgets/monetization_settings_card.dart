@@ -4,6 +4,7 @@ import 'package:flow_music/features/account/domain/repositories/auth_repository.
 import 'package:flow_music/features/account/presentation/providers/account_providers.dart';
 import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
 import 'package:flow_music/features/account/domain/entities/cloud_sync_access.dart';
+import 'package:flow_music/features/account/presentation/widgets/cloud_library_tools.dart';
 import 'package:flow_music/features/monetization/domain/services/subscription_links.dart';
 import 'package:flow_music/features/monetization/presentation/widgets/subscription_legal_footer.dart';
 import 'package:flow_music/features/monetization/domain/entities/subscription_access.dart';
@@ -236,6 +237,8 @@ class _MonetizationSettingsCardState
                 CloudSyncState.synced => 'cloud_sync_synced',
                 CloudSyncState.pending => 'cloud_sync_pending',
                 CloudSyncState.unavailable => 'cloud_sync_unavailable',
+                CloudSyncState.rateLimited => 'cloud_sync_rate_limited',
+                CloudSyncState.quotaExceeded => 'cloud_sync_quota_exceeded',
               }.tr(),
               key: const Key('cloud-sync-status'),
               style: Theme.of(context).textTheme.bodySmall,
@@ -247,6 +250,8 @@ class _MonetizationSettingsCardState
                 label: Text('cloud_sync_now'.tr()),
               ),
           ],
+          const SizedBox(height: 8),
+          const CloudLibraryTools(),
           if (managementUrl != null)
             TextButton.icon(
               onPressed: _busy ? null : () => _openLink(managementUrl),
@@ -302,7 +307,11 @@ class _MonetizationSettingsCardState
       await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
       if (mounted) _showMessage(LocaleKeys.subscription_success.tr());
     } on SubscriptionFailure catch (error) {
-      if (mounted && !error.cancelled) _showMessage(error.message);
+      if (mounted && !error.cancelled) {
+        _showMessage(
+          error.message,
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -321,7 +330,11 @@ class _MonetizationSettingsCardState
         );
       }
     } on SubscriptionFailure catch (error) {
-      if (mounted && !error.cancelled) _showMessage(error.message);
+      if (mounted && !error.cancelled) {
+        _showMessage(
+          error.message,
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -350,7 +363,11 @@ class _MonetizationSettingsCardState
     try {
       await ref.read(accountSessionActionsProvider).signOut();
     } on AuthFailure catch (error) {
-      if (mounted) _showMessage(error.message);
+      if (mounted) {
+        _showMessage(
+          error.code == 'local_rate_limit' ? error.message.tr() : error.message,
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -384,7 +401,11 @@ class _MonetizationSettingsCardState
       await ref.read(accountSessionActionsProvider).deleteAccount();
       if (mounted) _showMessage(LocaleKeys.auth_account_deleted.tr());
     } on AuthFailure catch (error) {
-      if (mounted) _showMessage(error.message);
+      if (mounted) {
+        _showMessage(
+          error.code == 'local_rate_limit' ? error.message.tr() : error.message,
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -599,7 +620,11 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
       await ref.read(authRepositoryProvider).signInWithGoogle();
       if (mounted) Navigator.of(context).pop();
     } on AuthFailure catch (error) {
-      if (mounted && error.code != 'cancelled') _showMessage(error.message);
+      if (mounted && error.code != 'cancelled') {
+        _showMessage(
+          error.code == 'local_rate_limit' ? error.message.tr() : error.message,
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -651,7 +676,11 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
         if (mounted) Navigator.of(context).pop();
       }
     } on AuthFailure catch (error) {
-      if (mounted) _showMessage(error.message);
+      if (mounted) {
+        _showMessage(
+          error.code == 'local_rate_limit' ? error.message.tr() : error.message,
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -672,7 +701,11 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
         _showMessage(LocaleKeys.auth_password_reset_sent.tr());
       }
     } on AuthFailure catch (error) {
-      if (mounted) _showMessage(error.message);
+      if (mounted) {
+        _showMessage(
+          error.code == 'local_rate_limit' ? error.message.tr() : error.message,
+        );
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }

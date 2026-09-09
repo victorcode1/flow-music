@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flow_music/features/account/data/user_data_local_store.dart';
 import 'package:flow_music/features/account/domain/entities/app_user.dart';
 import 'package:flow_music/features/account/domain/entities/cloud_sync_access.dart';
+import 'package:flow_music/features/account/domain/entities/cloud_library_status.dart';
 import 'package:flow_music/features/account/domain/entities/synced_user_data.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:flow_music/features/account/domain/repositories/cloud_sync_access_repository.dart';
@@ -42,6 +43,7 @@ class UserDataSyncCoordinator {
   int _revision = 0;
   bool _initialized = false;
   bool _disposed = false;
+  DateTime? _retryNotBefore;
 
   CloudSyncState get state => _state;
   Stream<CloudSyncState> watchState() async* {
@@ -54,6 +56,7 @@ class UserDataSyncCoordinator {
     _initialized = true;
     _authListener = _auth.authStateChanges.listen((_) {
       _epoch++;
+      _retryNotBefore = null;
       _permit = const CloudSyncAccess.denied();
       _timer?.cancel();
       unawaited(synchronizeNow());
@@ -159,6 +162,7 @@ class UserDataSyncCoordinator {
         _emit(CloudSyncState.localOnly);
         return;
       }
+      if (_retryNotBefore?.isAfter(DateTime.now()) ?? false) return;
       if (verify || !_permit.isCurrent) {
         _emit(CloudSyncState.verifying);
         final permission = await _access.verify();
@@ -237,6 +241,7 @@ class UserDataSyncCoordinator {
         await _local.apply(merged);
         await _local.setCloudBaseline();
         await _local.clearAllDirty();
+        await _local.recordSuccessfulSync(DateTime.now());
         await _local.archiveCurrent();
         _emit(CloudSyncState.synced);
         _onLocalDataChanged();
@@ -244,7 +249,15 @@ class UserDataSyncCoordinator {
     } catch (error) {
       if (sameSession()) {
         _permit = const CloudSyncAccess.denied();
-        _emit(CloudSyncState.unavailable);
+        if (error is CloudLibraryFailure && error.code == 'rate_limited') {
+          _retryNotBefore = DateTime.now().add(const Duration(minutes: 5));
+          _emit(CloudSyncState.rateLimited);
+        } else if (error is CloudLibraryFailure &&
+            error.code == 'quota_exceeded') {
+          _emit(CloudSyncState.quotaExceeded);
+        } else {
+          _emit(CloudSyncState.unavailable);
+        }
       }
       debugPrint('Cloud sync deferred: ${error.runtimeType}');
     }
