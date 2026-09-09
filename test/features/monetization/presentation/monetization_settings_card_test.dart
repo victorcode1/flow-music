@@ -105,7 +105,31 @@ void main() {
     );
   });
 
-  testWidgets('active Premium access hides both purchase choices', (
+  testWidgets(
+    'lifetime owners can add monthly cloud without buying lifetime again',
+    (tester) async {
+      await pumpCard(
+        tester,
+        access: const SubscriptionAccess(
+          isResolved: true,
+          serviceAvailable: true,
+          isActive: true,
+          productId: 'remove_ads_lifetime',
+        ),
+      );
+
+      expect(
+        find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
+        findsNothing,
+      );
+    },
+  );
+
+  testWidgets('monthly cloud subscribers are not asked to buy again', (
     tester,
   ) async {
     await pumpCard(
@@ -114,10 +138,11 @@ void main() {
         isResolved: true,
         serviceAvailable: true,
         isActive: true,
-        productId: 'remove_ads_lifetime',
+        userId: 'test-user',
+        productId: 'remove_ads_monthly',
+        hasMonthlySubscription: true,
       ),
     );
-
     expect(
       find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
       findsNothing,

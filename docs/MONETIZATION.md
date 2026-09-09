@@ -3,11 +3,12 @@
 StreamBeat usa un modelo freemium deliberadamente discreto:
 
 - La versión gratuita muestra como máximo un banner adaptativo de AdMob.
-- El banner no cubre contenido y se oculta mientras hay una emisora activa.
-- `remove_ads_monthly` elimina anuncios por USD 1 al mes (precio base; la
-  tienda aplica moneda local e impuestos).
-- No hay intersticiales, anuncios de apertura, recompensados ni recordatorios
-  emergentes.
+- El banner no cubre los controles y puede aparecer durante la reproducción.
+- `remove_ads_monthly` elimina anuncios e incluye copia y sincronización de
+  favoritos, playlists y preferencias. El precio se obtiene de la tienda.
+- `remove_ads_lifetime` elimina los anuncios con un pago único. No incluye nube;
+  un comprador de por vida puede contratar la mensualidad para añadirla.
+- No hay intersticiales, anuncios de apertura ni recompensados.
 
 ## Límites de arquitectura
 
@@ -46,6 +47,37 @@ explícitos. Las funciones son:
   exacto del encabezado `Authorization` configurado en RevenueCat.
 - `delete-account`: requiere JWT de Supabase, vuelve a validar el usuario y
   elimina la cuenta con el cliente administrativo.
+- `cloud-sync-access`: requiere JWT, verifica la identidad con Supabase Auth
+  y consulta RevenueCat desde el servidor. No acepta un UID ni un estado de
+  pago suministrados por la app.
+
+La tabla `cloud_subscription_access` está separada del entitlement para anuncios.
+Solo se habilita con períodos mensuales de producción no reembolsados; se excluyen
+pruebas sandbox, períodos trial, compras vitalicias y extensiones de gracia no
+pagadas. Cancelar la renovación mantiene los días pagados. Cada verificación
+vence como máximo a las 24 horas o al terminar el período, lo que ocurra primero.
+La app revalida al entrar, comprar/restaurar, volver a primer plano y cuando
+vence su permiso. El webhook consulta el estado actual de RevenueCat, incluidas
+ambas cuentas en transferencias, y no interpreta un evento viejo como un pago nuevo.
+
+`user_data_sync_requires_paid_monthly` es una política RLS restrictiva y se
+combina con la propiedad de la fila. Una cuenta gratuita no puede subir ni
+descargar su biblioteca, aunque use un cliente antiguo o modificado.
+Los cambios locales se agrupan durante dos segundos. No se mantiene un listener
+Realtime ni se suben snapshots sin cambios. Auth, perfiles y analítica conservan
+su funcionamiento previo; esta restricción no elimina sus costos de operación.
+
+Las copias ya guardadas se conservan al vencer la suscripción para permitir la
+restauración al renovar. Eliminar la cuenta las borra por cascada. El historial
+de reproducción siempre permanece local. Cerrar sesión archiva localmente la
+biblioteca bajo el UID para no perder cambios sin conexión ni mezclarlos con
+otra cuenta.
+
+La función usa la clave SDK **pública** de StreamBeat, que solo se utiliza para
+consultar Customer Info; puede reemplazarse mediante `REVENUECAT_CLOUD_API_KEY`.
+Las claves de servicio y el secreto de webhook siguen exclusivamente en Supabase.
+Para comprobar RLS sin conservar usuarios sintéticos, ejecutar el archivo
+`supabase/tests/paid_cloud_sync.sql`, que incluye BEGIN/ROLLBACK.
 
 Agregar `com.victorflores.streambeat://auth-callback` a las URL de redirección
 de Auth. Mantener confirmación de correo activada en producción.

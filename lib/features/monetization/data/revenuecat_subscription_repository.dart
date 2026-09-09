@@ -15,6 +15,8 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
   final _packages = <PremiumOfferKind, Package>{};
   bool _initialized = false;
   String? _identifiedUserId;
+  bool _changingIdentity = false;
+  Timer? _expiryTimer;
 
   late final CustomerInfoUpdateListener _customerInfoListener =
       _handleCustomerInfo;
@@ -60,6 +62,8 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
     }
     if (_identifiedUserId == userId) return refresh();
 
+    _changingIdentity = true;
+    _emit(const SubscriptionAccess.loading());
     try {
       final CustomerInfo info;
       if (userId == null) {
@@ -73,7 +77,10 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
       _identifiedUserId = userId;
       return _map(info);
     } on PlatformException catch (error) {
+      _identifiedUserId = null;
       throw _failure(error);
+    } finally {
+      _changingIdentity = false;
     }
   }
 
@@ -123,6 +130,7 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
 
   @override
   Future<SubscriptionAccess> purchase(PremiumOfferKind kind) async {
+    final purchasingUserId = _identifiedUserId;
     try {
       if (!_packages.containsKey(kind)) await loadOffers();
       final selected = _packages[kind];
@@ -134,6 +142,11 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
         );
       }
       final result = await Purchases.purchase(PurchaseParams.package(selected));
+      if (_identifiedUserId != purchasingUserId || _changingIdentity) {
+        throw const SubscriptionFailure(
+          'La cuenta cambió. Inicia sesión con la cuenta de la compra para restaurarla.',
+        );
+      }
       return _map(result.customerInfo);
     } on PlatformException catch (error) {
       throw _failure(error);
@@ -170,8 +183,15 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
 
   @override
   Future<SubscriptionAccess> restore() async {
+    final restoringUserId = _identifiedUserId;
     try {
-      return _map(await Purchases.restorePurchases());
+      final info = await Purchases.restorePurchases();
+      if (_identifiedUserId != restoringUserId || _changingIdentity) {
+        throw const SubscriptionFailure(
+          'La cuenta cambió. Inicia sesión de nuevo para restaurar la compra.',
+        );
+      }
+      return _map(info);
     } on PlatformException catch (error) {
       throw _failure(error);
     }
@@ -180,22 +200,48 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
   @override
   Future<SubscriptionAccess> refresh() async {
     if (!_initialized) return _current;
+    final userId = _identifiedUserId;
     try {
-      return _map(await Purchases.getCustomerInfo());
+      final info = await Purchases.getCustomerInfo();
+      return userId == _identifiedUserId && !_changingIdentity
+          ? _map(info)
+          : _current;
     } on PlatformException catch (error) {
       throw _failure(error);
     }
   }
 
-  void _handleCustomerInfo(CustomerInfo info) => _map(info);
+  void _handleCustomerInfo(CustomerInfo info) {
+    if (!_changingIdentity) _map(info);
+  }
 
   SubscriptionAccess _map(CustomerInfo info) {
     final entitlement =
         info.entitlements.all[AppEnvironment.revenueCatEntitlementId];
+    DateTime? monthlyExpiry;
+    for (final id in info.activeSubscriptions) {
+      if (!revenueCatProductIdentifierMatches(
+        id,
+        AppEnvironment.revenueCatMonthlyProductId,
+      )) {
+        continue;
+      }
+      final expiry = DateTime.tryParse(info.allExpirationDates[id] ?? '');
+      if (expiry != null &&
+          expiry.isAfter(DateTime.now()) &&
+          (monthlyExpiry == null || expiry.isAfter(monthlyExpiry))) {
+        monthlyExpiry = expiry;
+      }
+    }
     final access = SubscriptionAccess(
       isResolved: true,
       serviceAvailable: true,
-      isActive: entitlement?.isActive ?? false,
+      isActive: _identifiedUserId != null && (entitlement?.isActive ?? false),
+      userId: _identifiedUserId,
+      hasMonthlySubscription:
+          _identifiedUserId != null && monthlyExpiry != null,
+      monthlyExpiresAt: monthlyExpiry,
+      managementUrl: info.managementURL,
       willRenew: entitlement?.willRenew ?? false,
       productId: entitlement?.productIdentifier,
       expiresAt: entitlement?.expirationDate == null
@@ -209,7 +255,25 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
 
   void _emit(SubscriptionAccess access) {
     _current = access;
-    if (!_updates.isClosed) _updates.add(access);
+    if (_updates.isClosed) return;
+    _updates.add(access);
+    _expiryTimer?.cancel();
+    final now = DateTime.now();
+    final expirations = [
+      access.expiresAt,
+      access.monthlyExpiresAt,
+    ].whereType<DateTime>().where((date) => date.isAfter(now)).toList()..sort();
+    if (access.isResolved && access.userId != null && expirations.isNotEmpty) {
+      _expiryTimer = Timer(expirations.first.difference(now), () async {
+        // Refresh at the paid boundary even if the app stays in the foreground.
+        try {
+          await Purchases.invalidateCustomerInfoCache();
+          await refresh();
+        } catch (_) {
+          _emit(_current);
+        }
+      });
+    }
   }
 
   SubscriptionFailure _failure(PlatformException error) {
@@ -227,6 +291,7 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
 
   @override
   void dispose() {
+    _expiryTimer?.cancel();
     if (_initialized) {
       Purchases.removeCustomerInfoUpdateListener(_customerInfoListener);
     }

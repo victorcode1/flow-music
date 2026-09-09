@@ -4,9 +4,12 @@ import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
+import 'package:flow_music/features/account/application/user_data_sync_coordinator.dart';
+import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/monetization/application/monetization_coordinator.dart';
 import 'package:flow_music/features/monetization/application/monetization_coordinator_provider.dart';
+import 'package:flow_music/features/monetization/presentation/providers/monetization_providers.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/repositories/radio_browser_repository.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
@@ -29,6 +32,9 @@ class MainAppController {
   late final MonetizationCoordinator _monetizationCoordinator = ref.read(
     monetizationCoordinatorProvider,
   );
+  late final UserDataSyncCoordinator _userDataSyncCoordinator = ref.read(
+    userDataSyncCoordinatorProvider,
+  );
 
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
@@ -37,10 +43,12 @@ class MainAppController {
     unawaited(ref.read(productAnalyticsProvider).track('app_open'));
     unawaited(ref.read(reviewPromptCoordinatorProvider).initialize());
     unawaited(_monetizationCoordinator.initialize());
+    unawaited(_userDataSyncCoordinator.initialize());
   }
 
   void dispose() {
     _monetizationCoordinator.dispose();
+    _userDataSyncCoordinator.dispose();
     if (flowAudioHandler.onTrackComplete == handleTrackComplete) {
       flowAudioHandler.onTrackComplete = null;
     }
@@ -49,6 +57,15 @@ class MainAppController {
     }
     if (flowAudioHandler.onSkipToPrevious == handleSkipToPrevious) {
       flowAudioHandler.onSkipToPrevious = null;
+    }
+  }
+
+  Future<void> refreshAccount() async {
+    try {
+      await ref.read(subscriptionRepositoryProvider).refresh();
+      await _userDataSyncCoordinator.synchronizeNow();
+    } catch (_) {
+      // A network failure leaves local changes available for the next resume.
     }
   }
 

@@ -16,12 +16,19 @@ class MonetizationCoordinator {
   StreamSubscription<AppUser?>? _authSubscription;
   String? _lastUserId;
   bool _hasHandledIdentity = false;
+  Future<void> _serial = Future<void>.value();
 
   Future<void> initialize() async {
-    await _handleUser(_auth.currentUser);
     _authSubscription = _auth.authStateChanges.listen((user) {
-      unawaited(_handleUser(user));
+      unawaited(_enqueue(user));
     });
+    await _enqueue(_auth.currentUser);
+  }
+
+  Future<void> _enqueue(AppUser? user) {
+    final next = _serial.then((_) => _handleUser(user));
+    _serial = next.catchError((_) {});
+    return next;
   }
 
   Future<void> _handleUser(AppUser? user) async {
@@ -33,6 +40,7 @@ class MonetizationCoordinator {
       await _subscriptions.identify(user?.id);
       if (user != null) await _profiles.sync(user);
     } catch (error, stackTrace) {
+      _hasHandledIdentity = false;
       debugPrint('Unable to synchronize monetization identity: $error');
       debugPrintStack(stackTrace: stackTrace);
     }

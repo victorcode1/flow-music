@@ -5,7 +5,7 @@ import 'package:flow_music/features/daily_recommendations/domain/daily_recommend
 import 'package:flow_music/features/daily_recommendations/domain/repositories/daily_recommendation_repository.dart';
 import 'package:flow_music/features/home/data/home_suggestions_repository.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
-import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
+import 'package:flow_music/features/settings/data/settings_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';

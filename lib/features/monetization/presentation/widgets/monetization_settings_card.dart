@@ -2,12 +2,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:flow_music/features/account/presentation/providers/account_providers.dart';
+import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/domain/entities/cloud_sync_access.dart';
+import 'package:flow_music/features/monetization/domain/services/subscription_links.dart';
+import 'package:flow_music/features/monetization/presentation/widgets/subscription_legal_footer.dart';
 import 'package:flow_music/features/monetization/domain/entities/subscription_access.dart';
 import 'package:flow_music/features/monetization/domain/repositories/subscription_repository.dart';
 import 'package:flow_music/features/monetization/presentation/providers/ad_providers.dart';
 import 'package:flow_music/features/monetization/presentation/providers/monetization_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MonetizationSettingsCard extends ConsumerStatefulWidget {
   const MonetizationSettingsCard({super.key});
@@ -32,6 +37,10 @@ class _MonetizationSettingsCardState
     final lifetime = _offer(offers, PremiumOfferKind.lifetime);
     final authAvailable = ref.watch(authRepositoryProvider).isAvailable;
     final active = access?.isActive ?? false;
+    final monthlyActive = access?.hasMonthlySubscription ?? false;
+    final cloudState =
+        ref.watch(cloudSyncStateProvider).value ?? CloudSyncState.localOnly;
+    final managementUrl = SubscriptionLinks.management(access);
     final serviceAvailable =
         authAvailable && (access?.serviceAvailable ?? false);
 
@@ -158,12 +167,12 @@ class _MonetizationSettingsCardState
                         : const Icon(Icons.workspace_premium_rounded),
                     label: Text(LocaleKeys.remove_ads_action.tr()),
                   ),
-                if (!active && user != null && offersState.isLoading)
+                if (!monthlyActive && user != null && offersState.isLoading)
                   const SizedBox.square(
                     dimension: 24,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                if (!active && user != null && monthly != null)
+                if (!monthlyActive && user != null && monthly != null)
                   FilledButton.icon(
                     onPressed: _busy
                         ? null
@@ -187,7 +196,7 @@ class _MonetizationSettingsCardState
                       ),
                     ),
                   ),
-                if (!active &&
+                if (!monthlyActive &&
                     user != null &&
                     !offersState.isLoading &&
                     (offersState.hasError ||
@@ -218,10 +227,56 @@ class _MonetizationSettingsCardState
                   ),
               ],
             ),
+          if (user != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              switch (cloudState) {
+                CloudSyncState.localOnly => 'cloud_sync_monthly_required',
+                CloudSyncState.verifying => 'cloud_sync_verifying',
+                CloudSyncState.synced => 'cloud_sync_synced',
+                CloudSyncState.pending => 'cloud_sync_pending',
+                CloudSyncState.unavailable => 'cloud_sync_unavailable',
+              }.tr(),
+              key: const Key('cloud-sync-status'),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+            if (monthlyActive)
+              TextButton.icon(
+                onPressed: _busy ? null : _synchronize,
+                icon: const Icon(Icons.sync_rounded),
+                label: Text('cloud_sync_now'.tr()),
+              ),
+          ],
+          if (managementUrl != null)
+            TextButton.icon(
+              onPressed: _busy ? null : () => _openLink(managementUrl),
+              icon: const Icon(Icons.manage_accounts_outlined),
+              label: Text(LocaleKeys.subscription_manage.tr()),
+            ),
+          SubscriptionLegalFooter(onOpenLink: _openLink),
           const _PrivacyOptionsButton(),
         ],
       ),
     );
+  }
+
+  Future<void> _openLink(Uri uri) async {
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
+        mounted) {
+      _showMessage(LocaleKeys.subscription_link_failed.tr());
+    }
+  }
+
+  Future<void> _synchronize() async {
+    setState(() => _busy = true);
+    try {
+      await ref.read(subscriptionRepositoryProvider).refresh();
+      await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
+    } catch (_) {
+      if (mounted) _showMessage('cloud_sync_unavailable'.tr());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   Future<void> _showAccountSheet() {
@@ -244,6 +299,7 @@ class _MonetizationSettingsCardState
     setState(() => _busy = true);
     try {
       await ref.read(subscriptionActionsProvider).purchase(kind);
+      await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
       if (mounted) _showMessage(LocaleKeys.subscription_success.tr());
     } on SubscriptionFailure catch (error) {
       if (mounted && !error.cancelled) _showMessage(error.message);
@@ -256,6 +312,7 @@ class _MonetizationSettingsCardState
     setState(() => _busy = true);
     try {
       final access = await ref.read(subscriptionActionsProvider).restore();
+      await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
       if (mounted) {
         _showMessage(
           access.isActive
@@ -271,9 +328,27 @@ class _MonetizationSettingsCardState
   }
 
   Future<void> _signOut() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(LocaleKeys.auth_sign_out_title.tr()),
+        content: Text(LocaleKeys.auth_sign_out_message.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(LocaleKeys.cancel.tr()),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(LocaleKeys.auth_sign_out.tr()),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
     setState(() => _busy = true);
     try {
-      await ref.read(authRepositoryProvider).signOut();
+      await ref.read(accountSessionActionsProvider).signOut();
     } on AuthFailure catch (error) {
       if (mounted) _showMessage(error.message);
     } finally {
@@ -306,7 +381,7 @@ class _MonetizationSettingsCardState
 
     setState(() => _busy = true);
     try {
-      await ref.read(authRepositoryProvider).deleteAccount();
+      await ref.read(accountSessionActionsProvider).deleteAccount();
       if (mounted) _showMessage(LocaleKeys.auth_account_deleted.tr());
     } on AuthFailure catch (error) {
       if (mounted) _showMessage(error.message);

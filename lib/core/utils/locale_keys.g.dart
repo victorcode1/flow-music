@@ -354,4 +354,37 @@ abstract class LocaleKeys {
   static const auth_delete_account_title = 'auth_delete_account_title';
   static const auth_delete_account_message = 'auth_delete_account_message';
   static const auth_account_deleted = 'auth_account_deleted';
+  static const auth_signed_out = 'auth_signed_out';
+  static const auth_sign_out_delete_synced_data =
+      'auth_sign_out_delete_synced_data';
+  static const auth_sign_out_delete_synced_data_hint =
+      'auth_sign_out_delete_synced_data_hint';
+  static const auth_sign_out_delete_warning_title =
+      'auth_sign_out_delete_warning_title';
+  static const auth_sign_out_delete_warning_message =
+      'auth_sign_out_delete_warning_message';
+  static const auth_sign_out_delete_warning_action =
+      'auth_sign_out_delete_warning_action';
+  static const user_data_sync_failed = 'user_data_sync_failed';
+  static const subscription_price_unavailable =
+      'subscription_price_unavailable';
+  static const subscription_check_price = 'subscription_check_price';
+  static const subscription_manage = 'subscription_manage';
+  static const subscription_privacy_policy = 'subscription_privacy_policy';
+  static const subscription_terms_of_use = 'subscription_terms_of_use';
+  static const subscription_link_failed = 'subscription_link_failed';
+  static const subscription_apple_disclosure = 'subscription_apple_disclosure';
+  static const subscription_promo_title = 'subscription_promo_title';
+  static const subscription_promo_message = 'subscription_promo_message';
+  static const subscription_promo_no_ads = 'subscription_promo_no_ads';
+  static const subscription_promo_portable = 'subscription_promo_portable';
+  static const subscription_promo_support = 'subscription_promo_support';
+  static const subscription_promo_later = 'subscription_promo_later';
+  static const subscription_promo_action = 'subscription_promo_action';
+  static const cloud_sync_monthly_required = 'cloud_sync_monthly_required';
+  static const cloud_sync_verifying = 'cloud_sync_verifying';
+  static const cloud_sync_synced = 'cloud_sync_synced';
+  static const cloud_sync_pending = 'cloud_sync_pending';
+  static const cloud_sync_unavailable = 'cloud_sync_unavailable';
+  static const cloud_sync_now = 'cloud_sync_now';
 }

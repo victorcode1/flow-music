@@ -1,0 +1,15 @@
+<es-419>
+Copia y sincronización de favoritos, playlists y ajustes con una suscripción mensual vigente.
+Los datos locales se conservan y se separan por cuenta al cerrar sesión.
+La compra de por vida mantiene su beneficio de eliminar anuncios.
+</es-419>
+<en-US>
+Back up and sync favorites, playlists and settings with a current monthly subscription.
+Local data is preserved and kept separate for each account after sign-out.
+The lifetime purchase keeps its ad-removal benefit.
+</en-US>
+<pt-BR>
+Cópia e sincronização de favoritos, playlists e configurações com uma assinatura mensal vigente.
+Os dados locais são preservados e separados por conta ao sair.
+A compra vitalícia mantém o benefício de remover anúncios.
+</pt-BR>
