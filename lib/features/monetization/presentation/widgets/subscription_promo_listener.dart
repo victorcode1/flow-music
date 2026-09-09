@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/engagement/subscription_promo_coordinator.dart';
+import 'package:flow_music/core/routes/app_navigator_key.dart';
 import 'package:flow_music/core/routes/routes.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/monetization/domain/entities/subscription_access.dart';
@@ -49,10 +50,17 @@ class _SubscriptionPromoListenerState
   }
 
   bool _canSchedule(SubscriptionAccess? access) {
-    if (!_ready || _scheduled || _shownThisSession || access == null) {
+    if (!_ready || _scheduled || _shownThisSession) {
       return false;
     }
-    if (!access.isResolved || !access.serviceAvailable || access.isActive) {
+    return _isEligible(access);
+  }
+
+  bool _isEligible(SubscriptionAccess? access) {
+    if (access == null ||
+        !access.isResolved ||
+        !access.serviceAvailable ||
+        access.isActive) {
       return false;
     }
     return ref.read(subscriptionPromoCoordinatorProvider).shouldShow();
@@ -60,15 +68,30 @@ class _SubscriptionPromoListenerState
 
   Future<void> _showPromo() async {
     if (!mounted || _shownThisSession) return;
-    _shownThisSession = true;
-    await ref.read(subscriptionPromoCoordinatorProvider).markShown();
-    unawaited(
-      ref.read(productAnalyticsProvider).track('subscription_promo_shown'),
-    );
-    if (!mounted) return;
+    // Access may have changed since the post-frame callback was scheduled.
+    if (!_isEligible(ref.read(subscriptionAccessProvider).value)) {
+      _scheduled = false;
+      return;
+    }
 
-    final openSettings = await showDialog<bool>(
-      context: context,
+    // This listener lives in MaterialApp.router.builder, ABOVE the Navigator.
+    // Its mounted context cannot be used by showDialog. The root overlay is a
+    // descendant of the actual Navigator and can safely host the dialog.
+    final navigator = ref.read(appNavigatorKeyProvider).currentState;
+    final navigatorContext = navigator?.overlay?.context;
+    if (navigator == null ||
+        !navigator.mounted ||
+        navigatorContext == null ||
+        !navigatorContext.mounted) {
+      _scheduled = false;
+      return;
+    }
+    final coordinator = ref.read(subscriptionPromoCoordinatorProvider);
+    final analytics = ref.read(productAnalyticsProvider);
+
+    // No async gap between checking the Navigator and pushing the route.
+    final dialogResult = showDialog<bool>(
+      context: navigatorContext,
       builder: (dialogContext) => AlertDialog(
         icon: const Icon(Icons.workspace_premium_rounded, size: 36),
         title: Text(LocaleKeys.subscription_promo_title.tr()),
@@ -106,6 +129,13 @@ class _SubscriptionPromoListenerState
         ],
       ),
     );
+
+    // Count a display only after a real dialog route has been opened. Capture
+    // dependencies before awaiting persistence, since the listener can unmount.
+    _shownThisSession = true;
+    unawaited(analytics.track('subscription_promo_shown'));
+    await coordinator.markShown();
+    final openSettings = await dialogResult;
 
     if (openSettings == true && mounted) {
       unawaited(
