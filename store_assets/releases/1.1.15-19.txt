@@ -1,0 +1,15 @@
+<es-419>
+Mejoramos la navegación para conservar los controles principales al abrir Ajustes y el reproductor.
+Las portadas inaccesibles ahora muestran el marcador correcto.
+Los fallos temporales del catálogo de radios ya no se reportan como cierres inesperados.
+</es-419>
+<en-US>
+Improved navigation so primary controls remain available in Settings and the full player.
+Unavailable station artwork now uses the correct placeholder.
+Temporary radio catalog failures are no longer reported as unexpected crashes.
+</en-US>
+<pt-BR>
+Melhoramos a navegação para manter os controles principais em Configurações e no player.
+Capas de emissoras indisponíveis agora usam o marcador correto.
+Falhas temporárias do catálogo de rádios não são mais reportadas como encerramentos inesperados.
+</pt-BR>
