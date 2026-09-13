@@ -1,4 +1,4 @@
-package com.victorflores.streambeat
+package com.victorflores.streambeatmusic
 
 import com.ryanheise.audioservice.AudioServiceActivity
 

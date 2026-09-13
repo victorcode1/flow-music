@@ -43,13 +43,13 @@ explícitos. Las funciones son:
 - `delete-account`: requiere JWT de Supabase, vuelve a validar el usuario y
   elimina la cuenta con el cliente administrativo.
 
-Agregar `com.victorflores.streambeat://auth-callback` a las URL de redirección
+Agregar `com.victorflores.streambeatmusic://auth-callback` a las URL de redirección
 de Auth. Mantener confirmación de correo activada en producción.
 
 En el proyecto remoto, configurar también los secretos
 `REVENUECAT_WEBHOOK_AUTH` y `REVENUECAT_ENTITLEMENT_ID=remove_ads`. El webhook
 de RevenueCat debe apuntar a
-`https://afgpugpnapajemftfbzz.supabase.co/functions/v1/revenuecat-webhook`.
+`https://YOUR_PROJECT.supabase.co/functions/v1/revenuecat-webhook`.
 
 ## Tiendas y RevenueCat
 
@@ -67,9 +67,11 @@ las reglas generales para quitar anuncios, que es una función digital.
 
 ## AdMob y privacidad
 
-Los builds debug usan IDs de prueba oficiales. Android ya tiene configurado el
-application ID de StreamBeat; iOS seguirá sin anuncios de producción hasta que
-se cree su app y se reemplace `GADApplicationIdentifier`. UMP se consulta en
+Los builds debug usan IDs de prueba oficiales. En `main`, Android e iOS usan
+aplicaciones de prueba de AdMob. Antes de habilitar anuncios de producción,
+registrar StreamBeat Music como una app independiente y reemplazar
+`com.google.android.gms.ads.APPLICATION_ID` en Android y
+`GADApplicationIdentifier` en iOS, además de los IDs de banners. UMP se consulta en
 cada arranque, no se solicita un anuncio hasta que `canRequestAds` lo permite,
 y Ajustes muestra la entrada de privacidad cuando sea obligatoria.
 

@@ -35,7 +35,7 @@ class AppEnvironment {
 
   static const authCallbackUrl = String.fromEnvironment(
     'AUTH_CALLBACK_URL',
-    defaultValue: 'com.victorflores.streambeat://auth-callback',
+    defaultValue: 'com.victorflores.streambeatmusic://auth-callback',
   );
 
   static bool get hasSupabaseConfiguration =>

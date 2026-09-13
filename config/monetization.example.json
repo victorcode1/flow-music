@@ -7,5 +7,5 @@
   "REVENUECAT_MONTHLY_PRODUCT_ID": "remove_ads_monthly",
   "ADMOB_ANDROID_BANNER_ID": "ca-app-pub-0000000000000000/0000000000",
   "ADMOB_IOS_BANNER_ID": "ca-app-pub-0000000000000000/0000000000",
-  "AUTH_CALLBACK_URL": "com.victorflores.streambeat://auth-callback"
+  "AUTH_CALLBACK_URL": "com.victorflores.streambeatmusic://auth-callback"
 }

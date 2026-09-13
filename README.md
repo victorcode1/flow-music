@@ -15,6 +15,28 @@ funciones opcionales de cuenta y monetización usan servicios desacoplados:
 
 La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
 
+## Identidad independiente de main
+
+- `main`: `com.victorflores.streambeatmusic` (StreamBeat Music en Android/iOS).
+- `dev-main` y `store`: conservan `com.victorflores.streambeat` en Android/iOS.
+
+Android, iOS y macOS usan el nuevo identificador en todas las configuraciones;
+Linux también tiene su propio application ID. En Android/iOS se pueden instalar
+ambas apps a la vez y cada una mantiene sus datos locales. El enlace de retorno
+es `com.victorflores.streambeatmusic://auth-callback`, también en el archivo de
+ejemplo. No reutilizar un `monetization.local.json` que apunte al callback antiguo.
+Al integrar cambios futuros entre ramas, conservar la identidad de la rama destino.
+
+`flutter run` permite probar la app sin configurar cuentas ni compras. Para
+separar también los datos remotos, usar un proyecto Supabase propio, aplicar las
+migraciones/funciones de este repositorio y registrar el nuevo callback en Auth.
+Usar las claves públicas de ese proyecto y aplicaciones/productos propios en
+RevenueCat y las tiendas. Cambiar el ID del binario no crea estos servicios.
+Android e iOS incluyen IDs de aplicación de prueba de AdMob; los IDs de producción
+deben pertenecer a StreamBeat Music (ver `docs/MONETIZATION.md`). Para instalar en
+un iPhone físico o distribuir, configurar la firma del nuevo bundle ID en Apple.
+En web, usar un origen/puerto y configuración propios para aislar el almacenamiento.
+
 ## Requisitos
 
 - Flutter SDK 3.8 o posterior
