@@ -1,0 +1,16 @@
+Product ID: remove_ads_lifetime
+Type: non-consumable one-time product
+Entitlement: remove_ads
+Base price: USD 9.99
+
+[es-419]
+Nombre: StreamBeat Premium de por vida
+Descripción: Un solo pago para eliminar permanentemente los anuncios propios de StreamBeat. No elimina publicidad emitida por las radios.
+
+[en-US]
+Name: StreamBeat Lifetime Premium
+Description: One payment to permanently remove StreamBeat's own advertising. It does not remove advertising broadcast by radio stations.
+
+[pt-BR]
+Nome: StreamBeat Premium vitalício
+Descrição: Um único pagamento para remover permanentemente os anúncios do StreamBeat. Não remove anúncios transmitidos pelas rádios.

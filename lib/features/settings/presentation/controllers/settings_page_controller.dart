@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
 import 'package:flow_music/features/settings/data/settings_local_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -38,12 +39,14 @@ class SettingsPageController {
     Locale locale,
   ) async {
     await context.setLocale(locale);
-    final stored = const SettingsLocalDataSource().read();
-    await const SettingsLocalDataSource().write(
-      stored.copyWith(
-        locale: locale.toLanguageTag(),
-        updatedAtMs: DateTime.now().millisecondsSinceEpoch,
-      ),
-    );
+    await ref.read(userDataSyncCoordinatorProvider).editPreferences(() async {
+      final stored = const SettingsLocalDataSource().read();
+      await const SettingsLocalDataSource().write(
+        stored.copyWith(
+          locale: locale.toLanguageTag(),
+          updatedAtMs: DateTime.now().millisecondsSinceEpoch,
+        ),
+      );
+    });
   }
 }

@@ -1,0 +1,15 @@
+<es-419>
+Corregimos un error al mostrar el aviso de suscripción.
+La copia y sincronización de favoritos, playlists y ajustes requiere una suscripción mensual vigente.
+Conserva y exporta tu biblioteca local. La compra de por vida sigue eliminando anuncios.
+</es-419>
+<en-US>
+Fixed an error when displaying the subscription reminder.
+Backing up and syncing favorites, playlists and settings requires an active monthly subscription.
+Keep and export your local library. Lifetime purchases continue to remove ads.
+</en-US>
+<pt-BR>
+Corrigimos um erro ao exibir o aviso de assinatura.
+O backup e a sincronização de favoritos, playlists e configurações exigem uma assinatura mensal ativa.
+Mantenha e exporte sua biblioteca local. A compra vitalícia continua removendo anúncios.
+</pt-BR>

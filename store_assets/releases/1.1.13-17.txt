@@ -1,0 +1,18 @@
+<es-419>
+Copia y sincronización de favoritos, playlists y ajustes con una suscripción mensual vigente.
+Los datos locales se conservan y se separan por cuenta al cerrar sesión.
+Exporta tu biblioteca y consulta la última sincronización correcta.
+Límites de nube para proteger tus datos y el servicio. La compra de por vida sigue eliminando anuncios.
+</es-419>
+<en-US>
+Back up and sync favorites, playlists and settings with a current monthly subscription.
+Local data is preserved and kept separate for each account after sign-out.
+Export your library and see the last successful sync.
+Cloud limits help protect your data and the service. The lifetime purchase still removes ads.
+</en-US>
+<pt-BR>
+Cópia e sincronização de favoritos, playlists e configurações com uma assinatura mensal vigente.
+Os dados locais são preservados e separados por conta ao sair.
+Exporte sua biblioteca e veja a última sincronização bem-sucedida.
+Limites de nuvem protegem seus dados e o serviço. A compra vitalícia continua removendo anúncios.
+</pt-BR>

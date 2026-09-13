@@ -1,5 +1,5 @@
-import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart'
-    show settingsBoxName;
+import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/settings/data/settings_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -29,6 +29,7 @@ enum FlowAccent {
 
 /// Clave dentro de la caja `settings` de Hive para el acento elegido.
 const String _accentKey = 'accent_color';
+const String _settingsUpdatedAtKey = 'settings_updated_at_ms';
 
 /// Controla el color de acento activo de la app y lo persiste localmente en la
 /// misma caja Hive que el resto de preferencias. `MaterialApp` reconstruye su
@@ -41,13 +42,21 @@ final accentColorControllerProvider =
 class AccentColorController extends Notifier<FlowAccent> {
   @override
   FlowAccent build() {
+    ref.watch(userDataSyncRevisionProvider);
     return _decode(Hive.box(settingsBoxName).get(_accentKey));
   }
 
   /// Cambia el acento activo y lo persiste.
   Future<void> setAccent(FlowAccent accent) async {
     if (state == accent) return;
-    await Hive.box(settingsBoxName).put(_accentKey, accent.name);
+    final box = Hive.box(settingsBoxName);
+    await ref.read(userDataSyncCoordinatorProvider).editPreferences(() async {
+      await box.put(_accentKey, accent.name);
+      await box.put(
+        _settingsUpdatedAtKey,
+        DateTime.now().millisecondsSinceEpoch,
+      );
+    });
     state = accent;
   }
 

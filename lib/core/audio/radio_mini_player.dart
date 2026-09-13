@@ -3,10 +3,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
-import 'package:flow_music/features/radio/presentation/pages/radio_player_page.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
 import 'package:flow_music/shared/widgets/optimized_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Barra compacta para la emisora que suena en segundo plano.
@@ -34,6 +34,8 @@ class RadioMiniPlayer extends ConsumerWidget {
             final playback =
                 playbackSnapshot.data ?? flowAudioHandler.playbackState.value;
             final isLoading = isRadioPlaybackLoading(playback.processingState);
+            final hasError =
+                playback.processingState == AudioProcessingState.error;
             final isPlaying = playback.playing && !isLoading;
 
             return Padding(
@@ -43,11 +45,7 @@ class RadioMiniPlayer extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(18),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const RadioPlayerPage(),
-                    ),
-                  ),
+                  onTap: () => context.push('/radio-player'),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
@@ -70,7 +68,9 @@ class RadioMiniPlayer extends ConsumerWidget {
                                     ?.copyWith(fontWeight: FontWeight.w800),
                               ),
                               Text(
-                                item.artist ?? 'Radio en directo',
+                                hasError
+                                    ? LocaleKeys.radio_play_interrupted.tr()
+                                    : item.artist ?? 'Radio en directo',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall
@@ -94,6 +94,8 @@ class RadioMiniPlayer extends ConsumerWidget {
                           isPlaying: isPlaying,
                           tooltip: isLoading
                               ? LocaleKeys.loading.tr()
+                              : hasError
+                              ? LocaleKeys.retry.tr()
                               : isPlaying
                               ? LocaleKeys.pause.tr()
                               : LocaleKeys.play.tr(),

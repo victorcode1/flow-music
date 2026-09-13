@@ -21,7 +21,7 @@ Con StreamBeat puedes:
 
 La ubicación es opcional y solo se utiliza mientras usas la app para ofrecer sugerencias por país y centrar el mapa. Puedes escuchar radio sin conceder ese permiso.
 
-StreamBeat puede mostrar un banner compacto cuando no hay una emisora reproduciéndose. Una suscripción mensual opcional elimina los anuncios. Crear una cuenta es opcional y permite acceder a los beneficios de la suscripción en dispositivos compatibles.
+StreamBeat puede mostrar un banner compacto mientras usas la app, incluso al escuchar radio, sin cubrir los controles de reproducción. Puedes eliminar sus anuncios con una suscripción mensual opcional o con una compra única de acceso de por vida. Crear una cuenta es opcional y permite conservar los beneficios Premium en dispositivos compatibles.
 
 La disponibilidad y la calidad del audio dependen del proveedor de cada emisora. Algunas emisoras pueden no estar disponibles temporalmente.
 

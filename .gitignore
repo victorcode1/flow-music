@@ -85,3 +85,7 @@ scrip.sh
 /radio/
 /radio-restored/
 /radio-bundles/*.tmp
+
+# Local browser sessions may contain authenticated console snapshots.
+/.playwright-cli/
+/output/playwright/

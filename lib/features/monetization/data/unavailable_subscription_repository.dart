@@ -19,10 +19,11 @@ class UnavailableSubscriptionRepository implements SubscriptionRepository {
   Future<void> initialize({String? userId}) async {}
 
   @override
-  Future<SubscriptionOffer> loadMonthlyOffer() => Future.error(_failure);
+  Future<List<PremiumOffer>> loadOffers() => Future.error(_failure);
 
   @override
-  Future<SubscriptionAccess> purchaseMonthly() => Future.error(_failure);
+  Future<SubscriptionAccess> purchase(PremiumOfferKind kind) =>
+      Future.error(_failure);
 
   @override
   Future<SubscriptionAccess> refresh() async =>

@@ -2,12 +2,16 @@ class SubscriptionAccess {
   const SubscriptionAccess({
     required this.isResolved,
     required this.serviceAvailable,
-    required this.isActive,
+    required bool isActive,
     this.willRenew = false,
     this.productId,
     this.expiresAt,
     this.store,
-  });
+    this.managementUrl,
+    this.userId,
+    this.hasMonthlySubscription = false,
+    this.monthlyExpiresAt,
+  }) : _isActive = isActive;
 
   const SubscriptionAccess.loading()
     : this(isResolved: false, serviceAvailable: true, isActive: false);
@@ -20,21 +24,31 @@ class SubscriptionAccess {
 
   final bool isResolved;
   final bool serviceAvailable;
-  final bool isActive;
+  final bool _isActive;
+  bool get isActive =>
+      _isActive && (expiresAt == null || expiresAt!.isAfter(DateTime.now()));
   final bool willRenew;
   final String? productId;
   final DateTime? expiresAt;
   final String? store;
+  final String? managementUrl;
+  final String? userId;
+  final bool hasMonthlySubscription;
+  final DateTime? monthlyExpiresAt;
 }
 
-class SubscriptionOffer {
-  const SubscriptionOffer({
+enum PremiumOfferKind { monthly, lifetime }
+
+class PremiumOffer {
+  const PremiumOffer({
+    required this.kind,
     required this.productId,
     required this.priceLabel,
-    required this.period,
+    this.period,
   });
 
+  final PremiumOfferKind kind;
   final String productId;
   final String priceLabel;
-  final String period;
+  final String? period;
 }

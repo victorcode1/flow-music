@@ -11,7 +11,7 @@ import 'package:flow_music/features/flow_mix/data/flow_mix_feedback_repository.d
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
 import 'package:flow_music/features/radio/data/radio_station_health_repository.dart';
-import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
+import 'package:flow_music/features/settings/data/settings_storage.dart';
 import 'package:flow_music/shared/custom_info_version/provider/info_version.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';

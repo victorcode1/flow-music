@@ -7,13 +7,14 @@ Aplicación Flutter para descubrir música, reproducir audio y explorar estacion
 La reproducción y las preferencias siguen funcionando de forma local. Las
 funciones opcionales de cuenta y monetización usan servicios desacoplados:
 
-- Favoritos, playlists y preferencias se guardan solamente en el dispositivo con Hive.
+- Favoritos, playlists y preferencias se guardan localmente con Hive. Una suscripción mensual pagada y vigente permite guardar una copia en Supabase y recuperarla al entrar con la misma cuenta en otro dispositivo. La compra de por vida solo quita anuncios.
 - La ubicación se solicita solo mientras la app está abierta, para elegir el país de las recomendaciones y centrar el explorador de radio. No se guarda ni se envía a un servidor.
 - La recomendación diaria es opcional y se programa localmente a las 6:00 p. m. con una emisora aleatoria; no requiere un servidor ni ubicación en segundo plano.
 - Las compilaciones `release` envían a Sentry errores y una muestra de trazas de rendimiento para diagnóstico. Sentry permanece desactivado en debug y profile, y la integración no envía información personal por defecto.
 - Supabase Auth y PostgreSQL conservan la cuenta y el perfil entre dispositivos. El acceso opcional con Google comparte con StreamBeat el correo, nombre, foto e identificador básico autorizados por el usuario.
-- RevenueCat valida la suscripción mensual de USD 1 mediante Google Play Billing o Apple In-App Purchase.
-- AdMob muestra como máximo un banner adaptativo; se oculta durante la reproducción y para suscriptores.
+- RevenueCat valida la suscripción mensual y la compra Premium de por vida mediante Google Play Billing o Apple In-App Purchase.
+- La base de datos verifica el permiso mensual antes de leer o escribir copias. Al vencer se pausa la nube y se conservan los datos del dispositivo. Cerrar sesión separa los datos locales por cuenta.
+- AdMob muestra como máximo un banner compacto, separado de los controles, también durante la reproducción con la app en primer plano. Se oculta para usuarios Premium y libera el anuncio al pasar a segundo plano.
 
 La rama main conserva las funciones de búsqueda y reproducción basadas en YouTube. La rama store se prepara como una experiencia centrada únicamente en estaciones de radio.
 
@@ -28,7 +29,7 @@ La rama main conserva las funciones de búsqueda y reproducción basadas en YouT
     flutter pub get
     flutter run
 
-Para habilitar cuenta, suscripción y anuncios usa el archivo de ejemplo en
+Para habilitar cuenta, compras Premium y anuncios usa el archivo de ejemplo en
 `config/monetization.example.json`:
 
     cp config/monetization.example.json config/monetization.local.json

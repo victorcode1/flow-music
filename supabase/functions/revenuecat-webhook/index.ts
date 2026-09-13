@@ -1,4 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.112.3";
+import { reconcileCloudAccess } from "../_shared/cloud-sync-service.ts";
+import { customerIdsForEvent } from "../_shared/revenuecat-cloud-access.ts";
 
 type RevenueCatEvent = {
   id?: string;
@@ -67,6 +69,18 @@ Deno.serve(async (request) => {
   }
   if (existingEvent) {
     return Response.json({ received: true, duplicate: true });
+  }
+
+  // Refresh current server state instead of granting cloud access from the
+  // event type. Also refresh both sides of a purchase transfer.
+  try {
+    for (const id of customerIdsForEvent(event)) {
+      const { data: { user }, error } = await supabase.auth.admin.getUserById(id);
+      if (error && error.status !== 404) throw error;
+      if (user) await reconcileCloudAccess(supabase, user.id);
+    }
+  } catch (_) {
+    return new Response("Unable to verify cloud subscription", { status: 503 });
   }
 
   const affectsEntitlement =

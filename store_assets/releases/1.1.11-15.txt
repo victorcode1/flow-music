@@ -1,0 +1,9 @@
+<es-419>
+Ahora puedes elegir StreamBeat Premium de por vida con un solo pago, además de la suscripción mensual. Ambas opciones eliminan la publicidad propia de StreamBeat y se pueden restaurar con tu cuenta.
+</es-419>
+<en-US>
+You can now choose StreamBeat Lifetime Premium with one payment, alongside the monthly subscription. Both options remove StreamBeat's own advertising and can be restored with your account.
+</en-US>
+<pt-BR>
+Agora você pode escolher o StreamBeat Premium vitalício com um único pagamento, além da assinatura mensal. As duas opções removem os anúncios do StreamBeat e podem ser restauradas com sua conta.
+</pt-BR>

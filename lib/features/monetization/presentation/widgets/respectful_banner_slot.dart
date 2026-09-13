@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:audio_service/audio_service.dart';
-import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/config/app_environment.dart';
 import 'package:flow_music/features/monetization/domain/services/ad_visibility_policy.dart';
 import 'package:flow_music/features/monetization/presentation/providers/ad_providers.dart';
@@ -10,118 +8,159 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// Un unico banner compacto. Nunca cubre contenido y desaparece en cuanto se
-/// inicia una sesion de audio o se confirma la suscripcion sin anuncios.
-class RespectfulBannerSlot extends ConsumerWidget {
+/// Un banner compacto separado de los controles. Escuchar no lo oculta;
+/// pasar a segundo plano libera el anuncio sin tocar la sesion de audio.
+class RespectfulBannerSlot extends ConsumerStatefulWidget {
   const RespectfulBannerSlot({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final access = ref.watch(subscriptionAccessProvider).value;
-    if (access == null) return const SizedBox.shrink();
-
-    return StreamBuilder<MediaItem?>(
-      stream: flowAudioHandler.mediaItem,
-      initialData: flowAudioHandler.mediaItem.value,
-      builder: (context, snapshot) {
-        final item = snapshot.data;
-        final audioSessionActive =
-            item != null &&
-            item.title.trim().isNotEmpty &&
-            item.title != 'StreamBeat';
-        final shouldShow = AdVisibilityPolicy.shouldShow(
-          access: access,
-          audioSessionActive: audioSessionActive,
-          adsSupported: AppEnvironment.supportsNativeMonetization,
-        );
-        return shouldShow ? const _AdaptiveBanner() : const SizedBox.shrink();
-      },
-    );
-  }
+  ConsumerState<RespectfulBannerSlot> createState() =>
+      _RespectfulBannerSlotState();
 }
 
-class _AdaptiveBanner extends ConsumerStatefulWidget {
-  const _AdaptiveBanner();
+class _RespectfulBannerSlotState extends ConsumerState<RespectfulBannerSlot>
+    with WidgetsBindingObserver {
+  late bool _foreground;
 
   @override
-  ConsumerState<_AdaptiveBanner> createState() => _AdaptiveBannerState();
-}
+  void initState() {
+    super.initState();
+    _foreground =
+        WidgetsBinding.instance.lifecycleState == AppLifecycleState.resumed;
+    WidgetsBinding.instance.addObserver(this);
+  }
 
-class _AdaptiveBannerState extends ConsumerState<_AdaptiveBanner> {
-  BannerAd? _banner;
-  int? _requestedWidth;
-  bool _loading = false;
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final foreground = state == AppLifecycleState.resumed;
+    if (_foreground != foreground) setState(() => _foreground = foreground);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final consent = ref.watch(canRequestAdsProvider);
-    if (consent.value != true) return const SizedBox.shrink();
+    final access = ref.watch(subscriptionAccessProvider).value;
+    if (access == null ||
+        !AdVisibilityPolicy.shouldShow(
+          access: access,
+          adsSupported: AppEnvironment.supportsNativeMonetization,
+        )) {
+      return const SizedBox.shrink();
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = constraints.maxWidth.floor();
-        if (width > 0 && width != _requestedWidth && !_loading) {
-          _requestedWidth = width;
-          scheduleMicrotask(() => _load(width));
+        if (constraints.maxWidth < AdSize.banner.width) {
+          return const SizedBox.shrink();
         }
-        final banner = _banner;
-        if (banner == null) return const SizedBox.shrink();
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surface,
-          child: Center(
-            child: SafeArea(
-              top: false,
-              bottom: false,
-              child: SizedBox(
-                width: banner.size.width.toDouble(),
-                height: banner.size.height.toDouble(),
-                child: AdWidget(ad: banner),
-              ),
-            ),
-          ),
+        // Reservar altura antes de cargar evita desplazar los botones al llegar
+        // el anuncio. El espacio se conserva al abrir/cerrar otra aplicacion.
+        return SizedBox(
+          height: AdSize.banner.height + 24,
+          child: _foreground ? const _CompactBanner() : null,
         );
       },
     );
-  }
-
-  Future<void> _load(int _) async {
-    if (!mounted || _loading) return;
-    _loading = true;
-    final previous = _banner;
-    _banner = null;
-    await previous?.dispose();
-    const size = AdSize.banner;
-    if (!mounted) {
-      _loading = false;
-      return;
-    }
-
-    final banner = BannerAd(
-      adUnitId: AppEnvironment.admobBannerId,
-      request: const AdRequest(),
-      size: size,
-      listener: BannerAdListener(
-        onAdLoaded: (ad) {
-          if (!mounted) {
-            unawaited(ad.dispose());
-            return;
-          }
-          setState(() {
-            _banner = ad as BannerAd;
-            _loading = false;
-          });
-        },
-        onAdFailedToLoad: (ad, _) {
-          unawaited(ad.dispose());
-          if (mounted) setState(() => _loading = false);
-        },
-      ),
-    );
-    await banner.load();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+}
+
+class _CompactBanner extends ConsumerStatefulWidget {
+  const _CompactBanner();
+
+  @override
+  ConsumerState<_CompactBanner> createState() => _CompactBannerState();
+}
+
+class _CompactBannerState extends ConsumerState<_CompactBanner>
+    with WidgetsBindingObserver {
+  BannerAd? _banner;
+  bool _loaded = false;
+  Timer? _retry;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {});
+      return;
+    }
+    // En paused Flutter puede no dibujar otro frame: liberar el recurso nativo
+    // aqui, sin esperar a que el padre retire este widget.
+    _retry?.cancel();
+    _retry = null;
+    final banner = _banner;
+    _banner = null;
+    _loaded = false;
+    unawaited(banner?.dispose());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final consent = ref.watch(canRequestAdsProvider);
+    if (consent.value != true ||
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      return const SizedBox.shrink();
+    }
+    if (_banner == null && _retry == null) {
+      // La referencia se asigna inmediatamente para no duplicar solicitudes.
+      _load();
+    }
+    final banner = _banner;
+    if (!_loaded || banner == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Center(
+        child: SizedBox(
+          width: AdSize.banner.width.toDouble(),
+          height: AdSize.banner.height.toDouble(),
+          child: AdWidget(ad: banner),
+        ),
+      ),
+    );
+  }
+
+  void _load() {
+    final banner = BannerAd(
+      adUnitId: AppEnvironment.admobBannerId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          if (!mounted || !identical(_banner, ad)) return;
+          setState(() => _loaded = true);
+        },
+        onAdFailedToLoad: (ad, error) => _failed(ad),
+      ),
+    );
+    _banner = banner;
+    unawaited(banner.load().catchError((Object error) => _failed(banner)));
+  }
+
+  void _failed(Ad ad) {
+    if (!mounted || !identical(_banner, ad)) return;
+    unawaited(ad.dispose());
+    _banner = null;
+    _retry = Timer(const Duration(minutes: 1), () {
+      _retry = null;
+      if (mounted) setState(() {});
+    });
+    setState(() => _loaded = false);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _retry?.cancel();
     unawaited(_banner?.dispose());
     super.dispose();
   }

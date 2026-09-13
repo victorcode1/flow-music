@@ -1,4 +1,5 @@
-import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
+import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/settings/data/settings_storage.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,6 +14,7 @@ const String _settingsUpdatedAtKey = 'settings_updated_at_ms';
 class AutoplayEnabledController extends _$AutoplayEnabledController {
   @override
   bool build() {
+    ref.watch(userDataSyncRevisionProvider);
     final box = Hive.box(settingsBoxName);
     final stored = box.get(_autoplayEnabledKey);
     if (stored is bool) return stored;
@@ -21,8 +23,13 @@ class AutoplayEnabledController extends _$AutoplayEnabledController {
 
   Future<void> setEnabled(bool enabled) async {
     final box = Hive.box(settingsBoxName);
-    await box.put(_autoplayEnabledKey, enabled);
-    await box.put(_settingsUpdatedAtKey, DateTime.now().millisecondsSinceEpoch);
+    await ref.read(userDataSyncCoordinatorProvider).editPreferences(() async {
+      await box.put(_autoplayEnabledKey, enabled);
+      await box.put(
+        _settingsUpdatedAtKey,
+        DateTime.now().millisecondsSinceEpoch,
+      );
+    });
     state = enabled;
   }
 }

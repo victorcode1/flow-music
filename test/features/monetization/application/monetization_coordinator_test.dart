@@ -133,10 +133,11 @@ class _TrackingSubscriptionRepository implements SubscriptionRepository {
   }
 
   @override
-  Future<SubscriptionOffer> loadMonthlyOffer() => throw UnimplementedError();
+  Future<List<PremiumOffer>> loadOffers() => throw UnimplementedError();
 
   @override
-  Future<SubscriptionAccess> purchaseMonthly() => throw UnimplementedError();
+  Future<SubscriptionAccess> purchase(PremiumOfferKind kind) =>
+      throw UnimplementedError();
 
   @override
   Future<SubscriptionAccess> refresh() async => const SubscriptionAccess.free();

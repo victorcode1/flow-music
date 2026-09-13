@@ -1,0 +1,9 @@
+<es-419>
+Mejoramos la estabilidad al interrumpirse una emisora. Si falla la reproducción, verás un aviso y podrás volver a intentarlo con el botón de reproducir. También mejoramos la recuperación al cambiar de emisora después de un fallo.
+</es-419>
+<en-US>
+Improved stability when a station stops streaming. If playback fails, a message appears and you can press play to try again. Recovery when switching stations after a playback failure is also improved.
+</en-US>
+<pt-BR>
+Melhoramos a estabilidade quando uma transmissão é interrompida. Se a reprodução falhar, uma mensagem será exibida e você poderá pressionar reproduzir para tentar novamente. Também melhoramos a recuperação ao trocar de estação após uma falha.
+</pt-BR>

@@ -4,17 +4,14 @@ class AdVisibilityPolicy {
   const AdVisibilityPolicy._();
 
   /// Solo muestra publicidad cuando sabemos con certeza que el usuario no es
-  /// premium. Tambien la oculta mientras hay una emisora activa para no apilar
-  /// anuncio, controles del reproductor y navegacion.
+  /// premium. La reproduccion no cambia el derecho a mostrar el banner.
   static bool shouldShow({
     required SubscriptionAccess access,
-    required bool audioSessionActive,
     required bool adsSupported,
   }) {
     return adsSupported &&
         access.isResolved &&
         access.serviceAvailable &&
-        !access.isActive &&
-        !audioSessionActive;
+        !access.isActive;
   }
 }

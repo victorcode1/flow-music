@@ -4,11 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AdVisibilityPolicy', () {
-    test('shows one ad for a resolved free user while audio is idle', () {
+    test('shows an ad for a resolved free user independently of playback', () {
       expect(
         AdVisibilityPolicy.shouldShow(
           access: const SubscriptionAccess.free(),
-          audioSessionActive: false,
           adsSupported: true,
         ),
         isTrue,
@@ -19,7 +18,6 @@ void main() {
       expect(
         AdVisibilityPolicy.shouldShow(
           access: const SubscriptionAccess.loading(),
-          audioSessionActive: false,
           adsSupported: true,
         ),
         isFalse,
@@ -30,7 +28,6 @@ void main() {
       expect(
         AdVisibilityPolicy.shouldShow(
           access: const SubscriptionAccess.unavailable(),
-          audioSessionActive: false,
           adsSupported: true,
         ),
         isFalse,
@@ -45,19 +42,17 @@ void main() {
             serviceAvailable: true,
             isActive: true,
           ),
-          audioSessionActive: false,
           adsSupported: true,
         ),
         isFalse,
       );
     });
 
-    test('hides the ad while the radio session is active', () {
+    test('hides ads on unsupported platforms', () {
       expect(
         AdVisibilityPolicy.shouldShow(
           access: const SubscriptionAccess.free(),
-          audioSessionActive: true,
-          adsSupported: true,
+          adsSupported: false,
         ),
         isFalse,
       );

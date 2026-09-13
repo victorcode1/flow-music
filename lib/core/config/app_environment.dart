@@ -27,6 +27,10 @@ class AppEnvironment {
     'REVENUECAT_MONTHLY_PRODUCT_ID',
     defaultValue: 'remove_ads_monthly',
   );
+  static const revenueCatLifetimeProductId = String.fromEnvironment(
+    'REVENUECAT_LIFETIME_PRODUCT_ID',
+    defaultValue: 'remove_ads_lifetime',
+  );
 
   static const admobAndroidBannerId = String.fromEnvironment(
     'ADMOB_ANDROID_BANNER_ID',

@@ -29,7 +29,7 @@ class HomeMobileBottomBar extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const RespectfulBannerSlot(),
-        const RadioMiniPlayer(),
+        if (currentPath != '/radio-player') const RadioMiniPlayer(),
         FlowBottomNav(
           destinations: [
             FlowNavDestination(
@@ -50,7 +50,8 @@ class HomeMobileBottomBar extends ConsumerWidget {
               icon: Icons.radio,
               activeIcon: Icons.radio_rounded,
               label: LocaleKeys.radio.tr(),
-              selected: currentPath == '/radio',
+              selected:
+                  currentPath == '/radio' || currentPath == '/radio-player',
               onTap: () => navigate('/radio'),
             ),
             FlowNavDestination(

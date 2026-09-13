@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/sharing/station_share_service.dart';
@@ -20,9 +19,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///
 /// Muestra la portada, el nombre y los datos de la emisora actual y permite
 /// pausar / reanudar, pasar a la siguiente / anterior emisora de la cola y
-/// marcarla como favorita. Es autonomo (su propio `Scaffold` + `AppBar` con
-/// boton de retroceso) porque se abre con `Navigator.push` desde el mini
-/// player, fuera del shell `HomePage`.
+/// marcarla como favorita. Conserva su propio `Scaffold` + `AppBar`, pero se
+/// renderiza dentro del shell `HomePage` para mantener visible la navegacion
+/// principal.
 class RadioPlayerPage extends ConsumerStatefulWidget {
   const RadioPlayerPage({super.key, this.initialStation});
 
@@ -172,6 +171,26 @@ class _RadioPlayerPageState extends ConsumerState<RadioPlayerPage> {
                             ref: ref,
                           )
                         : null,
+                  ),
+                  StreamBuilder<PlaybackState>(
+                    stream: flowAudioHandler.playbackState,
+                    initialData: flowAudioHandler.playbackState.value,
+                    builder: (context, snapshot) {
+                      if (snapshot.data?.processingState !=
+                          AudioProcessingState.error) {
+                        return const SizedBox.shrink();
+                      }
+                      return Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Text(
+                          LocaleKeys.radio_play_interrupted.tr(),
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colors.error,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 40),
                 ],
@@ -377,23 +396,24 @@ class _Controls extends StatelessWidget {
         ),
         StreamBuilder<PlaybackState>(
           stream: flowAudioHandler.playbackState,
+          initialData: flowAudioHandler.playbackState.value,
           builder: (context, snapshot) {
             final state = snapshot.data;
             final processing = state?.processingState;
             final isBuffering =
                 processing == AudioProcessingState.loading ||
                 processing == AudioProcessingState.buffering;
-            final isPlaying =
-                flowAudioHandler.player.state == PlayerState.playing ||
-                (state?.playing ?? false);
+            final isPlaying = !isBuffering && (state?.playing ?? false);
             return GestureDetector(
-              onTap: () {
-                if (isPlaying) {
-                  flowAudioHandler.pause();
-                } else {
-                  flowAudioHandler.play();
-                }
-              },
+              onTap: isBuffering
+                  ? null
+                  : () {
+                      if (isPlaying) {
+                        flowAudioHandler.pause();
+                      } else {
+                        flowAudioHandler.play();
+                      }
+                    },
               child: Container(
                 width: 76,
                 height: 76,

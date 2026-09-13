@@ -1,0 +1,9 @@
+<es-419>
+Ahora puedes elegir StreamBeat Premium de por vida con un solo pago, además de la suscripción mensual. Corregimos la carga de ambos planes desde Google Play para que siempre se muestre la opción adecuada.
+</es-419>
+<en-US>
+You can now choose StreamBeat Lifetime Premium with one payment, alongside the monthly subscription. We fixed Google Play plan loading so both options display correctly.
+</en-US>
+<pt-BR>
+Agora você pode escolher o StreamBeat Premium vitalício com um único pagamento, além da assinatura mensal. Corrigimos o carregamento dos planos do Google Play para exibir as duas opções corretamente.
+</pt-BR>

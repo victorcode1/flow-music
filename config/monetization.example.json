@@ -5,6 +5,7 @@
   "REVENUECAT_IOS_API_KEY": "appl_YOUR_PUBLIC_SDK_KEY",
   "REVENUECAT_ENTITLEMENT_ID": "remove_ads",
   "REVENUECAT_MONTHLY_PRODUCT_ID": "remove_ads_monthly",
+  "REVENUECAT_LIFETIME_PRODUCT_ID": "remove_ads_lifetime",
   "ADMOB_ANDROID_BANNER_ID": "ca-app-pub-0000000000000000/0000000000",
   "ADMOB_IOS_BANNER_ID": "ca-app-pub-0000000000000000/0000000000",
   "AUTH_CALLBACK_URL": "com.victorflores.streambeat://auth-callback",

@@ -7,6 +7,7 @@ const _requiredAndroidKeys = <String>[
   'REVENUECAT_ANDROID_API_KEY',
   'REVENUECAT_ENTITLEMENT_ID',
   'REVENUECAT_MONTHLY_PRODUCT_ID',
+  'REVENUECAT_LIFETIME_PRODUCT_ID',
   'ADMOB_ANDROID_BANNER_ID',
   'AUTH_CALLBACK_URL',
   'GOOGLE_WEB_CLIENT_ID',
@@ -65,9 +66,11 @@ Future<void> main(List<String> arguments) async {
     _fail('GOOGLE_WEB_CLIENT_ID no parece un cliente OAuth web válido.');
   }
   if (config['REVENUECAT_ENTITLEMENT_ID'] != 'remove_ads' ||
-      config['REVENUECAT_MONTHLY_PRODUCT_ID'] != 'remove_ads_monthly') {
+      config['REVENUECAT_MONTHLY_PRODUCT_ID'] != 'remove_ads_monthly' ||
+      config['REVENUECAT_LIFETIME_PRODUCT_ID'] != 'remove_ads_lifetime') {
     _fail(
-      'Los identificadores deben coincidir con remove_ads/remove_ads_monthly.',
+      'Los identificadores deben coincidir con '
+      'remove_ads/remove_ads_monthly/remove_ads_lifetime.',
     );
   }
 

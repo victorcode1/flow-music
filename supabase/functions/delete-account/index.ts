@@ -25,6 +25,14 @@ Deno.serve(async (request) => {
   const adminClient = createClient(url, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+  const { error: analyticsDeleteError } = await adminClient
+    .from("product_analytics_events")
+    .delete()
+    .eq("user_id", data.user.id);
+  if (analyticsDeleteError) {
+    return new Response("Unable to delete account data", { status: 500 });
+  }
+
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(
     data.user.id,
   );

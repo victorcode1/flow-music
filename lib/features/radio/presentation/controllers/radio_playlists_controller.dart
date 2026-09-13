@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
+import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
 import 'package:flow_music/features/radio/data/models/radio_playlist.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
@@ -16,7 +17,10 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
   final RadioPlaylistsRepository _repository = const RadioPlaylistsRepository();
 
   @override
-  List<RadioPlaylist> build() => _repository.readAll();
+  List<RadioPlaylist> build() {
+    ref.watch(userDataSyncRevisionProvider);
+    return _repository.readAll();
+  }
 
   Future<RadioPlaylist> create(String rawName) async {
     final name = rawName.trim();
@@ -31,7 +35,9 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
       updatedAt: now,
       items: const [],
     );
-    await _repository.save(playlist);
+    await ref
+        .read(userDataSyncCoordinatorProvider)
+        .editPlaylists(() => _repository.save(playlist));
     state = [playlist, ...state];
     unawaited(ref.read(productAnalyticsProvider).track('playlist_created'));
     unawaited(
@@ -56,7 +62,9 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
       updatedAt: DateTime.now(),
       items: uniqueItems.values.toList(),
     );
-    await _repository.save(updated);
+    await ref
+        .read(userDataSyncCoordinatorProvider)
+        .editPlaylists(() => _repository.save(updated));
     state = [
       updated,
       ...state.where((candidate) => candidate.id != updated.id),
@@ -65,7 +73,9 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
   }
 
   Future<void> delete(String playlistId) async {
-    await _repository.delete(playlistId);
+    await ref
+        .read(userDataSyncCoordinatorProvider)
+        .editPlaylists(() => _repository.delete(playlistId));
     state = state.where((playlist) => playlist.id != playlistId).toList();
   }
 
@@ -81,7 +91,9 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
       updatedAt: DateTime.now(),
       items: [station, ...playlist.items],
     );
-    await _repository.save(updated);
+    await ref
+        .read(userDataSyncCoordinatorProvider)
+        .editPlaylists(() => _repository.save(updated));
     state = [
       updated,
       ...state.where((candidate) => candidate.id != playlistId),
@@ -111,7 +123,9 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
           .where((item) => radioPlaylistItemKey(item) != key)
           .toList(),
     );
-    await _repository.save(updated);
+    await ref
+        .read(userDataSyncCoordinatorProvider)
+        .editPlaylists(() => _repository.save(updated));
     state = [
       updated,
       ...state.where((candidate) => candidate.id != playlistId),

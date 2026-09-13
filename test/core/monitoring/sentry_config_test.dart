@@ -41,4 +41,15 @@ void main() {
 
     expect(SentryConfig.isRecoverableRadioPlaybackError(event), isFalse);
   });
+
+  test('does not silence the runtime failure reported in STREAMBEAT-HB', () {
+    final event = SentryEvent(
+      throwable: PlatformException(
+        code: 'AndroidAudioError',
+        message: 'MEDIA_ERROR_UNKNOWN {what:1}',
+        details: 'MEDIA_ERROR_SYSTEM',
+      ),
+    );
+    expect(SentryConfig.isRecoverableRadioPlaybackError(event), isFalse);
+  });
 }
