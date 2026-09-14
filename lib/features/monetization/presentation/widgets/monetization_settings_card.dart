@@ -266,9 +266,13 @@ class _MonetizationSettingsCardState
   }
 
   Future<void> _openLink(Uri uri) async {
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication) &&
-        mounted) {
-      _showMessage(LocaleKeys.subscription_link_failed.tr());
+    try {
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!opened && mounted) {
+        _showMessage(LocaleKeys.subscription_link_failed.tr());
+      }
+    } catch (_) {
+      if (mounted) _showMessage(LocaleKeys.subscription_link_failed.tr());
     }
   }
 
@@ -308,9 +312,7 @@ class _MonetizationSettingsCardState
       if (mounted) _showMessage(LocaleKeys.subscription_success.tr());
     } on SubscriptionFailure catch (error) {
       if (mounted && !error.cancelled) {
-        _showMessage(
-          error.message,
-        );
+        _showMessage(error.message);
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -331,9 +333,7 @@ class _MonetizationSettingsCardState
       }
     } on SubscriptionFailure catch (error) {
       if (mounted && !error.cancelled) {
-        _showMessage(
-          error.message,
-        );
+        _showMessage(error.message);
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -341,36 +341,105 @@ class _MonetizationSettingsCardState
   }
 
   Future<void> _signOut() async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(LocaleKeys.auth_sign_out_title.tr()),
-        content: Text(LocaleKeys.auth_sign_out_message.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(LocaleKeys.cancel.tr()),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(LocaleKeys.auth_sign_out.tr()),
-          ),
-        ],
-      ),
-    );
-    if (confirmed != true || !mounted) return;
+    final deleteAccountData = await _showSignOutOptions();
+    if (deleteAccountData == null || !mounted) return;
+    if (deleteAccountData && !await _confirmAccountDeletionOnSignOut()) return;
+    if (!mounted) return;
+
     setState(() => _busy = true);
     try {
-      await ref.read(accountSessionActionsProvider).signOut();
+      if (deleteAccountData) {
+        await ref.read(accountSessionActionsProvider).deleteAccount();
+      } else {
+        await ref.read(accountSessionActionsProvider).signOut();
+      }
+      if (mounted) {
+        _showMessage(
+          deleteAccountData
+              ? LocaleKeys.auth_account_deleted.tr()
+              : LocaleKeys.auth_signed_out.tr(),
+        );
+      }
     } on AuthFailure catch (error) {
       if (mounted) {
         _showMessage(
           error.code == 'local_rate_limit' ? error.message.tr() : error.message,
         );
       }
+    } catch (_) {
+      if (mounted) _showMessage(LocaleKeys.user_data_sync_failed.tr());
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<bool?> _showSignOutOptions() {
+    var deleteAccountData = false;
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(LocaleKeys.auth_sign_out_title.tr()),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(LocaleKeys.auth_sign_out_message.tr()),
+              const SizedBox(height: 14),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: deleteAccountData,
+                onChanged: (value) =>
+                    setDialogState(() => deleteAccountData = value ?? false),
+                title: Text(LocaleKeys.auth_sign_out_delete_synced_data.tr()),
+                subtitle: Text(
+                  LocaleKeys.auth_sign_out_delete_synced_data_hint.tr(),
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(LocaleKeys.cancel.tr()),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, deleteAccountData),
+              child: Text(LocaleKeys.auth_sign_out.tr()),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<bool> _confirmAccountDeletionOnSignOut() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          Icons.warning_amber_rounded,
+          color: Theme.of(dialogContext).colorScheme.error,
+        ),
+        title: Text(LocaleKeys.auth_sign_out_delete_warning_title.tr()),
+        content: Text(LocaleKeys.auth_sign_out_delete_warning_message.tr()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(LocaleKeys.cancel.tr()),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(dialogContext).colorScheme.error,
+            ),
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(LocaleKeys.auth_sign_out_delete_warning_action.tr()),
+          ),
+        ],
+      ),
+    );
+    return confirmed ?? false;
   }
 
   Future<void> _deleteAccount() async {

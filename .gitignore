@@ -89,3 +89,9 @@ scrip.sh
 # Local browser sessions may contain authenticated console snapshots.
 /.playwright-cli/
 /output/playwright/
+
+# Local CodeGraph index
+/.codegraph/
+
+# Kotlin compiler session cache
+/android/.kotlin/

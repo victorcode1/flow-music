@@ -70,6 +70,53 @@ void main() {
     expect(find.text('retry'), findsNothing);
   });
 
+  testWidgets('does not offer a purchase without store prices', (tester) async {
+    await pumpCard(tester, offers: const []);
+    expect(
+      find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
+      findsNothing,
+    );
+    expect(
+      find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
+      findsNothing,
+    );
+    expect(find.text('retry'), findsOneWidget);
+    expect(find.text('restore_purchase'), findsOneWidget);
+  });
+
+  testWidgets('sign-out keeps account deletion unchecked by default', (
+    tester,
+  ) async {
+    await pumpCard(tester);
+    await tester.ensureVisible(find.text('auth_sign_out'));
+    await tester.tap(find.text('auth_sign_out'));
+    await tester.pumpAndSettle();
+    expect(
+      tester.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
+      isFalse,
+    );
+    await tester.tap(find.widgetWithText(TextButton, 'cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+
+  testWidgets('account deletion during sign-out needs a second confirmation', (
+    tester,
+  ) async {
+    await pumpCard(tester);
+    await tester.ensureVisible(find.text('auth_sign_out'));
+    await tester.tap(find.text('auth_sign_out'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(CheckboxListTile));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'auth_sign_out'));
+    await tester.pumpAndSettle();
+    expect(find.text('auth_sign_out_delete_warning_title'), findsOneWidget);
+    await tester.tap(find.widgetWithText(TextButton, 'cancel'));
+    await tester.pumpAndSettle();
+    expect(find.byType(AlertDialog), findsNothing);
+  });
+
   testWidgets('routes lifetime selection to the lifetime package', (
     tester,
   ) async {

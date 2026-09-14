@@ -1,0 +1,921 @@
+{
+  "observedOn": "2026-09-02",
+  "status": "Reference only: no Google Play configuration changed; no App Store equivalence verified.",
+  "source": "https://play.google.com/console/u/1/developers/5718837349057276244/app/4972744497713435714/subscriptions/s/remove_ads_monthly/base-plans/b/monthly-v1",
+  "app": {
+    "name": "StreamBeat: Radio en vivo",
+    "bundleId": "com.victorflores.streambeat"
+  },
+  "subscription": {
+    "productId": "remove_ads_monthly",
+    "basePlanId": "monthly-v1",
+    "state": "active",
+    "billingPeriod": "P1M",
+    "autoRenewing": true,
+    "benefit": "Uso de StreamBeat sin publicidad",
+    "gracePeriodDays": 7,
+    "accountHoldDays": 53,
+    "resubscribe": true
+  },
+  "availability": {
+    "consoleReportedSelections": 174,
+    "namedCountryOrRegionCount": 173,
+    "includeNewCountriesOrRegions": true,
+    "note": "The selection list contains 173 named countries/regions plus 'Países o regiones nuevos'. These are subscription-plan settings, not proof of app distribution or purchasability in every territory."
+  },
+  "futureRegionPrices": [
+    {
+      "name": "Países o regiones nuevos (USD)",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "name": "Países o regiones nuevos (EUR)",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    }
+  ],
+  "revenueCat": {
+    "projectId": "9884dbf1",
+    "androidAppId": "app83c760ea96",
+    "offeringIdentifier": "default",
+    "offeringId": "ofrng2ea2d588f7",
+    "packageIdentifier": "$rc_monthly",
+    "androidProductIdentifier": "remove_ads_monthly:monthly-v1",
+    "entitlementIdentifier": "remove_ads",
+    "iosAppObserved": false
+  },
+  "regions": [
+    {
+      "googlePlayNameEs": "Alemania",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "19%"
+    },
+    {
+      "googlePlayNameEs": "Arabia Saudita",
+      "priceLabel": "SAR 4.29",
+      "taxLabel": "15%"
+    },
+    {
+      "googlePlayNameEs": "Argelia",
+      "priceLabel": "DZD 125.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Australia",
+      "priceLabel": "AUD 1.49",
+      "taxLabel": "10%"
+    },
+    {
+      "googlePlayNameEs": "Austria",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Bangladés",
+      "priceLabel": "BDT 150.00",
+      "taxLabel": "15%"
+    },
+    {
+      "googlePlayNameEs": "Baréin",
+      "priceLabel": "USD 1.09",
+      "taxLabel": "10%"
+    },
+    {
+      "googlePlayNameEs": "Bermudas",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Bolivia",
+      "priceLabel": "BOB 11.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Brasil",
+      "priceLabel": "BRL 4.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Bulgaria",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Bélgica",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "21%"
+    },
+    {
+      "googlePlayNameEs": "Camboya",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Camerún",
+      "priceLabel": "XAF 650",
+      "taxLabel": "19.25%"
+    },
+    {
+      "googlePlayNameEs": "Canadá",
+      "priceLabel": "CAD 1.39",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Catar",
+      "priceLabel": "QAR 3.50",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Chequia",
+      "priceLabel": "CZK 24.99",
+      "taxLabel": "21%"
+    },
+    {
+      "googlePlayNameEs": "Chile",
+      "priceLabel": "CLP 1,100",
+      "taxLabel": "19%"
+    },
+    {
+      "googlePlayNameEs": "Chipre",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "19%"
+    },
+    {
+      "googlePlayNameEs": "Ciudad del Vaticano",
+      "priceLabel": "EUR 0.89",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Colombia",
+      "priceLabel": "COP 3,000",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Corea del Sur",
+      "priceLabel": "KRW 1,500",
+      "taxLabel": "10%"
+    },
+    {
+      "googlePlayNameEs": "Costa Rica",
+      "priceLabel": "CRC 450.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Costa de Marfil",
+      "priceLabel": "XOF 650",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Croacia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "25%"
+    },
+    {
+      "googlePlayNameEs": "Dinamarca",
+      "priceLabel": "DKK 8.00",
+      "taxLabel": "25% con 2 anulaciones de ubicaciones"
+    },
+    {
+      "googlePlayNameEs": "Ecuador",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Egipto",
+      "priceLabel": "EGP 57.99",
+      "taxLabel": "14%"
+    },
+    {
+      "googlePlayNameEs": "El Salvador",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Emiratos Árabes Unidos",
+      "priceLabel": "AED 3.89",
+      "taxLabel": "5%"
+    },
+    {
+      "googlePlayNameEs": "Eslovaquia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "23%"
+    },
+    {
+      "googlePlayNameEs": "Eslovenia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "22%"
+    },
+    {
+      "googlePlayNameEs": "España",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "21% con 4 anulaciones de ubicaciones"
+    },
+    {
+      "googlePlayNameEs": "Estados Unidos",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA con 7 anulaciones de ubicaciones"
+    },
+    {
+      "googlePlayNameEs": "Estonia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "24%"
+    },
+    {
+      "googlePlayNameEs": "Filipinas",
+      "priceLabel": "PHP 69.00",
+      "taxLabel": "12%"
+    },
+    {
+      "googlePlayNameEs": "Finlandia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "25.5% con 1 anulación de ubicación"
+    },
+    {
+      "googlePlayNameEs": "Francia",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "20% con 11 anulaciones de ubicaciones"
+    },
+    {
+      "googlePlayNameEs": "Georgia",
+      "priceLabel": "GEL 3.00",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Ghana",
+      "priceLabel": "GHS 15.00",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Gibraltar",
+      "priceLabel": "GBP 0.69",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Grecia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "24%"
+    },
+    {
+      "googlePlayNameEs": "Hong Kong",
+      "priceLabel": "HKD 8.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Hungría",
+      "priceLabel": "HUF 399",
+      "taxLabel": "27%"
+    },
+    {
+      "googlePlayNameEs": "India",
+      "priceLabel": "INR 110.00",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Indonesia",
+      "priceLabel": "IDR 18,000",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Irak",
+      "priceLabel": "IQD 1,300",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Irlanda",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "23%"
+    },
+    {
+      "googlePlayNameEs": "Islas Caimán",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Islas Turcas y Caicos",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Islas Vírgenes Británicas",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Israel",
+      "priceLabel": "ILS 3.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Italia",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "22%"
+    },
+    {
+      "googlePlayNameEs": "Japón",
+      "priceLabel": "JPY 170",
+      "taxLabel": "10%"
+    },
+    {
+      "googlePlayNameEs": "Jordania",
+      "priceLabel": "JOD 0.700",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Kazajistán",
+      "priceLabel": "KZT 490.00",
+      "taxLabel": "16%"
+    },
+    {
+      "googlePlayNameEs": "Kenia",
+      "priceLabel": "KES 200.00",
+      "taxLabel": "16%"
+    },
+    {
+      "googlePlayNameEs": "Kuwait",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Letonia",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "21%"
+    },
+    {
+      "googlePlayNameEs": "Liechtenstein",
+      "priceLabel": "CHF 0.90",
+      "taxLabel": "8.1%"
+    },
+    {
+      "googlePlayNameEs": "Lituania",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "21%"
+    },
+    {
+      "googlePlayNameEs": "Luxemburgo",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "17%"
+    },
+    {
+      "googlePlayNameEs": "Macao",
+      "priceLabel": "MOP 7.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Malasia",
+      "priceLabel": "MYR 4.49",
+      "taxLabel": "8%"
+    },
+    {
+      "googlePlayNameEs": "Marruecos",
+      "priceLabel": "MAD 10.99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Micronesia",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Mongolia",
+      "priceLabel": "MNT 3,590.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Myanmar (Birmania)",
+      "priceLabel": "MMK 2,000",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "México",
+      "priceLabel": "MXN 20.00",
+      "taxLabel": "16%"
+    },
+    {
+      "googlePlayNameEs": "Mónaco",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Nigeria",
+      "priceLabel": "NGN 1,450.00",
+      "taxLabel": "7.5%"
+    },
+    {
+      "googlePlayNameEs": "Noruega",
+      "priceLabel": "NOK 12.00",
+      "taxLabel": "25% con 1 anulación de ubicación"
+    },
+    {
+      "googlePlayNameEs": "Nueva Zelanda",
+      "priceLabel": "NZD 1.89",
+      "taxLabel": "15%"
+    },
+    {
+      "googlePlayNameEs": "Omán",
+      "priceLabel": "USD 1.09",
+      "taxLabel": "5%"
+    },
+    {
+      "googlePlayNameEs": "Pakistán",
+      "priceLabel": "PKR 280",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Panamá",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Paraguay",
+      "priceLabel": "PYG 5,000",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Países Bajos",
+      "priceLabel": "EUR 0.99",
+      "taxLabel": "21%"
+    },
+    {
+      "googlePlayNameEs": "Perú",
+      "priceLabel": "PEN 3.39",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Polonia",
+      "priceLabel": "PLN 4.49",
+      "taxLabel": "23%"
+    },
+    {
+      "googlePlayNameEs": "Portugal",
+      "priceLabel": "EUR 1.09",
+      "taxLabel": "23%"
+    },
+    {
+      "googlePlayNameEs": "Reino Unido",
+      "priceLabel": "GBP 0.89",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Rumania",
+      "priceLabel": "RON 5.49",
+      "taxLabel": "21%"
+    },
+    {
+      "googlePlayNameEs": "Rusia",
+      "priceLabel": "RUB 85.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "San Marino",
+      "priceLabel": "EUR 0.89",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Senegal",
+      "priceLabel": "XOF 650",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Serbia",
+      "priceLabel": "RSD 99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Singapur",
+      "priceLabel": "SGD 1.48",
+      "taxLabel": "9%"
+    },
+    {
+      "googlePlayNameEs": "Sri Lanka",
+      "priceLabel": "LKR 325.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Sudáfrica",
+      "priceLabel": "ZAR 17.99",
+      "taxLabel": "15%"
+    },
+    {
+      "googlePlayNameEs": "Suecia",
+      "priceLabel": "SEK 12.00",
+      "taxLabel": "25%"
+    },
+    {
+      "googlePlayNameEs": "Suiza",
+      "priceLabel": "CHF 0.80",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Tailandia",
+      "priceLabel": "THB 35.00",
+      "taxLabel": "7%"
+    },
+    {
+      "googlePlayNameEs": "Taiwán",
+      "priceLabel": "TWD 34.00",
+      "taxLabel": "5%"
+    },
+    {
+      "googlePlayNameEs": "Tanzania",
+      "priceLabel": "TZS 2,600.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Turquía",
+      "priceLabel": "TRY 57.99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Ucrania",
+      "priceLabel": "UAH 54.99",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Vietnam",
+      "priceLabel": "VND 26,000",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Albania",
+      "priceLabel": "USD 1.20",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Angola",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Antigua y Barbuda",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Argentina",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Armenia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Aruba",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Azerbaiyán",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Bahamas",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Belice",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Bielorrusia",
+      "priceLabel": "USD 1.20",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Bosnia-Herzegovina",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Botsuana",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Cabo Verde",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Chad",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Comoras",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Dominica",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Eritrea",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Fiyi",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Gambia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Granada",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Guatemala",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Guinea",
+      "priceLabel": "USD 0.99",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Haití",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Honduras",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Islas Salomón",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Jamaica",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Kirguistán",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Laos",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Liberia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Libia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Líbano",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Macedonia del Norte",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Maldivas",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Mauricio",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Moldavia",
+      "priceLabel": "USD 1.20",
+      "taxLabel": "20%"
+    },
+    {
+      "googlePlayNameEs": "Mozambique",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Namibia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Nepal",
+      "priceLabel": "USD 1.13",
+      "taxLabel": "13%"
+    },
+    {
+      "googlePlayNameEs": "Nicaragua",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Papúa Nueva Guinea",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "República Democrática del Congo",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "República Dominicana",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "República del Congo",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Ruanda",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Samoa",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "San Cristóbal y Nieves",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Santa Lucía",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Seychelles",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Sierra Leona",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Somalia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Surinam",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Tayikistán",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Tonga",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Trinidad y Tobago",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Turkmenistán",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Túnez",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Uganda",
+      "priceLabel": "USD 1.18",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Uruguay",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Uzbekistán",
+      "priceLabel": "USD 1.12",
+      "taxLabel": "12%"
+    },
+    {
+      "googlePlayNameEs": "Vanuatu",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Venezuela",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Yemen",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Yibuti",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Zambia",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Zimbabue",
+      "priceLabel": "USD 1.00",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Benín",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Burkina Faso",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Gabón",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Guinea-Bisáu",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Islandia",
+      "priceLabel": "EUR 1.07",
+      "taxLabel": "24%"
+    },
+    {
+      "googlePlayNameEs": "Mali",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Malta",
+      "priceLabel": "EUR 1.01",
+      "taxLabel": "18%"
+    },
+    {
+      "googlePlayNameEs": "Níger",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "República Centroafricana",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    },
+    {
+      "googlePlayNameEs": "Togo",
+      "priceLabel": "EUR 0.86",
+      "taxLabel": "Sin IVA"
+    }
+  ],
+  "pendingAppleChecks": [
+    "Verify App Store territorial availability by identity, not by count alone.",
+    "Verify the actual Apple price points and taxes, including the Android USD 0.99 prices in Panama/United States and USD 1.00 fallback for new regions.",
+    "Do not equate Google account hold with Apple billing retry; verify available settings.",
+    "Activate membership, complete required contracts and financial setup, create subscription, connect RevenueCat, and test purchases before claiming equivalence."
+  ]
+}

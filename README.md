@@ -77,3 +77,16 @@ Para generar los archivos de Riverpod y Freezed:
 ## Aviso sobre contenido de terceros
 
 Las marcas, catálogos y emisiones pertenecen a sus respectivos titulares. Antes de publicar una versión en una tienda, confirma que cada fuente de audio y su forma de reproducción cumplen los términos de servicio y las licencias aplicables.
+
+## Herramientas de desarrollo
+
+La configuración de CodeGraph y su uso local están en `docs/codegraph.md`.
+La herramienta de compilación Android usa Gradle 9.1.0, AGP 9.0.1 y Kotlin
+2.3.20; la integración está validada con Flutter 3.47.3 y Dart 3.13.3.
+Para verificar las claves públicas y los identificadores antes de una compilación:
+
+    dart run tool/verify_monetization_config.dart config/monetization.local.json
+    dart run tool/verify_monetization_config.dart config/monetization.local.json --platform=ios
+
+La validación iOS requiere macOS y comprueba también `ios/Runner/Info.plist`.
+Estas comprobaciones no sustituyen la validación de compras en las tiendas.
