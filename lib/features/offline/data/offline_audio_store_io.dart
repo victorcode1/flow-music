@@ -15,6 +15,7 @@ Future<DownloadedAudio> saveOfflineAudioStream({
   required int totalBytes,
   required Stream<List<int>> chunks,
   required void Function(double progress) onProgress,
+  bool hasVideoTrack = false,
 }) async {
   IOSink? output;
   File? outputFile;
@@ -24,7 +25,7 @@ Future<DownloadedAudio> saveOfflineAudioStream({
     final existing = await getOfflineAudio(videoId);
     if (existing != null) return existing;
 
-    final resolvedExtension = extension.toLowerCase() == 'mp4'
+    final resolvedExtension = extension.toLowerCase() == 'mp4' && !hasVideoTrack
         ? 'm4a'
         : extension;
     outputFile = File(
@@ -53,6 +54,14 @@ Future<DownloadedAudio> saveOfflineAudioStream({
     await output.close();
     output = null;
 
+    if (downloadedBytes == 0 ||
+        (totalBytes > 0 && downloadedBytes < totalBytes)) {
+      throw StateError(
+        'Incomplete offline download: received $downloadedBytes of '
+        '$totalBytes bytes.',
+      );
+    }
+
     final offlineAudio = DownloadedAudio(
       videoId: videoId,
       title: title,
@@ -60,6 +69,7 @@ Future<DownloadedAudio> saveOfflineAudioStream({
       thumbnailUrl: thumbnailUrl,
       filePath: outputFile.path,
       downloadedAt: DateTime.now(),
+      hasVideoTrack: hasVideoTrack,
     );
     await _writeMetadata(directory, offlineAudio);
     return offlineAudio;
@@ -80,8 +90,11 @@ Future<DownloadedAudio?> getOfflineAudio(String videoId) async {
   if (videoId.isEmpty) return null;
   final directory = await _offlineDirectory();
   final metadata = await _readMetadata(directory, videoId);
-  if (metadata != null && await File(metadata.filePath).exists()) {
-    return metadata;
+  if (metadata != null) {
+    final file = File(metadata.filePath);
+    if (await file.exists() && await file.length() > 0) {
+      return metadata;
+    }
   }
   return null;
 }
@@ -92,8 +105,11 @@ Future<List<DownloadedAudio>> listOfflineAudios() async {
   await for (final entity in directory.list()) {
     if (entity is! File || !entity.path.endsWith('.json')) continue;
     final metadata = await _readMetadataFile(entity);
-    if (metadata != null && await File(metadata.filePath).exists()) {
-      audios.add(metadata);
+    if (metadata != null) {
+      final file = File(metadata.filePath);
+      if (await file.exists() && await file.length() > 0) {
+        audios.add(metadata);
+      }
     }
   }
   audios.sort((a, b) => b.downloadedAt.compareTo(a.downloadedAt));

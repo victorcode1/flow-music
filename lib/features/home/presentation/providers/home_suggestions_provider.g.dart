@@ -11,30 +11,36 @@ part of 'home_suggestions_provider.dart';
 /// Carga la lista de sugerencias iniciales para mostrar en `home` cuando no
 /// hay query ni reproduccion activa.
 ///
+/// Al abrir la app se pinta lo ultimo que quedo guardado en disco, para no
+/// dejar al usuario mirando el loading. Si esa tanda ya paso su hora
+/// ([homeSuggestionsCacheTtl]) se renueva en segundo plano y la pantalla se
+/// actualiza sola cuando llega la nueva.
+///
 /// `keepAlive: true` para que la lista no se pida cada vez que el usuario
 /// vuelva al estado `Suggested` despues de buscar o reproducir.
 
-@ProviderFor(homeSuggestions)
+@ProviderFor(HomeSuggestions)
 final homeSuggestionsProvider = HomeSuggestionsProvider._();
 
 /// Carga la lista de sugerencias iniciales para mostrar en `home` cuando no
 /// hay query ni reproduccion activa.
 ///
+/// Al abrir la app se pinta lo ultimo que quedo guardado en disco, para no
+/// dejar al usuario mirando el loading. Si esa tanda ya paso su hora
+/// ([homeSuggestionsCacheTtl]) se renueva en segundo plano y la pantalla se
+/// actualiza sola cuando llega la nueva.
+///
 /// `keepAlive: true` para que la lista no se pida cada vez que el usuario
 /// vuelva al estado `Suggested` despues de buscar o reproducir.
-
 final class HomeSuggestionsProvider
-    extends
-        $FunctionalProvider<
-          AsyncValue<HomeSuggestionsResult>,
-          HomeSuggestionsResult,
-          FutureOr<HomeSuggestionsResult>
-        >
-    with
-        $FutureModifier<HomeSuggestionsResult>,
-        $FutureProvider<HomeSuggestionsResult> {
+    extends $AsyncNotifierProvider<HomeSuggestions, HomeSuggestionsResult> {
   /// Carga la lista de sugerencias iniciales para mostrar en `home` cuando no
   /// hay query ni reproduccion activa.
+  ///
+  /// Al abrir la app se pinta lo ultimo que quedo guardado en disco, para no
+  /// dejar al usuario mirando el loading. Si esa tanda ya paso su hora
+  /// ([homeSuggestionsCacheTtl]) se renueva en segundo plano y la pantalla se
+  /// actualiza sola cuando llega la nueva.
   ///
   /// `keepAlive: true` para que la lista no se pida cada vez que el usuario
   /// vuelva al estado `Suggested` despues de buscar o reproducir.
@@ -54,14 +60,41 @@ final class HomeSuggestionsProvider
 
   @$internal
   @override
-  $FutureProviderElement<HomeSuggestionsResult> $createElement(
-    $ProviderPointer pointer,
-  ) => $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<HomeSuggestionsResult> create(Ref ref) {
-    return homeSuggestions(ref);
-  }
+  HomeSuggestions create() => HomeSuggestions();
 }
 
-String _$homeSuggestionsHash() => r'dd6b0dde3965c0d7dddee7f053ff10c063b2ada8';
+String _$homeSuggestionsHash() => r'8c598959abe93b463fb3ca244248da0bce3aa30d';
+
+/// Carga la lista de sugerencias iniciales para mostrar en `home` cuando no
+/// hay query ni reproduccion activa.
+///
+/// Al abrir la app se pinta lo ultimo que quedo guardado en disco, para no
+/// dejar al usuario mirando el loading. Si esa tanda ya paso su hora
+/// ([homeSuggestionsCacheTtl]) se renueva en segundo plano y la pantalla se
+/// actualiza sola cuando llega la nueva.
+///
+/// `keepAlive: true` para que la lista no se pida cada vez que el usuario
+/// vuelva al estado `Suggested` despues de buscar o reproducir.
+
+abstract class _$HomeSuggestions extends $AsyncNotifier<HomeSuggestionsResult> {
+  FutureOr<HomeSuggestionsResult> build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref
+            as $Ref<AsyncValue<HomeSuggestionsResult>, HomeSuggestionsResult>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<
+                AsyncValue<HomeSuggestionsResult>,
+                HomeSuggestionsResult
+              >,
+              AsyncValue<HomeSuggestionsResult>,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

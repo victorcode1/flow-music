@@ -13,8 +13,13 @@ part of 'autoplay_queue_controller.dart';
 /// When a search result is tapped, the parent calls [enqueue] with the full
 /// result list and the tapped index. The queue keeps the tapped track as
 /// `current` and the surrounding tracks as `played` (before) and `upcoming`
-/// (after), then kicks off parallel resolution + caching for the first few
-/// upcoming items so next/prev navigation is instant.
+/// (after), then keeps a rolling background prefetch running over the head of
+/// the queue so next/prev navigation is instant.
+///
+/// El relleno automatico se ancla en la cancion que el usuario toco: pide los
+/// "relacionados" de YouTube (el mismo pozo del mix) para no salirse de esa
+/// linea musical, y descarta en toda la sesion lo que ya sono o ya esta en la
+/// cola para no repetir pistas.
 
 @ProviderFor(AutoplayQueueController)
 final autoplayQueueControllerProvider = AutoplayQueueControllerProvider._();
@@ -24,8 +29,13 @@ final autoplayQueueControllerProvider = AutoplayQueueControllerProvider._();
 /// When a search result is tapped, the parent calls [enqueue] with the full
 /// result list and the tapped index. The queue keeps the tapped track as
 /// `current` and the surrounding tracks as `played` (before) and `upcoming`
-/// (after), then kicks off parallel resolution + caching for the first few
-/// upcoming items so next/prev navigation is instant.
+/// (after), then keeps a rolling background prefetch running over the head of
+/// the queue so next/prev navigation is instant.
+///
+/// El relleno automatico se ancla en la cancion que el usuario toco: pide los
+/// "relacionados" de YouTube (el mismo pozo del mix) para no salirse de esa
+/// linea musical, y descarta en toda la sesion lo que ya sono o ya esta en la
+/// cola para no repetir pistas.
 final class AutoplayQueueControllerProvider
     extends $NotifierProvider<AutoplayQueueController, AutoplayQueueState> {
   /// Holds the search-results queue and pre-resolved audio URLs / cached files.
@@ -33,8 +43,13 @@ final class AutoplayQueueControllerProvider
   /// When a search result is tapped, the parent calls [enqueue] with the full
   /// result list and the tapped index. The queue keeps the tapped track as
   /// `current` and the surrounding tracks as `played` (before) and `upcoming`
-  /// (after), then kicks off parallel resolution + caching for the first few
-  /// upcoming items so next/prev navigation is instant.
+  /// (after), then keeps a rolling background prefetch running over the head of
+  /// the queue so next/prev navigation is instant.
+  ///
+  /// El relleno automatico se ancla en la cancion que el usuario toco: pide los
+  /// "relacionados" de YouTube (el mismo pozo del mix) para no salirse de esa
+  /// linea musical, y descarta en toda la sesion lo que ya sono o ya esta en la
+  /// cola para no repetir pistas.
   AutoplayQueueControllerProvider._()
     : super(
         from: null,
@@ -63,15 +78,20 @@ final class AutoplayQueueControllerProvider
 }
 
 String _$autoplayQueueControllerHash() =>
-    r'eee80457281681fe3b719ea8a4dbce80f45c470c';
+    r'ed511ecdda628012836bd9c26323fd06be8a20e8';
 
 /// Holds the search-results queue and pre-resolved audio URLs / cached files.
 ///
 /// When a search result is tapped, the parent calls [enqueue] with the full
 /// result list and the tapped index. The queue keeps the tapped track as
 /// `current` and the surrounding tracks as `played` (before) and `upcoming`
-/// (after), then kicks off parallel resolution + caching for the first few
-/// upcoming items so next/prev navigation is instant.
+/// (after), then keeps a rolling background prefetch running over the head of
+/// the queue so next/prev navigation is instant.
+///
+/// El relleno automatico se ancla en la cancion que el usuario toco: pide los
+/// "relacionados" de YouTube (el mismo pozo del mix) para no salirse de esa
+/// linea musical, y descarta en toda la sesion lo que ya sono o ya esta en la
+/// cola para no repetir pistas.
 
 abstract class _$AutoplayQueueController extends $Notifier<AutoplayQueueState> {
   AutoplayQueueState build();

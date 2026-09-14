@@ -9,6 +9,7 @@ Future<DownloadedAudio> saveAudioStream({
   required int totalBytes,
   required Stream<List<int>> chunks,
   required void Function(double progress) onProgress,
+  bool hasVideoTrack = false,
 }) {
   throw UnsupportedError('Audio downloads are not supported on this platform.');
 }

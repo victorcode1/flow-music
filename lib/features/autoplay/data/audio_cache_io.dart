@@ -18,6 +18,9 @@ class AudioCacheResult {
 Future<AudioCacheResult> cacheAudioToDisk({
   required String videoId,
   required String url,
+  Map<String, String> requestHeaders = const {},
+  int? rangeEnd,
+  String? fileExtension,
 }) async {
   if (videoId.isEmpty || url.isEmpty) return AudioCacheResult.empty;
 
@@ -26,18 +29,31 @@ Future<AudioCacheResult> cacheAudioToDisk({
     final directory = await _cacheDirectory();
     final existing = await _findCachedFile(directory, videoId);
     if (existing != null) {
-      try {
-        await existing.setLastAccessed(DateTime.now());
-      } catch (_) {
-        // Ignore touch errors; file is still usable.
+      final expectedBytes = rangeEnd == null || rangeEnd < 0
+          ? null
+          : rangeEnd + 1;
+      if (expectedBytes != null && await existing.length() != expectedBytes) {
+        // Replace a stale audio-only or incomplete cache entry with the
+        // validated Apple-compatible stream requested by the caller.
+        await _safeDelete(existing);
+      } else {
+        try {
+          await existing.setLastAccessed(DateTime.now());
+        } catch (_) {
+          // Ignore touch errors; file is still usable.
+        }
+        return AudioCacheResult(filePath: existing.path);
       }
-      return AudioCacheResult(filePath: existing.path);
     }
 
     final client = http.Client();
     final http.StreamedResponse response;
     try {
       final request = http.Request('GET', Uri.parse(url));
+      request.headers.addAll(requestHeaders);
+      if (rangeEnd != null && rangeEnd >= 0) {
+        request.headers['Range'] = 'bytes=0-$rangeEnd';
+      }
       response = await client.send(request);
     } catch (_) {
       client.close();
@@ -48,9 +64,9 @@ Future<AudioCacheResult> cacheAudioToDisk({
       return AudioCacheResult.empty;
     }
 
-    final extension = _extensionFromContentType(
-      response.headers['content-type'],
-    );
+    final extension =
+        _safeExtension(fileExtension) ??
+        _extensionFromContentType(response.headers['content-type']);
     final uniqueSuffix =
         '${DateTime.now().microsecondsSinceEpoch}_'
         '${identityHashCode(response)}';
@@ -75,6 +91,17 @@ Future<AudioCacheResult> cacheAudioToDisk({
     }
 
     if (!await tempFile.exists()) {
+      return AudioCacheResult.empty;
+    }
+    if (rangeEnd != null &&
+        rangeEnd >= 0 &&
+        await tempFile.length() != rangeEnd + 1) {
+      debugPrint(
+        'Incomplete cache download for $videoId: '
+        '${await tempFile.length()}/${rangeEnd + 1} bytes',
+      );
+      await _safeDelete(tempFile);
+      tempFile = null;
       return AudioCacheResult.empty;
     }
 
@@ -241,6 +268,12 @@ String _extensionFromContentType(String? contentType) {
   if (lower.contains('webm') || lower.contains('opus')) return 'webm';
   if (lower.contains('mpeg') || lower.contains('mp3')) return 'mp3';
   return 'audio';
+}
+
+String? _safeExtension(String? extension) {
+  if (extension == null || extension.isEmpty) return null;
+  final normalized = extension.toLowerCase().replaceFirst('.', '');
+  return RegExp(r'^[a-z0-9]{1,8}$').hasMatch(normalized) ? normalized : null;
 }
 
 bool _looksLikeDiskFull(FileSystemException e) {

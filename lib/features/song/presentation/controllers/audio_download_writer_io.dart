@@ -13,6 +13,7 @@ Future<DownloadedAudio> saveAudioStream({
   required int totalBytes,
   required Stream<List<int>> chunks,
   required void Function(double progress) onProgress,
+  bool hasVideoTrack = false,
 }) async {
   return _saveMediaStream(
     videoId: videoId,
@@ -24,6 +25,7 @@ Future<DownloadedAudio> saveAudioStream({
     chunks: chunks,
     onProgress: onProgress,
     mediaType: DownloadedMediaType.audio,
+    hasVideoTrack: hasVideoTrack,
   );
 }
 
@@ -47,6 +49,7 @@ Future<DownloadedAudio> saveVideoStream({
     chunks: chunks,
     onProgress: onProgress,
     mediaType: DownloadedMediaType.video,
+    hasVideoTrack: true,
   );
 }
 
@@ -60,6 +63,7 @@ Future<DownloadedAudio> _saveMediaStream({
   required Stream<List<int>> chunks,
   required void Function(double progress) onProgress,
   required DownloadedMediaType mediaType,
+  required bool hasVideoTrack,
 }) async {
   IOSink? output;
   File? outputFile;
@@ -75,7 +79,8 @@ Future<DownloadedAudio> _saveMediaStream({
 
     final resolvedExtension =
         mediaType == DownloadedMediaType.audio &&
-            extension.toLowerCase() == 'mp4'
+            extension.toLowerCase() == 'mp4' &&
+            !hasVideoTrack
         ? 'm4a'
         : extension;
     outputFile = File(
@@ -104,6 +109,14 @@ Future<DownloadedAudio> _saveMediaStream({
     await output.close();
     output = null;
 
+    if (downloadedBytes == 0 ||
+        (totalBytes > 0 && downloadedBytes < totalBytes)) {
+      throw StateError(
+        'Incomplete media download: received $downloadedBytes of '
+        '$totalBytes bytes.',
+      );
+    }
+
     final downloadedAudio = DownloadedAudio(
       videoId: videoId,
       title: title,
@@ -112,6 +125,7 @@ Future<DownloadedAudio> _saveMediaStream({
       filePath: outputFile.path,
       downloadedAt: DateTime.now(),
       mediaType: mediaType,
+      hasVideoTrack: hasVideoTrack,
     );
     await _writeMetadata(downloadsDirectory, downloadedAudio);
 
@@ -149,13 +163,17 @@ Future<DownloadedAudio?> _getDownloadedMedia(
 ) async {
   final downloadsDirectory = await _downloadsDirectory();
   final metadata = await _readMetadata(downloadsDirectory, videoId, mediaType);
-  if (metadata != null && await File(metadata.filePath).exists()) {
-    return metadata;
+  if (metadata != null) {
+    final file = File(metadata.filePath);
+    if (await file.exists() && await file.length() > 0) {
+      return metadata;
+    }
   }
 
   final safeVideoId = _safeBaseName(_fileBaseName(videoId, mediaType));
   await for (final entity in downloadsDirectory.list()) {
     if (entity is! File || entity.path.endsWith('.json')) continue;
+    if (await entity.length() == 0) continue;
 
     final fileName = _fileName(entity.path);
     final dotIndex = fileName.lastIndexOf('.');
@@ -186,9 +204,12 @@ Future<List<DownloadedAudio>> listDownloadedAudios() async {
   await for (final entity in downloadsDirectory.list()) {
     if (entity is! File || !entity.path.endsWith('.json')) continue;
     final metadata = await _readMetadataFile(entity);
-    if (metadata != null && await File(metadata.filePath).exists()) {
-      downloads.add(metadata);
-      metadataByPath.add(metadata.filePath);
+    if (metadata != null) {
+      final file = File(metadata.filePath);
+      if (await file.exists() && await file.length() > 0) {
+        downloads.add(metadata);
+        metadataByPath.add(metadata.filePath);
+      }
     }
   }
 
@@ -198,6 +219,7 @@ Future<List<DownloadedAudio>> listDownloadedAudios() async {
         metadataByPath.contains(entity.path)) {
       continue;
     }
+    if (await entity.length() == 0) continue;
 
     downloads.add(
       DownloadedAudio(
@@ -254,15 +276,13 @@ Future<ShareableDownload> prepareDownloadedForSharing(
   }
   final ext = _extensionOf(originalPath);
 
-  if (audio.isVideo) {
+  if (audio.isVideo || audio.hasVideoTrack) {
     return ShareableDownload(path: originalPath, mimeType: _videoMime(ext));
   }
 
-  // YouTube entrega el audio-only en un contenedor MP4, asi que el archivo
-  // queda guardado como `.mp4`. iOS asocia esa extension al UTI de video
-  // (`public.movie`), asi que WhatsApp y otros destinos abren el compositor
-  // de video y muestran un preview vacio. Copiamos a un `.m4a` temporal
-  // para que el share sheet lo trate como audio.
+  // Compatibilidad con descargas audio-only antiguas que conservaron `.mp4`.
+  // Las descargas muxed ya salieron arriba con MIME de video y no deben
+  // renombrarse a `.m4a`, porque contienen una pista de video real.
   if (ext == 'mp4') {
     try {
       final tempDir = await getTemporaryDirectory();

@@ -214,7 +214,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                 : station.stationUuid,
             name: station.name,
             country: station.country,
-            artworkUrl: artUrl ?? station.artworkUrl,
+            artworkUrl: artUrl ?? '',
           );
     } catch (_) {
       if (mounted) {

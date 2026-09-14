@@ -94,6 +94,10 @@ class SongPageController {
     required NextTrack? track,
   }) async {
     if (track == null) return;
+    if (controller.currentMode == PlaybackMode.video) {
+      await controller.playVideo(id: track.suggestion.videoId);
+      return;
+    }
     final resolved = track.resolved;
     if (resolved != null) {
       await controller.playPrefetched(resolved);

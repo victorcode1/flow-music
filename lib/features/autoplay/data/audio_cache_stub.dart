@@ -14,6 +14,9 @@ class AudioCacheResult {
 Future<AudioCacheResult> cacheAudioToDisk({
   required String videoId,
   required String url,
+  Map<String, String> requestHeaders = const {},
+  int? rangeEnd,
+  String? fileExtension,
 }) async {
   return AudioCacheResult.empty;
 }

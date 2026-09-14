@@ -8,6 +8,9 @@ class ResolvedAudio {
     required this.audioUrl,
     this.cacheFilePath,
     this.mimeType,
+    this.requestHeaders = const {},
+    this.rangeEnd,
+    this.fileExtension,
     this.title,
     this.author,
     this.thumbnailUrl,
@@ -21,6 +24,9 @@ class ResolvedAudio {
   /// able to download it. When present, prefer this over [audioUrl].
   final String? cacheFilePath;
   final String? mimeType;
+  final Map<String, String> requestHeaders;
+  final int? rangeEnd;
+  final String? fileExtension;
   final String? title;
   final String? author;
   final String? thumbnailUrl;
@@ -54,6 +60,9 @@ class ResolvedAudio {
       audioUrl: audioUrl,
       cacheFilePath: cacheFilePath ?? this.cacheFilePath,
       mimeType: mimeType,
+      requestHeaders: requestHeaders,
+      rangeEnd: rangeEnd,
+      fileExtension: fileExtension,
       title: title,
       author: author,
       thumbnailUrl: thumbnailUrl,

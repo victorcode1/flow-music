@@ -146,7 +146,9 @@ class _HomeDesktopNavItem extends StatelessWidget {
                   child: Text(
                     label,
                     style: theme.textTheme.titleSmall?.copyWith(
-                      color: selected ? colors.primary : colors.onSurfaceVariant,
+                      color: selected
+                          ? colors.primary
+                          : colors.onSurfaceVariant,
                       fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                     ),
                   ),

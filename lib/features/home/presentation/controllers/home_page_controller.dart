@@ -15,13 +15,17 @@ class HomePageController {
     required void Function(String query) setQuery,
     required void Function(String path) navigateTo,
   }) {
-    if (currentPath == targetPath) return;
-
+    // Volver a tocar la pestana activa no navega, pero si limpia lo que haya
+    // encima. Antes salia de una: con una busqueda de categoria abierta dentro
+    // de /home (Pop, Reggaeton...) tocar Inicio no hacia nada y el usuario se
+    // quedaba sin forma de volver a las sugerencias.
     if (searchController.text.isNotEmpty) {
       searchController.clear();
     }
     setQuery('');
     FocusManager.instance.primaryFocus?.unfocus();
+
+    if (currentPath == targetPath) return;
     navigateTo(targetPath);
   }
 

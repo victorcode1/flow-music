@@ -18,7 +18,10 @@ La rama main conserva las funciones de búsqueda y reproducción basadas en YouT
 ## Identidad independiente de main
 
 - `main`: `com.victorflores.streambeatmusic` (StreamBeat Music en Android/iOS).
-- `dev-main` y `store`: conservan `com.victorflores.streambeat` en Android/iOS.
+- `store`: conserva `com.victorflores.streambeat` en Android/iOS.
+
+Los cambios de la antigua rama de trabajo `dev-main` están integrados en `main`.
+Las nuevas ramas de trabajo de StreamBeat Music deben partir de `main`.
 
 Android, iOS y macOS usan el nuevo identificador en todas las configuraciones;
 Linux también tiene su propio application ID. En Android/iOS se pueden instalar

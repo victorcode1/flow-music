@@ -8,7 +8,7 @@ void main() {
   group('HomePageController.navigateToTab', () {
     const controller = HomePageController();
 
-    test('does nothing when the tab is already selected', () {
+    test('re-tapping the active tab clears what is on top of it', () {
       final searchController = TextEditingController(text: 'radio');
       String? clearedQuery;
       String? navigatedPath;
@@ -21,8 +21,10 @@ void main() {
         navigateTo: (path) => navigatedPath = path,
       );
 
-      expect(searchController.text, 'radio');
-      expect(clearedQuery, isNull);
+      // Sin navegar (ya estamos ahi), pero devolviendo /home a sus sugerencias:
+      // es la salida de una busqueda de categoria abierta dentro de la pestana.
+      expect(searchController.text, isEmpty);
+      expect(clearedQuery, '');
       expect(navigatedPath, isNull);
     });
 

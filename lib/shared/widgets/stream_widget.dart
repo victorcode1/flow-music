@@ -35,6 +35,7 @@ class _StreamWidgetState extends State<StreamWidget> {
     streams = <StreamSubscription>[
       player.onDurationChanged.listen(
         (it) => setState(() => streamDuration = it),
+        onError: (Object _, StackTrace _) {},
       ),
       player.onPlayerStateChanged.listen(
         (it) => setState(() => streamState = it),

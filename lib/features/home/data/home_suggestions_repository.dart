@@ -1,10 +1,20 @@
 import 'dart:math';
 
+import 'package:flow_music/features/autoplay/data/mix_playlist_repository.dart';
 import 'package:flow_music/features/home/data/apple_top_charts_service.dart';
 import 'package:flow_music/features/home/data/location_service.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
+import 'package:flow_music/features/search/data/repositories/song_title_normalizer.dart';
 import 'package:flow_music/features/search/data/repositories/youtube_suggestions_repository.dart';
 import 'package:flutter/foundation.dart';
+
+typedef HomeSearchLoader =
+    Future<List<YouTubeSearchSuggestion>> Function(
+      String query, {
+      String source,
+    });
+typedef HomeMixLoader =
+    Future<MixPlaylistPage> Function(YouTubeSearchSuggestion seed);
 
 /// Resultado de `HomeSuggestionsRepository.load`.
 class HomeSuggestionsResult {
@@ -28,22 +38,41 @@ class HomeSuggestionsResult {
 /// cada top se resuelve a su `videoId` buscandolo en YouTube, conservando el
 /// titulo, el artista y la portada cuadrada de Apple.
 ///
+/// La tanda se mezcla con la parte "para ti": la radio (mix) de lo ultimo que
+/// escucho el usuario. Y en cada refresco cambia — se corren las semillas del
+/// historial y la ventana del top del pais — para que el home no muestre
+/// siempre lo mismo.
+///
 /// Si Apple no responde (o ninguna cancion resuelve), cae a una busqueda
 /// generica por pais en YouTube para que la pantalla nunca quede vacia.
 class HomeSuggestionsRepository {
   HomeSuggestionsRepository({
     LocationService? locationService,
     AppleTopChartsService? appleService,
+    HomeSearchLoader? searchLoader,
+    HomeMixLoader? mixLoader,
   }) : _locationService = locationService ?? const LocationService(),
-       _appleService = appleService ?? const AppleTopChartsService();
+       _appleService = appleService ?? const AppleTopChartsService(),
+       _searchLoader = searchLoader ?? fetchYouTubeSearchSuggestions,
+       _mixLoader = mixLoader ?? fetchMixPlaylist;
 
   final LocationService _locationService;
   final AppleTopChartsService _appleService;
+  final HomeSearchLoader _searchLoader;
+  final HomeMixLoader _mixLoader;
 
   /// Cuantas canciones del top intentamos resolver contra YouTube y el tamano
   /// de cada lote concurrente (para no saturar a YouTube).
   static const int _maxToResolve = 16;
   static const int _resolveChunkSize = 4;
+
+  /// Cuantas canciones del historial siembran la parte "para ti" y cuantas
+  /// pistas se toman de la radio de cada una.
+  static const int _maxPersonalSeeds = 2;
+  static const int _tracksPerSeed = 4;
+
+  /// Cuanto se corre la ventana del top del pais en cada refresco.
+  static const int _chartRotationStep = 5;
 
   /// Queries por pais (ISO 3166-1 alpha-2). Si el pais no esta listado, se
   /// arma una query generica con el nombre/codigo.
@@ -82,26 +111,42 @@ class HomeSuggestionsRepository {
     'Playlist top hits ${DateTime.now().year}',
   ];
 
-  Future<HomeSuggestionsResult> load() async {
+  /// [rotation] sube en cada refresco: es lo que hace que la tanda cambie.
+  /// [recentlyPlayed] son las ultimas canciones escuchadas, mas recientes
+  /// primero.
+  Future<HomeSuggestionsResult> load({
+    int rotation = 0,
+    List<YouTubeSearchSuggestion> recentlyPlayed = const [],
+  }) async {
     final country = await _locationService.resolveCountry();
 
-    // Fuente principal: tops reales del pais (Apple Music).
+    // Las dos fuentes van en paralelo: la personal (radio de lo ultimo que
+    // escucho) y el top real del pais.
+    final personal = await _personalPicks(
+      recentlyPlayed: recentlyPlayed,
+      rotation: rotation,
+    );
+
     final topSongs = await _appleService.fetchTopSongs(
       countryCode: country.countryCode,
     );
-    if (topSongs.isNotEmpty) {
-      final resolved = await _resolveTopSongs(topSongs);
-      if (resolved.isNotEmpty) {
-        return HomeSuggestionsResult(
-          suggestions: resolved,
-          countryName: country.countryName,
-        );
-      }
+    final chart = topSongs.isEmpty
+        ? const <YouTubeSearchSuggestion>[]
+        : await _resolveTopSongs(
+            _rotated(topSongs, rotation * _chartRotationStep),
+          );
+
+    final merged = _merge([personal, chart]);
+    if (merged.isNotEmpty) {
+      return HomeSuggestionsResult(
+        suggestions: merged,
+        countryName: country.countryName,
+      );
     }
 
     // Respaldo: busqueda generica por pais en YouTube.
-    final query = _pickQuery(country);
-    final suggestions = await fetchYouTubeSearchSuggestions(
+    final query = _pickQuery(country, rotation);
+    final suggestions = await _searchLoader(
       query,
       source: 'HomeSuggestionsRepository',
     );
@@ -110,6 +155,73 @@ class HomeSuggestionsRepository {
       suggestions: suggestions,
       countryName: country.countryName,
     );
+  }
+
+  /// Parte "para ti": la radio de las ultimas canciones escuchadas. Se rota que
+  /// semillas se usan para que dos refrescos seguidos no den lo mismo.
+  Future<List<YouTubeSearchSuggestion>> _personalPicks({
+    required List<YouTubeSearchSuggestion> recentlyPlayed,
+    required int rotation,
+  }) async {
+    final seeds = <YouTubeSearchSuggestion>[];
+    for (var i = 0; i < recentlyPlayed.length; i++) {
+      if (seeds.length >= _maxPersonalSeeds) break;
+      final seed = recentlyPlayed[(rotation + i) % recentlyPlayed.length];
+      if (seed.videoId.isEmpty) continue;
+      if (seeds.any((picked) => picked.videoId == seed.videoId)) continue;
+      seeds.add(seed);
+    }
+    if (seeds.isEmpty) return const [];
+
+    final pages = await Future.wait(seeds.map(_safeMix));
+    return [for (final page in pages) ...page.tracks.take(_tracksPerSeed)];
+  }
+
+  Future<MixPlaylistPage> _safeMix(YouTubeSearchSuggestion seed) async {
+    try {
+      return await _mixLoader(seed);
+    } catch (error) {
+      debugPrint('Home mix for "${seed.displayText}" failed: $error');
+      return MixPlaylistPage.empty;
+    }
+  }
+
+  /// Intercala las fuentes por turnos (una personal, una del top...) y descarta
+  /// repetidos por id y por titulo+artista.
+  List<YouTubeSearchSuggestion> _merge(
+    List<List<YouTubeSearchSuggestion>> sources,
+  ) {
+    final merged = <YouTubeSearchSuggestion>[];
+    final seenIds = <String>{};
+    final seenKeys = <String>{};
+    final longest = sources.fold<int>(
+      0,
+      (longest, source) => source.length > longest ? source.length : longest,
+    );
+
+    for (var index = 0; index < longest; index++) {
+      for (final source in sources) {
+        if (index >= source.length) continue;
+        final item = source[index];
+        if (item.videoId.isEmpty || !seenIds.add(item.videoId)) continue;
+        final key = songDedupKey(
+          title: item.displayText,
+          artist: item.channelTitle,
+        );
+        if (key.isNotEmpty && !seenKeys.add(key)) continue;
+        merged.add(item);
+      }
+    }
+    return merged;
+  }
+
+  /// Corre la lista [offset] posiciones sin perder elementos, para mostrar otra
+  /// parte del top en cada refresco.
+  List<T> _rotated<T>(List<T> items, int offset) {
+    if (items.length < 2) return items;
+    final shift = offset % items.length;
+    if (shift == 0) return items;
+    return [...items.sublist(shift), ...items.sublist(0, shift)];
   }
 
   /// Resuelve los tops de Apple contra YouTube en lotes concurrentes,
@@ -141,10 +253,7 @@ class HomeSuggestionsRepository {
         ? song.name
         : '${song.artist} ${song.name}';
     try {
-      final results = await fetchYouTubeSearchSuggestions(
-        query,
-        source: 'AppleTopChart',
-      );
+      final results = await _searchLoader(query, source: 'AppleTopChart');
       if (results.isEmpty) return null;
       final match = results.first;
       if (match.videoId.isEmpty) return null;
@@ -163,15 +272,16 @@ class HomeSuggestionsRepository {
     }
   }
 
-  String _pickQuery(ResolvedCountry country) {
+  /// La query tambien rota, asi el respaldo no repite siempre la misma busqueda.
+  String _pickQuery(ResolvedCountry country, int rotation) {
     final code = country.countryCode;
     if (code != null && _countryQueries.containsKey(code)) {
       final list = _countryQueries[code]!;
-      return list[Random().nextInt(list.length)];
+      return list[rotation % list.length];
     }
     if (code != null && country.countryName != null) {
       return 'Top music ${country.countryName}';
     }
-    return _fallbackQueries[Random().nextInt(_fallbackQueries.length)];
+    return _fallbackQueries[rotation % _fallbackQueries.length];
   }
 }

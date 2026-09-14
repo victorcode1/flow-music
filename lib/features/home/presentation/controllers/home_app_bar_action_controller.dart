@@ -2,16 +2,17 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/audio_tools/presentation/controllers/audio_tools_controller.dart';
 import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_queue_controller.dart';
+import 'package:flow_music/features/autoplay/presentation/widgets/now_playing_queue_view.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_view_controller.dart';
 import 'package:flow_music/features/library/data/downloaded_audio.dart';
 import 'package:flow_music/features/library/presentation/widgets/downloaded_file_actions.dart';
-import 'package:flow_music/features/lyrics/data/lyrics_repository.dart';
 import 'package:flow_music/features/playlists/presentation/controllers/playlists_controller.dart';
 import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/features/sleep_timer/presentation/controllers/sleep_timer_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
+import 'package:flow_music/features/song/presentation/widgets/share_song_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -83,6 +84,8 @@ class HomeAppBarActionController {
         return;
       case HomeAppBarMenuAction.queue:
         return showNowPlayingQueueSheet(context: context, ref: ref);
+      case HomeAppBarMenuAction.share:
+        return showShareSongSheet(context: context, ref: ref);
       case HomeAppBarMenuAction.addToPlaylist:
         return addToPlaylist(context: context, audio: item);
       case HomeAppBarMenuAction.sleepTimer:
@@ -90,12 +93,6 @@ class HomeAppBarActionController {
           context: context,
           state: ref.read(sleepTimerControllerProvider),
           controller: ref.read(sleepTimerControllerProvider.notifier),
-        );
-      case HomeAppBarMenuAction.lyrics:
-        return showNowPlayingLyricsSheet(
-          context: context,
-          title: item.title,
-          artist: item.author,
         );
       case HomeAppBarMenuAction.audioTools:
         return _showAppBarAudioToolsSheet(
@@ -127,9 +124,9 @@ class HomeAppBarActionController {
 enum HomeAppBarMenuAction {
   favorite,
   queue,
+  share,
   addToPlaylist,
   sleepTimer,
-  lyrics,
   audioTools,
   download,
   offline,
@@ -144,6 +141,10 @@ Future<void> showNowPlayingQueueSheet({
   Future<void> playFromQueue(NextTrack? track) async {
     if (track == null) return;
     final controller = ref.read(songController);
+    if (controller.currentMode == PlaybackMode.video) {
+      await controller.playVideo(id: track.suggestion.videoId);
+      return;
+    }
     final resolved = track.resolved;
     if (resolved != null) {
       await controller.playPrefetched(resolved);
@@ -161,7 +162,6 @@ Future<void> showNowPlayingQueueSheet({
         builder: (context, ref, _) {
           final state = ref.watch(autoplayQueueControllerProvider);
           final theme = Theme.of(context);
-          final colors = theme.colorScheme;
           final upcoming = state.upcoming;
           return SafeArea(
             child: FractionallySizedBox(
@@ -227,64 +227,14 @@ Future<void> showNowPlayingQueueSheet({
                       ],
                     ),
                   ),
-                  if (state.current != null)
-                    ListTile(
-                      leading: Icon(
-                        Icons.graphic_eq_rounded,
-                        color: colors.primary,
-                      ),
-                      title: Text(LocaleKeys.playing.tr()),
-                      subtitle: Text(
-                        state.current!.displayText,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                  if (state.isLoadingMore)
+                    const LinearProgressIndicator(minHeight: 2),
                   Expanded(
-                    child: upcoming.isEmpty
-                        ? Center(child: Text(LocaleKeys.empty_queue.tr()))
-                        : ReorderableListView.builder(
-                            padding: const EdgeInsets.fromLTRB(12, 0, 12, 20),
-                            itemCount: upcoming.length,
-                            onReorderItem: notifier.moveUpcoming,
-                            itemBuilder: (context, index) {
-                              final item = upcoming[index];
-                              return ListTile(
-                                key: ValueKey('queue-menu-${item.videoId}'),
-                                leading: item.thumbnailUrl.isEmpty
-                                    ? const Icon(Icons.music_note_rounded)
-                                    : ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.network(
-                                          item.thumbnailUrl,
-                                          width: 48,
-                                          height: 48,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                title: Text(
-                                  item.displayText,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                subtitle: Text(
-                                  item.channelTitle,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                onTap: () {
-                                  Navigator.of(context).pop();
-                                  playFromQueue(notifier.playUpcomingAt(index));
-                                },
-                                trailing: IconButton(
-                                  tooltip: LocaleKeys.delete.tr(),
-                                  onPressed: () =>
-                                      notifier.removeUpcomingAt(index),
-                                  icon: const Icon(Icons.close_rounded),
-                                ),
-                              );
-                            },
-                          ),
+                    child: NowPlayingQueueView(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 20),
+                      onPlay: playFromQueue,
+                      onTrackSelected: () => Navigator.of(context).pop(),
+                    ),
                   ),
                 ],
               ),
@@ -357,65 +307,6 @@ Future<void> _showAppBarSleepTimerSheet({
                 },
               ),
           ],
-        ),
-      );
-    },
-  );
-}
-
-Future<void> showNowPlayingLyricsSheet({
-  required BuildContext context,
-  required String title,
-  required String artist,
-}) async {
-  await showModalBottomSheet<void>(
-    context: context,
-    showDragHandle: true,
-    isScrollControlled: true,
-    builder: (context) {
-      return SafeArea(
-        child: FractionallySizedBox(
-          heightFactor: 0.82,
-          child: FutureBuilder<String?>(
-            future: const LyricsRepository().findLyrics(
-              title: title,
-              artist: artist,
-            ),
-            builder: (context, snapshot) {
-              final theme = Theme.of(context);
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final lyrics = snapshot.data;
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.lyrics.tr(),
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: lyrics == null || lyrics.isEmpty
-                          ? Center(child: Text(LocaleKeys.no_lyrics.tr()))
-                          : SingleChildScrollView(
-                              child: SelectableText(
-                                lyrics,
-                                style: theme.textTheme.bodyLarge?.copyWith(
-                                  height: 1.45,
-                                ),
-                              ),
-                            ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
         ),
       );
     },

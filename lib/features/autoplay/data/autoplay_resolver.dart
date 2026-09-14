@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flow_music/features/autoplay/data/resolved_audio.dart';
+import 'package:flow_music/features/autoplay/data/youtube_playback_stream.dart';
+import 'package:flow_music/features/autoplay/data/youtube_access_state.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/features/search/data/repositories/piped_video_duration.dart';
 import 'package:flutter/foundation.dart';
@@ -16,7 +18,9 @@ Future<ResolvedAudio?> resolveAudioFor(
   if (videoId.isEmpty) return null;
 
   try {
-    if (!kIsWeb) {
+    // Con la IP marcada por YouTube, insistir solo alarga el castigo: se va
+    // directo a Piped hasta que pase el enfriamiento.
+    if (!kIsWeb && !isYoutubeRateLimited) {
       final resolved = await _tryResolveViaYoutubeExplode(suggestion);
       if (resolved != null) return resolved;
     }
@@ -35,10 +39,11 @@ Future<ResolvedAudio?> _tryResolveViaYoutubeExplode(
   try {
     return await _resolveViaYoutubeExplode(suggestion);
   } catch (error, stackTrace) {
+    final rateLimited = reportYoutubeFailure(error);
     debugPrint(
       'youtube_explode prefetch failed for ${suggestion.videoId}, falling back to Piped: $error',
     );
-    debugPrint('$stackTrace');
+    if (!rateLimited) debugPrint('$stackTrace');
     return null;
   }
 }
@@ -51,26 +56,25 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
     final video = await yt.videos.get(suggestion.videoId);
     final manifest = await yt.videos.streamsClient.getManifest(
       suggestion.videoId,
-      ytClients: [YoutubeApiClient.safari, YoutubeApiClient.androidVr],
     );
-    if (manifest.audioOnly.isEmpty) return null;
-
-    final preferred = manifest.audioOnly.where(
-      (stream) =>
-          stream.container == StreamContainer.mp4 ||
-          stream.codec.subtype == 'mp4a.40.2',
+    final playbackStream = pickYoutubePlaybackStream(
+      manifest,
+      preferMuxed: _isApplePlatform,
     );
-    final audioStream = (preferred.isEmpty ? manifest.audioOnly : preferred)
-        .withHighestBitrate();
+    if (playbackStream == null) return null;
 
     return ResolvedAudio(
       suggestion: suggestion,
-      audioUrl: audioStream.url.toString(),
+      audioUrl: playbackStream.url.toString(),
+      mimeType: '${playbackStream.codec.type}/${playbackStream.codec.subtype}',
+      requestHeaders: YoutubeHttpClient.defaultHeaders,
+      rangeEnd: playbackStream.size.totalBytes - 1,
+      fileExtension: playbackStream.container.name,
       title: suggestion.displayText,
       author: suggestion.channelTitle,
       thumbnailUrl: suggestion.thumbnailUrl,
       duration: _resolveAudioDuration(
-        streamUri: audioStream.url,
+        streamUri: playbackStream.url,
         knownDuration: suggestion.duration,
         fallback: video.duration,
       ),
@@ -79,6 +83,11 @@ Future<ResolvedAudio?> _resolveViaYoutubeExplode(
     yt.close();
   }
 }
+
+bool get _isApplePlatform =>
+    !kIsWeb &&
+    (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.macOS);
 
 Future<ResolvedAudio?> _resolveViaPiped(
   YouTubeSearchSuggestion suggestion,
@@ -101,6 +110,11 @@ Future<ResolvedAudio?> _resolveViaPiped(
   if (typed.isEmpty) return null;
 
   typed.sort((a, b) {
+    if (_isApplePlatform) {
+      final aM4a = _isM4aStream(a) ? 1 : 0;
+      final bM4a = _isM4aStream(b) ? 1 : 0;
+      if (aM4a != bM4a) return bM4a.compareTo(aM4a);
+    }
     final aOpus = a['format'] == 'WEBMA_OPUS' ? 1 : 0;
     final bOpus = b['format'] == 'WEBMA_OPUS' ? 1 : 0;
     if (aOpus != bOpus) return bOpus.compareTo(aOpus);
@@ -119,6 +133,12 @@ Future<ResolvedAudio?> _resolveViaPiped(
     thumbnailUrl: 'https://i.ytimg.com/vi/${suggestion.videoId}/hqdefault.jpg',
     duration: suggestion.duration ?? parsePipedDuration(decoded['duration']),
   );
+}
+
+bool _isM4aStream(Map<String, dynamic> stream) {
+  final format = (stream['format'] as String? ?? '').toUpperCase();
+  final mimeType = (stream['mimeType'] as String? ?? '').toLowerCase();
+  return format.contains('M4A') || mimeType.contains('mp4');
 }
 
 Duration? _resolveAudioDuration({

@@ -33,6 +33,7 @@ class MainAppController {
 
   void initialize() {
     flowAudioHandler.onTrackComplete = handleTrackComplete;
+    ref.read(songController).onVideoComplete = handleTrackComplete;
     flowAudioHandler.onSkipToNext = handleSkipToNext;
     flowAudioHandler.onSkipToPrevious = handleSkipToPrevious;
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,6 +44,10 @@ class MainAppController {
 
   void dispose() {
     _monetizationCoordinator.dispose();
+    final controller = ref.read(songController);
+    if (controller.onVideoComplete == handleTrackComplete) {
+      controller.onVideoComplete = null;
+    }
     if (flowAudioHandler.onTrackComplete == handleTrackComplete) {
       flowAudioHandler.onTrackComplete = null;
     }
@@ -55,7 +60,13 @@ class MainAppController {
   }
 
   Future<void> handleTrackComplete() async {
+    final controller = ref.read(songController);
+    final completedMode = controller.currentMode;
     if (ref.read(repeatModeControllerProvider)) {
+      if (completedMode == PlaybackMode.video) {
+        await controller.replayCurrentVideo();
+        return;
+      }
       final player = flowAudioHandler.player;
       await player.seek(Duration.zero);
       await player.resume();
@@ -63,15 +74,17 @@ class MainAppController {
     }
 
     if (!ref.read(autoplayEnabledControllerProvider)) return;
-    await _playQueueTrack(
-      ref.read(autoplayQueueControllerProvider.notifier).playNext(),
-    );
+    final next = await ref
+        .read(autoplayQueueControllerProvider.notifier)
+        .playNext();
+    await _playQueueTrack(next, mode: completedMode);
   }
 
   Future<void> handleSkipToNext() async {
-    await _playQueueTrack(
-      ref.read(autoplayQueueControllerProvider.notifier).playNext(),
-    );
+    final next = await ref
+        .read(autoplayQueueControllerProvider.notifier)
+        .playNext();
+    await _playQueueTrack(next);
   }
 
   Future<void> handleSkipToPrevious() async {
@@ -113,9 +126,13 @@ class MainAppController {
     });
   }
 
-  Future<void> _playQueueTrack(NextTrack? next) async {
+  Future<void> _playQueueTrack(NextTrack? next, {PlaybackMode? mode}) async {
     if (next == null) return;
     final controller = ref.read(songController);
+    if ((mode ?? controller.currentMode) == PlaybackMode.video) {
+      await controller.playVideo(id: next.suggestion.videoId);
+      return;
+    }
     final resolved = next.resolved;
     if (resolved != null) {
       await controller.playPrefetched(resolved);
