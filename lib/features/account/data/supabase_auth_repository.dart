@@ -1,15 +1,18 @@
 import 'package:flow_music/core/config/app_environment.dart';
+import 'package:flow_music/features/account/data/apple_auth_gateway.dart';
 import 'package:flow_music/features/account/data/google_auth_gateway.dart';
 import 'package:flow_music/features/account/data/auth_attempt_guard.dart';
 import 'package:flow_music/features/account/domain/entities/app_user.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SupabaseAuthRepository implements AuthRepository {
-  SupabaseAuthRepository(this._client, this._googleAuth);
+  SupabaseAuthRepository(this._client, this._googleAuth, this._appleAuth);
 
   final SupabaseClient _client;
   final GoogleAuthGateway _googleAuth;
+  final AppleAuthGateway _appleAuth;
   final _attempts = AuthAttemptGuard();
 
   @override
@@ -60,6 +63,29 @@ class SupabaseAuthRepository implements AuthRepository {
       }
       return user;
     } on GoogleAuthGatewayFailure catch (error) {
+      throw AuthFailure(error.message, code: error.code);
+    } on AuthException catch (error) {
+      throw AuthFailure(error.message, code: error.code);
+    }
+  }
+
+  @override
+  Future<AppUser> signInWithApple() async {
+    try {
+      _attempts.check('sign_in');
+      final rawNonce = _client.auth.generateRawNonce();
+      final tokens = await _appleAuth.authenticate(rawNonce: rawNonce);
+      final response = await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: tokens.idToken,
+        nonce: rawNonce,
+      );
+      final user = _mapUser(response.user);
+      if (user == null) {
+        throw const AuthFailure('No se pudo recuperar la cuenta de Apple.');
+      }
+      return user;
+    } on AppleAuthGatewayFailure catch (error) {
       throw AuthFailure(error.message, code: error.code);
     } on AuthException catch (error) {
       throw AuthFailure(error.message, code: error.code);
@@ -121,8 +147,19 @@ class SupabaseAuthRepository implements AuthRepository {
   @override
   Future<void> deleteAccount() async {
     try {
-      await _client.functions.invoke('delete-account');
+      final user = _client.auth.currentUser;
+      final body = <String, String>{};
+      if (userUsesAppleIdentity(user)) {
+        final rawNonce = _client.auth.generateRawNonce();
+        final tokens = await _appleAuth.authenticate(rawNonce: rawNonce);
+        body
+          ..['apple_authorization_code'] = tokens.authorizationCode
+          ..['apple_raw_nonce'] = rawNonce;
+      }
+      await _client.functions.invoke('delete-account', body: body);
       await _client.auth.signOut(scope: SignOutScope.local);
+    } on AppleAuthGatewayFailure catch (error) {
+      throw AuthFailure(error.message, code: error.code);
     } on FunctionException catch (error) {
       throw AuthFailure(
         'No se pudo eliminar la cuenta.',
@@ -165,4 +202,15 @@ class SupabaseAuthRepository implements AuthRepository {
       emailConfirmed: user.emailConfirmedAt != null,
     );
   }
+}
+
+@visibleForTesting
+bool userUsesAppleIdentity(User? user) {
+  if (user == null) return false;
+  if (user.identities?.any((identity) => identity.provider == 'apple') ??
+      false) {
+    return true;
+  }
+  final providers = user.appMetadata['providers'];
+  return providers is List && providers.any((provider) => provider == 'apple');
 }

@@ -11,6 +11,8 @@ abstract interface class AuthRepository {
 
   Future<AppUser> signInWithGoogle();
 
+  Future<AppUser> signInWithApple();
+
   Future<SignUpResult> signUp({
     required String email,
     required String password,

@@ -323,6 +323,8 @@
   "auth_alternative_divider": "or",
   "auth_sign_in_with_google": "Continue with Google",
   "auth_register_with_google": "Sign up with Google",
+  "auth_sign_in_with_apple": "Continue with Apple",
+  "auth_register_with_apple": "Sign up with Apple",
   "auth_action_failed": "We couldn't complete the action. Please try again.",
   "auth_required_field": "This field is required.",
   "auth_invalid_email": "Enter a valid email address.",

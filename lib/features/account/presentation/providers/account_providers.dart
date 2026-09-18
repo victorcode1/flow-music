@@ -1,5 +1,6 @@
 import 'package:flow_music/core/backend/backend_providers.dart';
 import 'package:flow_music/core/config/app_environment.dart';
+import 'package:flow_music/features/account/data/apple_auth_gateway.dart';
 import 'package:flow_music/features/account/data/google_auth_gateway.dart';
 import 'package:flow_music/features/account/data/supabase_auth_repository.dart';
 import 'package:flow_music/features/account/data/unavailable_auth_repository.dart';
@@ -14,11 +15,19 @@ final googleAuthGatewayProvider = Provider<GoogleAuthGateway>((ref) {
   );
 });
 
+final appleAuthGatewayProvider = Provider<AppleAuthGateway>((ref) {
+  return const NativeAppleAuthGateway();
+});
+
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final client = ref.watch(supabaseClientProvider);
   return client == null
       ? const UnavailableAuthRepository()
-      : SupabaseAuthRepository(client, ref.watch(googleAuthGatewayProvider));
+      : SupabaseAuthRepository(
+          client,
+          ref.watch(googleAuthGatewayProvider),
+          ref.watch(appleAuthGatewayProvider),
+        );
 });
 
 final authUserProvider = StreamProvider<AppUser?>((ref) {

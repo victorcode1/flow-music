@@ -323,6 +323,8 @@
   "auth_alternative_divider": "ou",
   "auth_sign_in_with_google": "Continuar com o Google",
   "auth_register_with_google": "Criar conta com o Google",
+  "auth_sign_in_with_apple": "Continuar com a Apple",
+  "auth_register_with_apple": "Criar conta com a Apple",
   "auth_action_failed": "Não foi possível concluir a ação. Tente novamente.",
   "auth_required_field": "Este campo é obrigatório.",
   "auth_invalid_email": "Digite um e-mail válido.",

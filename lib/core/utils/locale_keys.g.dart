@@ -2,7 +2,7 @@
 
 // ignore_for_file: constant_identifier_names
 
-abstract class  LocaleKeys {
+abstract class LocaleKeys {
   static const cloud_last_success = 'cloud_last_success';
   static const cloud_sync_rate_limited = 'cloud_sync_rate_limited';
   static const cloud_sync_quota_exceeded = 'cloud_sync_quota_exceeded';
@@ -184,8 +184,10 @@ abstract class  LocaleKeys {
   static const radio_map_error = 'radio_map_error';
   static const radio_map_retry = 'radio_map_retry';
   static const radio_map_back_world = 'radio_map_back_world';
-  static const home_stations_load_error_title = 'home_stations_load_error_title';
-  static const home_stations_load_error_subtitle = 'home_stations_load_error_subtitle';
+  static const home_stations_load_error_title =
+      'home_stations_load_error_title';
+  static const home_stations_load_error_subtitle =
+      'home_stations_load_error_subtitle';
   static const home_no_stations_title = 'home_no_stations_title';
   static const home_no_stations_subtitle = 'home_no_stations_subtitle';
   static const popular_radio = 'popular_radio';
@@ -202,7 +204,8 @@ abstract class  LocaleKeys {
   static const location_blocked_title = 'location_blocked_title';
   static const location_blocked_message = 'location_blocked_message';
   static const not_now = 'not_now';
-  static const location_permission_still_denied = 'location_permission_still_denied';
+  static const location_permission_still_denied =
+      'location_permission_still_denied';
   static const filter_nearby = 'filter_nearby';
   static const filter_news = 'filter_news';
   static const filter_sports = 'filter_sports';
@@ -231,8 +234,10 @@ abstract class  LocaleKeys {
   static const theme_and_appearance = 'theme_and_appearance';
   static const continuous_playback = 'continuous_playback';
   static const daily_radio_recommendations = 'daily_radio_recommendations';
-  static const daily_radio_recommendations_subtitle = 'daily_radio_recommendations_subtitle';
-  static const daily_radio_recommendations_enabled = 'daily_radio_recommendations_enabled';
+  static const daily_radio_recommendations_subtitle =
+      'daily_radio_recommendations_subtitle';
+  static const daily_radio_recommendations_enabled =
+      'daily_radio_recommendations_enabled';
   static const daily_radio_permission_denied = 'daily_radio_permission_denied';
   static const daily_radio_schedule_failed = 'daily_radio_schedule_failed';
   static const daily_radio_unavailable = 'daily_radio_unavailable';
@@ -269,8 +274,10 @@ abstract class  LocaleKeys {
   static const autoplay_queue = 'autoplay_queue';
   static const autoplay_queue_subtitle = 'autoplay_queue_subtitle';
   static const audio_download_quality = 'audio_download_quality';
-  static const current_audio_download_quality = 'current_audio_download_quality';
-  static const audio_download_quality_subtitle = 'audio_download_quality_subtitle';
+  static const current_audio_download_quality =
+      'current_audio_download_quality';
+  static const audio_download_quality_subtitle =
+      'audio_download_quality_subtitle';
   static const audio_quality_high = 'audio_quality_high';
   static const audio_quality_medium = 'audio_quality_medium';
   static const audio_quality_low = 'audio_quality_low';
@@ -300,9 +307,11 @@ abstract class  LocaleKeys {
   static const path_copied = 'path_copied';
   static const cancel = 'cancel';
   static const confirm_delete_download_title = 'confirm_delete_download_title';
-  static const confirm_delete_download_message = 'confirm_delete_download_message';
+  static const confirm_delete_download_message =
+      'confirm_delete_download_message';
   static const confirm_delete_offline_title = 'confirm_delete_offline_title';
-  static const confirm_delete_offline_message = 'confirm_delete_offline_message';
+  static const confirm_delete_offline_message =
+      'confirm_delete_offline_message';
   static const download_deleted = 'download_deleted';
   static const download_delete_error = 'download_delete_error';
   static const share_unavailable = 'share_unavailable';
@@ -327,6 +336,8 @@ abstract class  LocaleKeys {
   static const auth_alternative_divider = 'auth_alternative_divider';
   static const auth_sign_in_with_google = 'auth_sign_in_with_google';
   static const auth_register_with_google = 'auth_register_with_google';
+  static const auth_sign_in_with_apple = 'auth_sign_in_with_apple';
+  static const auth_register_with_apple = 'auth_register_with_apple';
   static const auth_action_failed = 'auth_action_failed';
   static const auth_required_field = 'auth_required_field';
   static const auth_invalid_email = 'auth_invalid_email';
@@ -366,13 +377,19 @@ abstract class  LocaleKeys {
   static const auth_delete_account_message = 'auth_delete_account_message';
   static const auth_account_deleted = 'auth_account_deleted';
   static const auth_signed_out = 'auth_signed_out';
-  static const auth_sign_out_delete_synced_data = 'auth_sign_out_delete_synced_data';
-  static const auth_sign_out_delete_synced_data_hint = 'auth_sign_out_delete_synced_data_hint';
-  static const auth_sign_out_delete_warning_title = 'auth_sign_out_delete_warning_title';
-  static const auth_sign_out_delete_warning_message = 'auth_sign_out_delete_warning_message';
-  static const auth_sign_out_delete_warning_action = 'auth_sign_out_delete_warning_action';
+  static const auth_sign_out_delete_synced_data =
+      'auth_sign_out_delete_synced_data';
+  static const auth_sign_out_delete_synced_data_hint =
+      'auth_sign_out_delete_synced_data_hint';
+  static const auth_sign_out_delete_warning_title =
+      'auth_sign_out_delete_warning_title';
+  static const auth_sign_out_delete_warning_message =
+      'auth_sign_out_delete_warning_message';
+  static const auth_sign_out_delete_warning_action =
+      'auth_sign_out_delete_warning_action';
   static const user_data_sync_failed = 'user_data_sync_failed';
-  static const subscription_price_unavailable = 'subscription_price_unavailable';
+  static const subscription_price_unavailable =
+      'subscription_price_unavailable';
   static const subscription_check_price = 'subscription_check_price';
   static const subscription_manage = 'subscription_manage';
   static const subscription_privacy_policy = 'subscription_privacy_policy';
@@ -392,5 +409,4 @@ abstract class  LocaleKeys {
   static const cloud_sync_pending = 'cloud_sync_pending';
   static const cloud_sync_unavailable = 'cloud_sync_unavailable';
   static const cloud_sync_now = 'cloud_sync_now';
-
 }

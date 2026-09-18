@@ -19,6 +19,10 @@ void main() {
   };
   Map<String, Object?> plist() => {
     'GADApplicationIdentifier': 'ca-app-pub-1234567890123456~3456789012',
+    'NSLocationWhenInUseUsageDescription':
+        'StreamBeat usa tu ubicación para sugerirte emisoras de tu país.',
+    'NSLocationAlwaysAndWhenInUseUsageDescription':
+        'StreamBeat usa tu ubicación para mostrar emisoras cercanas.',
     'CFBundleURLTypes': [
       {
         'CFBundleURLSchemes': [
@@ -81,6 +85,19 @@ void main() {
     expect(errors, contains('editores diferentes'));
     expect(errors, contains('esquema invertido'));
     expect(errors, contains('esquema de retorno'));
+  });
+
+  test('iOS requires both location privacy purpose strings', () {
+    final native = plist()
+      ..remove('NSLocationWhenInUseUsageDescription')
+      ..['NSLocationAlwaysAndWhenInUseUsageDescription'] = '   ';
+    final errors = validateMonetizationConfig(
+      configuration(),
+      platform: MonetizationPlatform.ios,
+      iosPlist: native,
+    ).join('\n');
+    expect(errors, contains('NSLocationWhenInUseUsageDescription'));
+    expect(errors, contains('NSLocationAlwaysAndWhenInUseUsageDescription'));
   });
 
   test('placeholder and non-string values fail without casting errors', () {

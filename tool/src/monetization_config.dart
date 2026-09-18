@@ -87,6 +87,15 @@ List<String> validateMonetizationConfig(
     );
   }
   if (isIos) {
+    for (final key in [
+      'NSLocationWhenInUseUsageDescription',
+      'NSLocationAlwaysAndWhenInUseUsageDescription',
+    ]) {
+      final purpose = iosPlist?[key];
+      if (purpose is! String || purpose.trim().isEmpty) {
+        errors.add('Info.plist: falta una descripción válida para $key.');
+      }
+    }
     final appId = iosPlist?['GADApplicationIdentifier'];
     if (appId is! String || !productionAdId(appId, '~')) {
       errors.add(

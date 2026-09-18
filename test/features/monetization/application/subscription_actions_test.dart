@@ -80,6 +80,9 @@ class _FakeAuthRepository implements AuthRepository {
   Future<AppUser> signInWithGoogle() => throw UnimplementedError();
 
   @override
+  Future<AppUser> signInWithApple() => throw UnimplementedError();
+
+  @override
   Future<void> signOut() async {}
 
   @override

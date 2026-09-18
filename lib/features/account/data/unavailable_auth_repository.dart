@@ -34,6 +34,9 @@ class UnavailableAuthRepository implements AuthRepository {
   Future<AppUser> signInWithGoogle() => Future.error(_failure);
 
   @override
+  Future<AppUser> signInWithApple() => Future.error(_failure);
+
+  @override
   Future<void> signOut() async {}
 
   @override

@@ -13,6 +13,7 @@ import 'package:flow_music/features/monetization/presentation/providers/ad_provi
 import 'package:flow_music/features/monetization/presentation/providers/monetization_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MonetizationSettingsCard extends ConsumerStatefulWidget {
@@ -521,6 +522,7 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
   bool _register = false;
   bool _busy = false;
   bool _googleBusy = false;
+  bool _appleBusy = false;
   bool _obscurePassword = true;
 
   @override
@@ -528,6 +530,9 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
     final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
     final googleAuthAvailable = ref.watch(
       googleAuthGatewayProvider.select((gateway) => gateway.isAvailable),
+    );
+    final appleAuthAvailable = ref.watch(
+      appleAuthGatewayProvider.select((gateway) => gateway.isAvailable),
     );
     return SafeArea(
       child: SingleChildScrollView(
@@ -554,6 +559,16 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
                 ),
               ),
               const SizedBox(height: 18),
+              if (appleAuthAvailable) ...[
+                SignInWithAppleButton(
+                  onPressed: _busy ? null : _signInWithApple,
+                  text: _register
+                      ? LocaleKeys.auth_register_with_apple.tr()
+                      : LocaleKeys.auth_sign_in_with_apple.tr(),
+                  iconAlignment: SignInWithAppleIconAlignment.left,
+                ),
+                const SizedBox(height: 12),
+              ],
               if (googleAuthAvailable) ...[
                 OutlinedButton.icon(
                   onPressed: _busy ? null : _signInWithGoogle,
@@ -569,7 +584,9 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
                         : LocaleKeys.auth_sign_in_with_google.tr(),
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 12),
+              ],
+              if (appleAuthAvailable || googleAuthAvailable) ...[
                 Row(
                   children: [
                     const Expanded(child: Divider()),
@@ -661,7 +678,7 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
                 const SizedBox(height: 16),
               FilledButton(
                 onPressed: _busy ? null : _submit,
-                child: _busy && !_googleBusy
+                child: _busy && !_googleBusy && !_appleBusy
                     ? const SizedBox.square(
                         dimension: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
@@ -699,6 +716,31 @@ class _AccountSheetState extends ConsumerState<_AccountSheet> {
         setState(() {
           _busy = false;
           _googleBusy = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _appleBusy = true;
+    });
+    try {
+      await ref.read(authRepositoryProvider).signInWithApple();
+      if (mounted) Navigator.of(context).pop();
+    } on AuthFailure catch (error) {
+      if (mounted && error.code != 'cancelled') {
+        _showMessage(
+          error.code == 'local_rate_limit' ? error.message.tr() : error.message,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _appleBusy = false;
         });
       }
     }
