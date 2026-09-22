@@ -24,7 +24,7 @@ class SettingsPage extends ConsumerWidget {
       route.go('/home');
     }
 
-    if (supportsFlowDesktopShell && useFlowWideLayout(context)) {
+    if (useFlowDesktopShell(context)) {
       return SettingsDesktopContent(
         embedded: embedded,
         onBack: goHome,

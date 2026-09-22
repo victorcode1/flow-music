@@ -53,6 +53,15 @@ class ModernPlayerWidget extends StatefulWidget {
   /// Riel derecho (cola/letra) que se muestra solo en la variante de escritorio.
   final Widget? sideRail;
 
+  /// Reproduciendo el video en vez del audio, para el selector de escritorio.
+  final bool isVideo;
+
+  /// Alterna audio/video. Null oculta el selector.
+  final VoidCallback? onToggleVideo;
+
+  /// Pliega o abre el riel de cola desde los controles del reproductor.
+  final VoidCallback? onToggleQueue;
+
   /// Etiqueta de origen ("Reproduciendo desde…") para el escritorio.
   final String? sourceLabel;
 
@@ -91,6 +100,9 @@ class ModernPlayerWidget extends StatefulWidget {
     this.isFavorite = false,
     this.onToggleFavorite,
     this.sideRail,
+    this.isVideo = false,
+    this.onToggleVideo,
+    this.onToggleQueue,
     this.sourceLabel,
   });
 
@@ -193,9 +205,21 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
           onShuffle: widget.onShuffle,
           trackKey: trackKey,
           forward: _forward,
+          // El reproductor de escritorio suma el selector Audio/Video, la
+          // velocidad y el volumen (mockup "Escritorio · Reproduciendo").
+          wide: useFlowDesktopShell(context),
+          isVideo: widget.isVideo,
+          onToggleVideo: widget.onToggleVideo,
+          onToggleQueue: widget.onToggleQueue,
+          playbackRate: widget.playbackRate,
+          onCyclePlaybackRate: widget.onPlaybackRateChanged == null
+              ? null
+              : () => widget.onPlaybackRateChanged!(
+                  _nextPlaybackRate(widget.playbackRate),
+                ),
         );
 
-        if (supportsFlowDesktopShell && useFlowWideLayout(context)) {
+        if (useFlowDesktopShell(context)) {
           return ModernPlayerWideLayout(
             theme: theme,
             isDark: isDark,
@@ -271,4 +295,16 @@ class _ModernPlayerWidgetState extends State<ModernPlayerWidget> {
       },
     );
   }
+}
+
+/// Siguiente velocidad del ciclo del boton `1.0×`.
+///
+/// Son los mismos pasos que ofrece el selector de velocidad de ajustes, para
+/// que ambos controles hablen el mismo idioma.
+double _nextPlaybackRate(double current) {
+  const steps = [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+  for (final step in steps) {
+    if (step > current + 0.01) return step;
+  }
+  return steps.first;
 }

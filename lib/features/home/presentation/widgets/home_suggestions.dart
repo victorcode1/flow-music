@@ -312,7 +312,7 @@ class _SuggestionsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) return const SizedBox.shrink();
-    if (supportsFlowDesktopShell && useFlowWideLayout(context)) {
+    if (useFlowDesktopShell(context)) {
       return _WebSuggestionsGrid(
         items: items,
         history: history,

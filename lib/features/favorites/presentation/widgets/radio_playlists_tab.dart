@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_page_controller.dart';
 import 'package:flow_music/features/favorites/presentation/pages/radio_playlist_detail_page.dart';
@@ -35,7 +36,12 @@ class RadioPlaylistsTab extends ConsumerWidget {
         );
 
         return ListView(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+          padding: EdgeInsets.fromLTRB(
+            flowContentInset(context),
+            12,
+            flowContentInset(context),
+            flowListBottomInset(context),
+          ),
           children: [
             Row(
               children: [

@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_page_controller.dart';
 import 'package:flow_music/features/favorites/presentation/widgets/favorites_empty_state.dart';
@@ -33,7 +34,12 @@ class FavoriteStationsTab extends ConsumerWidget {
 
         if (visible.isEmpty) {
           return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+            padding: EdgeInsets.fromLTRB(
+              flowContentInset(context),
+              16,
+              flowContentInset(context),
+              flowListBottomInset(context),
+            ),
             child: FavoritesEmptyState(
               icon: Icons.radio_rounded,
               message: LocaleKeys.no_radio_favorites.tr(),
@@ -43,7 +49,12 @@ class FavoriteStationsTab extends ConsumerWidget {
         }
 
         return ListView.separated(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
+          padding: EdgeInsets.fromLTRB(
+            flowContentInset(context),
+            12,
+            flowContentInset(context),
+            flowListBottomInset(context),
+          ),
           itemCount: visible.length,
           separatorBuilder: (_, _) => const SizedBox(height: 12),
           itemBuilder: (context, index) {

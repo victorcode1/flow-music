@@ -7,6 +7,7 @@ import 'package:flow_music/features/search/data/models/youtube_search_suggestion
 import 'package:flow_music/features/autoplay/presentation/widgets/now_playing_queue_view.dart';
 import 'package:flow_music/features/favorites/presentation/controllers/favorites_controller.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_app_bar_action_controller.dart';
+import 'package:flow_music/features/home/presentation/providers/desktop_queue_rail.dart';
 import 'package:flow_music/features/settings/presentation/controllers/default_playback_mode_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/repeat_mode_controller.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
@@ -133,7 +134,7 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
     );
 
     final theme = Theme.of(context);
-    final isWide = supportsFlowDesktopShell && useFlowWideLayout(context);
+    final isDesktop = useFlowDesktopShell(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       // Igual al mockup: el reproductor inmersivo no lleva toggle Audio/Video
@@ -202,13 +203,30 @@ class _ScreenPlayState extends ConsumerState<ScreenPlay>
                   audioToolsNotifier.setSmoothTransitions,
               // En escritorio el reproductor inmersivo muestra la cola a la
               // derecha.
-              sourceLabel: isWide ? LocaleKeys.playing.tr() : null,
-              sideRail: isWide ? const _PlayerQueueRail() : null,
+              sourceLabel: isDesktop ? LocaleKeys.playing.tr() : null,
+              // El boton de cola de la barra superior pliega el riel.
+              sideRail: isDesktop && ref.watch(desktopQueueRailVisibleProvider)
+                  ? const _PlayerQueueRail()
+                  : null,
+              // En escritorio los chips del pie no se dibujan, asi que el
+              // cambio a video y la cola viven en los controles del
+              // reproductor (mockup "Escritorio · Reproduciendo").
+              isVideo: controller.currentMode == PlaybackMode.video,
+              onToggleVideo: isDesktop
+                  ? () => controller.switchMode(
+                      controller.currentMode == PlaybackMode.video
+                          ? PlaybackMode.audio
+                          : PlaybackMode.video,
+                    )
+                  : null,
+              onToggleQueue: isDesktop
+                  ? ref.read(desktopQueueRailVisibleProvider.notifier).toggle
+                  : null,
             ),
           ),
           // En movil, accesos rapidos al pie (Video / Cola). En escritorio el
           // riel lateral cubre la cola, asi que se ocultan.
-          if (!isWide)
+          if (!isDesktop)
             _PlayerActionChips(
               isVideo: controller.currentMode == PlaybackMode.video,
               onToggleVideo: () => controller.switchMode(
@@ -379,20 +397,40 @@ class _PlayerQueueRail extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 18, 20, 12),
-            child: Text(
-              LocaleKeys.queue.tr(),
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: colors.onSurface,
+          // Cabecera del mockup: el titulo se apoya en el borde inferior del
+          // riel con un subrayado de acento, en vez de flotar sobre una linea
+          // gris suelta.
+          DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(color: colors.primary, width: 2),
+                      ),
+                    ),
+                    child: Text(
+                      LocaleKeys.up_next.tr(),
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: colors.primary,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          Divider(height: 1, color: colors.outlineVariant),
           Expanded(
             child: NowPlayingQueueView(
-              padding: const EdgeInsets.fromLTRB(4, 6, 4, 18),
+              padding: const EdgeInsets.fromLTRB(8, 12, 8, 18),
               reorderable: false,
               currentFallback: currentFallback,
               onPlay: (track) => SongWidget.pageController.playFromQueue(

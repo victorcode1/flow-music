@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/favorites/presentation/pages/radio_playlist_detail_page.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
@@ -8,6 +9,7 @@ import 'package:flow_music/features/library/presentation/pages/downloaded_audio_
 import 'package:flow_music/features/library/presentation/pages/library_playlist_detail_page.dart';
 import 'package:flow_music/features/library/presentation/widgets/library_downloaded_audio_tile.dart';
 import 'package:flow_music/features/library/presentation/widgets/library_empty_card.dart';
+import 'package:flow_music/features/library/presentation/widgets/library_playlist_grid.dart';
 import 'package:flow_music/features/library/presentation/widgets/library_playlist_tile.dart';
 import 'package:flow_music/features/library/presentation/widgets/library_playlists_header.dart';
 import 'package:flow_music/features/library/presentation/widgets/library_radio_playlist_tile.dart';
@@ -129,6 +131,7 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final isDesktop = useFlowDesktopShell(context);
     final playlists = ref.watch(playlistsControllerProvider);
     final radioFavorites = ref.watch(radioFavoritesControllerProvider);
     final radioPlaylists = ref.watch(radioPlaylistsControllerProvider);
@@ -171,7 +174,11 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
             return RefreshIndicator(
               onRefresh: _reload,
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                // El escritorio respira con el margen del diseno (30/40px); en
+                // movil se mantiene el margen compacto de siempre.
+                padding: isDesktop
+                    ? const EdgeInsets.fromLTRB(40, 30, 40, 40)
+                    : const EdgeInsets.fromLTRB(16, 8, 16, 24),
                 children: [
                   LibraryPlaylistsHeader(
                     onCreate: () => _createPlaylist(),
@@ -181,7 +188,16 @@ class _LibraryPageState extends ConsumerState<LibraryPage> {
                   const SizedBox(height: 10),
                   LibrarySmartPlaylistActions(onCreate: _createSmartPlaylist),
                   const SizedBox(height: 12),
-                  if (visiblePlaylists.isEmpty)
+                  // En escritorio las listas van en cuadricula de cubiertas
+                  // (mockup "Biblioteca — escritorio"); en movil siguen siendo
+                  // filas, que es lo que cabe a 390px.
+                  if (isDesktop)
+                    LibraryPlaylistGrid(
+                      playlists: visiblePlaylists,
+                      onOpen: _openPlaylist,
+                      onCreate: () => _createPlaylist(),
+                    )
+                  else if (visiblePlaylists.isEmpty)
                     LibraryEmptyCard(
                       icon: Icons.playlist_add_rounded,
                       message: LocaleKeys.empty_playlists.tr(),

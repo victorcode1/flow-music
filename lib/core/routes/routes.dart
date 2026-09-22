@@ -32,11 +32,10 @@ class Route extends _$Route {
         GoRoute(
           path: '/settings',
           pageBuilder: (context, state) {
-            final isWide =
-                supportsFlowDesktopShell && useFlowWideLayout(context);
+            final isDesktop = useFlowDesktopShell(context);
             return _noTransitionPage(
               state,
-              HomePage(child: SettingsPage(embedded: isWide)),
+              HomePage(child: SettingsPage(embedded: isDesktop)),
             );
           },
         ),

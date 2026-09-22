@@ -3,8 +3,10 @@ import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_q
 import 'package:flow_music/features/home/presentation/controllers/home_view_controller.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/search/presentation/providers/list_quick_search_data.dart';
+import 'package:flow_music/features/search/presentation/widgets/search_results_desktop.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -118,6 +120,15 @@ class SuggestedListSearch extends ConsumerWidget {
               ),
             ),
           );
+        }
+
+        // La busqueda rapida de la barra superior caia siempre en las
+        // tarjetas moviles (ancho completo, radio 28 y el violeta del fondo
+        // ambiente), asi que dentro del shell de escritorio el rediseno se
+        // perdia en cuanto se escribia. En escritorio reusa la misma vista a
+        // dos columnas que los resultados completos.
+        if (useFlowDesktopShell(context)) {
+          return SearchResultsDesktop(items: results, onPlay: onItemTap);
         }
 
         return ListView.separated(

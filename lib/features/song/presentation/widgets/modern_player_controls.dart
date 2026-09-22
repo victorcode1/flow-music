@@ -36,6 +36,27 @@ class ModernPlayerControls extends StatelessWidget {
   /// Sentido del cambio: adelante en la cola o de vuelta a la anterior.
   final bool forward;
 
+  /// Variante de escritorio: titulo centrado con barras de ecualizador,
+  /// selector Audio/Video y fila de controles secundarios, como en el mockup
+  /// "Escritorio · Reproduciendo". En movil nada de esto cabe.
+  final bool wide;
+
+  /// Reproduciendo el video en vez de solo el audio.
+  final bool isVideo;
+
+  /// Alterna entre audio y video. En escritorio este era el unico control que
+  /// no tenia donde vivir: los chips del pie solo se dibujan en movil.
+  final VoidCallback? onToggleVideo;
+
+  /// Abre o pliega el riel de cola.
+  final VoidCallback? onToggleQueue;
+
+  /// Velocidad de reproduccion actual (1.0 = normal).
+  final double playbackRate;
+
+  /// Cicla la velocidad de reproduccion.
+  final VoidCallback? onCyclePlaybackRate;
+
   const ModernPlayerControls({
     super.key,
     required this.theme,
@@ -62,6 +83,12 @@ class ModernPlayerControls extends StatelessWidget {
     this.onToggleFavorite,
     this.trackKey = '',
     this.forward = true,
+    this.wide = false,
+    this.isVideo = false,
+    this.onToggleVideo,
+    this.onToggleQueue,
+    this.playbackRate = 1,
+    this.onCyclePlaybackRate,
   });
 
   @override
@@ -77,62 +104,128 @@ class ModernPlayerControls extends StatelessWidget {
           // pantalla D): el protagonista del reproductor inmersivo, sobre la
           // onda de progreso.
           if ((title ?? '').isNotEmpty) ...[
-            Row(
-              children: [
-                Expanded(
-                  child: TrackChangeTransition(
-                    trackKey: trackKey.isNotEmpty ? trackKey : (title ?? ''),
-                    forward: forward,
-                    alignment: Alignment.centerLeft,
-                    slide: 0.10,
-                    scaleFrom: 0.98,
-                    duration: const Duration(milliseconds: 360),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            if (wide)
+              // Escritorio: titulo centrado con las barras de ecualizador al
+              // lado, como en el mockup. El favorito baja a la fila de
+              // controles secundarios.
+              TrackChangeTransition(
+                trackKey: trackKey.isNotEmpty ? trackKey : (title ?? ''),
+                forward: forward,
+                slide: 0.10,
+                scaleFrom: 0.98,
+                duration: const Duration(milliseconds: 360),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
                       mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          title!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: -0.4,
-                          ),
+                        _EqualizerBars(
+                          playing: isPlaying,
+                          color: theme.colorScheme.primary,
                         ),
-                        if ((author ?? '').isNotEmpty) ...[
-                          const SizedBox(height: 2),
-                          Text(
-                            author!,
+                        const SizedBox(width: 12),
+                        Flexible(
+                          child: Text(
+                            title!,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w600,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.headlineLarge?.copyWith(
+                              fontSize: 34,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.34,
                             ),
                           ),
-                        ],
+                        ),
                       ],
                     ),
-                  ),
+                    if ((author ?? '').isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Text(
+                        author!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.6,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
                 ),
-                if (onToggleFavorite != null)
-                  IconButton(
-                    tooltip: LocaleKeys.add_to_favorites.tr(),
-                    onPressed: onToggleFavorite,
-                    iconSize: 28,
-                    icon: Icon(
-                      isFavorite
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      color: isFavorite
-                          ? const Color(0xFFFF4D6D)
-                          : theme.colorScheme.onSurfaceVariant,
+              )
+            else
+              Row(
+                children: [
+                  Expanded(
+                    child: TrackChangeTransition(
+                      trackKey: trackKey.isNotEmpty ? trackKey : (title ?? ''),
+                      forward: forward,
+                      alignment: Alignment.centerLeft,
+                      slide: 0.10,
+                      scaleFrom: 0.98,
+                      duration: const Duration(milliseconds: 360),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            title!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.headlineSmall?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.4,
+                            ),
+                          ),
+                          if ((author ?? '').isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              author!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ),
-              ],
-            ),
+                  if (onToggleFavorite != null)
+                    IconButton(
+                      tooltip: LocaleKeys.add_to_favorites.tr(),
+                      onPressed: onToggleFavorite,
+                      iconSize: 28,
+                      icon: Icon(
+                        isFavorite
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
+                        color: isFavorite
+                            ? const Color(0xFFFF4D6D)
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
             const SizedBox(height: 14),
+          ],
+          // Selector Audio / Video del mockup, entre el titulo y la onda.
+          if (wide && onToggleVideo != null) ...[
+            _ModeToggle(
+              theme: theme,
+              isVideo: isVideo,
+              onSelect: onToggleVideo!,
+            ),
+            const SizedBox(height: 22),
           ],
           Builder(
             builder: (_) {
@@ -222,8 +315,8 @@ class ModernPlayerControls extends StatelessWidget {
               // Boton principal del reproductor inmersivo: circulo blanco con
               // icono oscuro, tal como el diseno StreamBeat (pantalla D).
               Container(
-                width: 72,
-                height: 72,
+                width: wide ? 62 : 72,
+                height: wide ? 62 : 72,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
@@ -238,7 +331,7 @@ class ModernPlayerControls extends StatelessWidget {
                 child: IconButton(
                   icon: Icon(
                     isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                    size: 40,
+                    size: wide ? 32 : 40,
                   ),
                   onPressed: onTogglePlayPause,
                   color: const Color(0xFF121212),
@@ -269,6 +362,25 @@ class ModernPlayerControls extends StatelessWidget {
               ),
             ],
           ),
+          // Fila de controles secundarios del mockup. Aqui viven el favorito y
+          // la cola a la izquierda, y velocidad y volumen a la derecha — el
+          // volumen ya llegaba a este widget pero no se dibujaba en ningun
+          // sitio, asi que en escritorio no habia forma de ajustarlo.
+          if (wide) ...[
+            const SizedBox(height: 16),
+            _SecondaryControls(
+              theme: theme,
+              isFavorite: isFavorite,
+              onToggleFavorite: onToggleFavorite,
+              onToggleQueue: onToggleQueue,
+              playbackRate: playbackRate,
+              onCyclePlaybackRate: onCyclePlaybackRate,
+              isMuted: isMuted,
+              volume: volume,
+              onToggleMute: onToggleMute,
+              onVolumeChanged: onVolumeChanged,
+            ),
+          ],
         ],
       ),
     );
@@ -383,5 +495,330 @@ class _WaveformPainter extends CustomPainter {
     return oldDelegate.progress != progress ||
         oldDelegate.activeColor != activeColor ||
         oldDelegate.inactiveColor != inactiveColor;
+  }
+}
+
+/// Barras de ecualizador junto al titulo, como en el mockup.
+///
+/// Solo animan mientras suena: en pausa se quedan quietas a media altura, para
+/// que el movimiento signifique algo en vez de ser adorno permanente.
+class _EqualizerBars extends StatefulWidget {
+  const _EqualizerBars({required this.playing, required this.color});
+
+  final bool playing;
+  final Color color;
+
+  @override
+  State<_EqualizerBars> createState() => _EqualizerBarsState();
+}
+
+class _EqualizerBarsState extends State<_EqualizerBars>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+
+  /// Periodo y desfase de cada barra, para que no latan al unisono.
+  static const _bars = <({double period, double delay})>[
+    (period: 0.70, delay: 0.00),
+    (period: 0.90, delay: 0.15),
+    (period: 0.60, delay: 0.30),
+    (period: 0.80, delay: 0.10),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+    if (widget.playing) _controller.repeat();
+  }
+
+  @override
+  void didUpdateWidget(_EqualizerBars old) {
+    super.didUpdateWidget(old);
+    if (widget.playing == old.playing) return;
+    if (widget.playing) {
+      _controller.repeat();
+    } else {
+      _controller.stop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 16,
+      child: AnimatedBuilder(
+        animation: _controller,
+        builder: (context, _) {
+          return Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              for (final bar in _bars)
+                Padding(
+                  padding: const EdgeInsets.only(right: 2),
+                  child: Container(
+                    width: 3,
+                    height: 16 * _heightFactor(bar.period, bar.delay),
+                    decoration: BoxDecoration(
+                      color: widget.color,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// Onda triangular entre 0.3 y 1.0, como el keyframe `eqbar` del mockup.
+  double _heightFactor(double period, double delay) {
+    if (!widget.playing) return 0.55;
+    final t = ((_controller.value + delay) / period) % 1.0;
+    final wave = t < 0.5 ? t * 2 : (1 - t) * 2;
+    return 0.3 + wave * 0.7;
+  }
+}
+
+/// Selector de pastilla Audio / Video.
+class _ModeToggle extends StatelessWidget {
+  const _ModeToggle({
+    required this.theme,
+    required this.isVideo,
+    required this.onSelect,
+  });
+
+  final ThemeData theme;
+  final bool isVideo;
+  final VoidCallback onSelect;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _ModeOption(
+            theme: theme,
+            icon: Icons.music_note_rounded,
+            label: LocaleKeys.audio.tr(),
+            selected: !isVideo,
+            onTap: isVideo ? onSelect : null,
+          ),
+          _ModeOption(
+            theme: theme,
+            icon: Icons.videocam_rounded,
+            label: LocaleKeys.video.tr(),
+            selected: isVideo,
+            onTap: isVideo ? null : onSelect,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ModeOption extends StatelessWidget {
+  const _ModeOption({
+    required this.theme,
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final ThemeData theme;
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final foreground = selected
+        ? const Color(0xFF121212)
+        : theme.colorScheme.onSurface.withValues(alpha: 0.75);
+
+    return Material(
+      color: selected ? Colors.white : Colors.transparent,
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(999),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 16, color: foreground),
+              const SizedBox(width: 7),
+              Text(
+                label,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: foreground,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Fila inferior del reproductor de escritorio: favorito y cola a la
+/// izquierda; velocidad y volumen a la derecha.
+class _SecondaryControls extends StatelessWidget {
+  const _SecondaryControls({
+    required this.theme,
+    required this.isFavorite,
+    required this.onToggleFavorite,
+    required this.onToggleQueue,
+    required this.playbackRate,
+    required this.onCyclePlaybackRate,
+    required this.isMuted,
+    required this.volume,
+    required this.onToggleMute,
+    required this.onVolumeChanged,
+  });
+
+  final ThemeData theme;
+  final bool isFavorite;
+  final VoidCallback? onToggleFavorite;
+  final VoidCallback? onToggleQueue;
+  final double playbackRate;
+  final VoidCallback? onCyclePlaybackRate;
+  final bool isMuted;
+  final double volume;
+  final VoidCallback onToggleMute;
+  final ValueChanged<double> onVolumeChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = theme.colorScheme.onSurface.withValues(alpha: 0.6);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onToggleFavorite != null)
+              IconButton(
+                tooltip: LocaleKeys.add_to_favorites.tr(),
+                iconSize: 20,
+                color: isFavorite ? const Color(0xFFFF4D6D) : muted,
+                icon: Icon(
+                  isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                ),
+                onPressed: onToggleFavorite,
+              ),
+            if (onToggleQueue != null)
+              IconButton(
+                tooltip: LocaleKeys.queue.tr(),
+                iconSize: 20,
+                color: muted,
+                icon: const Icon(Icons.queue_music_rounded),
+                onPressed: onToggleQueue,
+              ),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (onCyclePlaybackRate != null) ...[
+              Tooltip(
+                message: LocaleKeys.playback_speed.tr(),
+                child: OutlinedButton(
+                  onPressed: onCyclePlaybackRate,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: Size.zero,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 11,
+                      vertical: 4,
+                    ),
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    foregroundColor: muted,
+                    side: BorderSide(
+                      color: theme.colorScheme.onSurface.withValues(
+                        alpha: 0.16,
+                      ),
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                  child: Text(
+                    '${playbackRate.toStringAsFixed(playbackRate % 1 == 0 ? 1 : 2)}×',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: muted,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+            ],
+            IconButton(
+              tooltip: LocaleKeys.volume.tr(),
+              iconSize: 19,
+              color: muted,
+              icon: Icon(
+                isMuted || volume == 0
+                    ? Icons.volume_off_rounded
+                    : Icons.volume_up_rounded,
+              ),
+              onPressed: onToggleMute,
+            ),
+            SizedBox(
+              width: 90,
+              child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 4,
+                  activeTrackColor: theme.colorScheme.onSurface,
+                  inactiveTrackColor: theme.colorScheme.onSurface.withValues(
+                    alpha: 0.18,
+                  ),
+                  thumbColor: theme.colorScheme.onSurface,
+                  overlayShape: const RoundSliderOverlayShape(
+                    overlayRadius: 12,
+                  ),
+                  thumbShape: const RoundSliderThumbShape(
+                    enabledThumbRadius: 5.5,
+                  ),
+                ),
+                child: Slider(
+                  value: (isMuted ? 0.0 : volume).clamp(0.0, 1.0),
+                  onChanged: onVolumeChanged,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }

@@ -5,10 +5,11 @@ import 'package:flow_music/features/autoplay/presentation/controllers/autoplay_q
 import 'package:flow_music/features/search/presentation/controllers/search_history_controller.dart';
 import 'package:flow_music/features/search/data/models/youtube_search_suggestion.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/search/presentation/providers/list_search_result.dart';
+import 'package:flow_music/features/search/presentation/widgets/search_results_desktop.dart';
 import 'package:flow_music/features/settings/presentation/controllers/autoplay_enabled_controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -56,23 +57,14 @@ class ListSongs extends ConsumerWidget {
           );
         }
 
-        if (kIsWeb && MediaQuery.sizeOf(context).width >= 900) {
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1180),
-              child: ListView.separated(
-                padding: const EdgeInsets.fromLTRB(28, 28, 28, 44),
-                itemCount: items.length,
-                separatorBuilder: (context, _) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final suggestion = items[index];
-                  return _WebSongRow(
-                    suggestion: suggestion,
-                    onTap: () => onItemTap(items, index),
-                  );
-                },
-              ),
-            ),
+        // Antes esta rama estaba limitada a `kIsWeb`, asi que en macOS los
+        // resultados caian en el layout movil: tarjetas de 28px de radio
+        // estiradas a todo el ancho de la ventana. Ahora la condicion es el
+        // shell de escritorio, que cubre macOS, Windows, Linux y web.
+        if (useFlowDesktopShell(context)) {
+          return SearchResultsDesktop(
+            items: items,
+            onPlay: (index) => onItemTap(items, index),
           );
         }
 
@@ -188,77 +180,6 @@ class ListSongs extends ConsumerWidget {
       },
       loading: () => const Center(
         child: CircularProgressIndicator.adaptive(strokeWidth: 2),
-      ),
-    );
-  }
-}
-
-class _WebSongRow extends StatelessWidget {
-  const _WebSongRow({required this.suggestion, required this.onTap});
-
-  final YouTubeSearchSuggestion suggestion;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-
-    return Material(
-      color: colors.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(14),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: SizedBox(
-                  width: 96,
-                  height: 64,
-                  child: Image.network(
-                    suggestion.thumbnailUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) =>
-                        _PlaceholderArtwork(colors: colors),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      suggestion.displayText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      suggestion.channelTitle,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 16),
-              FilledButton.icon(
-                onPressed: onTap,
-                icon: const Icon(Icons.play_arrow_rounded),
-                label: Text(LocaleKeys.play.tr()),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

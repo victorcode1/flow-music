@@ -1,11 +1,21 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/routes/routes.dart';
+import 'package:flow_music/core/theme/desktop_theme.dart';
+import 'package:flow_music/core/theme/flow_cover_gradients.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/features/library/presentation/pages/library_playlist_detail_page.dart';
+import 'package:flow_music/features/playlists/data/playlist.dart';
+import 'package:flow_music/features/playlists/presentation/controllers/playlists_controller.dart';
+import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// Sidebar fija para la variante desktop del home.
+///
+/// Sigue el riel del mockup "StreamBeat — Rediseño": navegacion arriba, las
+/// playlists del usuario en medio (scrollean cuando no caben) y Configuracion
+/// anclada abajo.
 class HomeDesktopSidebar extends ConsumerWidget {
   const HomeDesktopSidebar({super.key});
 
@@ -15,9 +25,10 @@ class HomeDesktopSidebar extends ConsumerWidget {
     final colors = theme.colorScheme;
     final route = ref.read(routeProvider);
     final currentPath = GoRouterState.of(context).uri.path;
+    final playlists = ref.watch(playlistsControllerProvider);
 
     return Container(
-      width: 232,
+      width: FlowDesktopTheme.sidebarWidth,
       decoration: BoxDecoration(
         color: colors.surfaceContainerLowest,
         border: Border(right: BorderSide(color: colors.outlineVariant)),
@@ -59,43 +70,201 @@ class HomeDesktopSidebar extends ConsumerWidget {
                 selected: currentPath == '/radio-map',
                 onTap: () => route.go('/radio-map'),
               ),
-              const SizedBox(height: 12),
-              Divider(color: colors.outlineVariant),
-              const SizedBox(height: 12),
+              const _SidebarDivider(),
+              Expanded(
+                child: _SidebarPlaylists(
+                  playlists: playlists,
+                  onOpenLibrary: () => route.go('/library'),
+                ),
+              ),
+              const _SidebarDivider(),
               _HomeDesktopNavItem(
                 icon: Icons.settings_rounded,
                 label: LocaleKeys.settings.tr(),
                 selected: currentPath == '/settings',
                 onTap: () => route.go('/settings'),
               ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: colors.outlineVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Hairline de separacion entre bloques del riel.
+class _SidebarDivider extends StatelessWidget {
+  const _SidebarDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 1,
+      margin: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+      color: Theme.of(context).colorScheme.outlineVariant,
+    );
+  }
+}
+
+/// Bloque "Tus playlists" del riel: titulo de seccion y las listas del usuario.
+class _SidebarPlaylists extends StatelessWidget {
+  const _SidebarPlaylists({
+    required this.playlists,
+    required this.onOpenLibrary,
+  });
+
+  final List<Playlist> playlists;
+  final VoidCallback onOpenLibrary;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+          child: Text(
+            LocaleKeys.your_playlists.tr(),
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.3,
+              color: FlowDesktopTheme.faint(colors),
+            ),
+          ),
+        ),
+        Expanded(
+          child: playlists.isEmpty
+              // El riel vacio invita a crear, no se queda en blanco.
+              ? _EmptyPlaylists(onTap: onOpenLibrary)
+              : ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemCount: playlists.length,
+                  itemBuilder: (context, index) {
+                    final playlist = playlists[index];
+                    return _SidebarPlaylistRow(playlist: playlist);
+                  },
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome_rounded,
-                      color: colors.primary,
-                      size: 18,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'v0.1.0',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: colors.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ],
+        ),
+      ],
+    );
+  }
+}
+
+class _EmptyPlaylists extends StatelessWidget {
+  const _EmptyPlaylists({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Align(
+      alignment: Alignment.topCenter,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          child: Row(
+            children: [
+              Icon(
+                Icons.add_rounded,
+                size: 18,
+                color: FlowDesktopTheme.faint(colors),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  LocaleKeys.create_playlist.tr(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: FlowDesktopTheme.faint(colors),
+                  ),
                 ),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Fila de playlist del riel: cubierta de degradado, nombre y conteo.
+class _SidebarPlaylistRow extends StatelessWidget {
+  const _SidebarPlaylistRow({required this.playlist});
+
+  final Playlist playlist;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 2),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(10),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => LibraryPlaylistDetailPage(playlistId: playlist.id),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    gradient: FlowCoverGradients.of(playlist.id),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        playlist.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: colors.onSurface,
+                        ),
+                      ),
+                      Text(
+                        songCountLabel(playlist.itemCount),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: FlowDesktopTheme.faint(colors),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -145,7 +314,10 @@ class _HomeDesktopNavItem extends StatelessWidget {
                 Expanded(
                   child: Text(
                     label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall?.copyWith(
+                      fontSize: 15,
                       color: selected
                           ? colors.primary
                           : colors.onSurfaceVariant,

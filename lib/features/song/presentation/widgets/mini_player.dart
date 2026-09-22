@@ -9,6 +9,7 @@ import 'package:flow_music/features/radio/presentation/controllers/radio_queue_c
 import 'package:flow_music/features/radio/presentation/pages/radio_player_page.dart';
 import 'package:flow_music/features/radio/presentation/utils/play_radio_station.dart';
 import 'package:flow_music/features/song/presentation/controllers/song_controller.dart';
+import 'package:flow_music/features/song/presentation/widgets/desktop_now_playing_bar.dart';
 import 'package:flow_music/features/song/presentation/widgets/track_change_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
@@ -25,7 +26,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 /// "StreamBeat") o cuando el estado de procesamiento queda en `idle`
 /// (stop explicito).
 class MiniPlayer extends ConsumerStatefulWidget {
-  const MiniPlayer({super.key});
+  const MiniPlayer({super.key, this.desktop = false});
+
+  /// Dibuja la barra fija de 72px del escritorio en vez de la tarjeta
+  /// flotante movil. Comparten las suscripciones de audio de este widget, solo
+  /// cambia la presentacion.
+  final bool desktop;
 
   /// Altura total que el widget reserva (card + margenes). El `AppBar`
   /// wrapper la consume al calcular su `preferredSize`, asi no aparece
@@ -110,30 +116,47 @@ class _MiniPlayerState extends ConsumerState<MiniPlayer> {
             // canciones.
             final isRadio = ref.watch(songController).currentVideoId == null;
             final radioQueue = ref.watch(radioQueueControllerProvider);
+            final onPrevious = isRadio
+                ? (radioQueue.hasPrevious
+                      ? () =>
+                            playPreviousRadioStation(context: context, ref: ref)
+                      : null)
+                : (autoplayQueue.hasPrevious
+                      ? () => _playFromQueue(autoplayNotifier.playPrevious())
+                      : null);
+            final onNext = isRadio
+                ? (radioQueue.hasNext
+                      ? () => playNextRadioStation(context: context, ref: ref)
+                      : null)
+                : (autoplayQueue.hasNext
+                      ? () async =>
+                            _playFromQueue(await autoplayNotifier.playNext())
+                      : null);
+
+            if (widget.desktop) {
+              return DesktopNowPlayingBar(
+                item: item!,
+                isPlaying: _isPlaying,
+                isBuffering: isBuffering,
+                progress: _progressFraction(item),
+                position: _position,
+                duration: item.duration ?? _duration,
+                onToggle: _togglePlayPause,
+                onPrevious: onPrevious,
+                onNext: onNext,
+                onStop: () => flowAudioHandler.stop(),
+                onOpen: _openPlayer,
+              );
+            }
+
             return _MiniPlayerBar(
               item: item!,
               isPlaying: _isPlaying,
               isBuffering: isBuffering,
               progress: _progressFraction(item),
               onToggle: _togglePlayPause,
-              onPrevious: isRadio
-                  ? (radioQueue.hasPrevious
-                        ? () => playPreviousRadioStation(
-                            context: context,
-                            ref: ref,
-                          )
-                        : null)
-                  : (autoplayQueue.hasPrevious
-                        ? () => _playFromQueue(autoplayNotifier.playPrevious())
-                        : null),
-              onNext: isRadio
-                  ? (radioQueue.hasNext
-                        ? () => playNextRadioStation(context: context, ref: ref)
-                        : null)
-                  : (autoplayQueue.hasNext
-                        ? () async =>
-                              _playFromQueue(await autoplayNotifier.playNext())
-                        : null),
+              onPrevious: onPrevious,
+              onNext: onNext,
               onStop: () => flowAudioHandler.stop(),
               onOpen: _openPlayer,
             );

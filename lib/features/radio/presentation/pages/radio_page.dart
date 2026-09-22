@@ -5,6 +5,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
@@ -14,6 +15,7 @@ import 'package:flow_music/features/radio/data/repositories/radio_browser_reposi
 import 'package:flow_music/features/radio/presentation/controllers/radio_favorites_controller.dart';
 import 'package:flow_music/features/radio/presentation/controllers/radio_queue_controller.dart';
 import 'package:flow_music/features/radio/presentation/widgets/radio_playlist_actions.dart';
+import 'package:flow_music/features/radio/presentation/widgets/radio_station_card.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -246,12 +248,17 @@ class _RadioPageState extends ConsumerState<RadioPage> {
     final favoritesController = ref.read(
       radioFavoritesControllerProvider.notifier,
     );
+    final isDesktop = useFlowDesktopShell(context);
 
     return CustomScrollView(
       keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       slivers: [
         SliverPadding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          // La cabecera comparte el margen lateral del listado, para que el
+          // titulo quede a plomo con la primera tarjeta en ambos anchos.
+          padding: isDesktop
+              ? const EdgeInsets.fromLTRB(40, 26, 40, 0)
+              : const EdgeInsets.fromLTRB(16, 8, 16, 0),
           sliver: SliverToBoxAdapter(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,10 +268,16 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                     Expanded(
                       child: Text(
                         LocaleKeys.radio.tr(),
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w800,
-                          color: colors.onSurface,
-                        ),
+                        // 30px en escritorio, como los titulos de seccion del
+                        // mockup; 24px en movil, donde no cabe.
+                        style:
+                            (isDesktop
+                                    ? theme.textTheme.headlineMedium
+                                    : theme.textTheme.headlineSmall)
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.onSurface,
+                                ),
                       ),
                     ),
                     FilledButton.tonalIcon(
@@ -365,6 +378,52 @@ class _RadioPageState extends ConsumerState<RadioPage> {
               );
             }
 
+            Future<void> toggleFavorite(RadioStation station) async {
+              final added = await favoritesController.toggle(station);
+              if (!context.mounted) return;
+              ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+                SnackBar(
+                  content: Text(
+                    added
+                        ? LocaleKeys.radio_favorite_added.tr()
+                        : LocaleKeys.radio_favorite_removed.tr(),
+                  ),
+                ),
+              );
+            }
+
+            // En escritorio las emisoras van en cuadricula de tarjetas de color
+            // (mockup "Radio — escritorio"); en movil siguen siendo filas.
+            if (isDesktop) {
+              return SliverPadding(
+                padding: const EdgeInsets.fromLTRB(40, 0, 40, 40),
+                sliver: SliverGrid.builder(
+                  itemCount: stations.length,
+                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                    maxCrossAxisExtent: 300,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                    mainAxisExtent: 150,
+                  ),
+                  itemBuilder: (context, index) {
+                    final station = stations[index];
+                    return RadioStationCard(
+                      station: station,
+                      isActive: station.stationUuid == _playingStationUuid,
+                      isFavorite: favoritesController.contains(station),
+                      onTap: () {
+                        ref
+                            .read(radioQueueControllerProvider.notifier)
+                            .enqueue(stations, index);
+                        _toggleStation(station);
+                      },
+                      onToggleFavorite: () => toggleFavorite(station),
+                    );
+                  },
+                ),
+              );
+            }
+
             return SliverPadding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
               sliver: SliverList.separated(
@@ -389,19 +448,7 @@ class _RadioPageState extends ConsumerState<RadioPage> {
                       _toggleStation(station);
                     },
                     onLongPress: () => _showStationInfo(station),
-                    onToggleFavorite: () async {
-                      final added = await favoritesController.toggle(station);
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            added
-                                ? LocaleKeys.radio_favorite_added.tr()
-                                : LocaleKeys.radio_favorite_removed.tr(),
-                          ),
-                        ),
-                      );
-                    },
+                    onToggleFavorite: () => toggleFavorite(station),
                     onAddToPlaylist: () => showAddToRadioPlaylistFlow(
                       context: context,
                       ref: ref,

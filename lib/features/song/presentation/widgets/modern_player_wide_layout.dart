@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flow_music/core/theme/desktop_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -111,7 +112,7 @@ class ModernPlayerWideLayout extends StatelessWidget {
                 Expanded(child: _buildNowPlaying(context)),
                 if (sideRail != null && webEmbedVideoId == null)
                   Container(
-                    width: 320,
+                    width: FlowDesktopTheme.sideRailWidth,
                     decoration: BoxDecoration(
                       border: Border(
                         left: BorderSide(color: colors.outlineVariant),
@@ -152,43 +153,49 @@ class ModernPlayerWideLayout extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
               ],
-              SizedBox(
-                width: 300,
-                height: 300,
-                child: webEmbedVideoId == null
-                    ? Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          AnimatedOpacity(
-                            duration: const Duration(milliseconds: 260),
-                            opacity: isBusy ? 0.5 : 1,
-                            child: TrackChangeTransition(
-                              trackKey: trackKey.isNotEmpty
-                                  ? trackKey
-                                  : (thumbnailUrl ?? ''),
-                              forward: forward,
-                              expandToParent: true,
-                              child: ModernPlayerArtwork(
-                                theme: theme,
-                                videoController: videoController,
-                                thumbnailUrl: thumbnailUrl,
-                                borderRadius: 18,
-                              ),
-                            ),
-                          ),
-                          if (isBusy)
-                            Center(
-                              child: SizedBox.square(
-                                dimension: 32,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.6,
-                                  color: theme.colorScheme.primary,
+              // La caratula mide 300px como en el mockup, pero se encoge si
+              // la ventana esta en su ancho minimo con el riel de cola
+              // abierto: el reproductor se estrecha en vez de desbordar (el
+              // diseno de escritorio ya no cede el sitio al shell movil).
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 300),
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: webEmbedVideoId == null
+                      ? Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            AnimatedOpacity(
+                              duration: const Duration(milliseconds: 260),
+                              opacity: isBusy ? 0.5 : 1,
+                              child: TrackChangeTransition(
+                                trackKey: trackKey.isNotEmpty
+                                    ? trackKey
+                                    : (thumbnailUrl ?? ''),
+                                forward: forward,
+                                expandToParent: true,
+                                child: ModernPlayerArtwork(
+                                  theme: theme,
+                                  videoController: videoController,
+                                  thumbnailUrl: thumbnailUrl,
+                                  borderRadius: 18,
                                 ),
                               ),
                             ),
-                        ],
-                      )
-                    : _buildWebEmbed(webEmbedVideoId!),
+                            if (isBusy)
+                              Center(
+                                child: SizedBox.square(
+                                  dimension: 32,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2.6,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        )
+                      : _buildWebEmbed(webEmbedVideoId!),
+                ),
               ),
               const SizedBox(height: 28),
               if (webEmbedVideoId != null) _buildWebEmbedStatus() else controls,

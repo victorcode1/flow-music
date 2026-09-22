@@ -1,4 +1,5 @@
 import 'package:flow_music/core/audio/now_playing_provider.dart';
+import 'package:flow_music/core/theme/desktop_theme.dart';
 import 'package:flow_music/core/utils/adaptive_layout.dart';
 import 'package:flow_music/features/radio/presentation/widgets/radio_search_delegate.dart';
 import 'package:flow_music/features/home/presentation/controllers/home_page_controller.dart';
@@ -68,48 +69,59 @@ class _HomePageState extends ConsumerState<HomePage> {
       currentPath: currentPath,
     );
 
-    if (supportsFlowDesktopShell && useFlowWideLayout(context)) {
-      final colors = Theme.of(context).colorScheme;
+    if (useFlowDesktopShell(context)) {
       // Estructura del mockup StreamBeat: barra superior a todo lo ancho, y
       // debajo la fila [sidebar | contenido]. El contenido pinta una
       // superficie opaca para que el fondo ambiente (con tinte de acento) no
       // se filtre en la zona central — el escritorio queda plano y oscuro como
       // el diseno.
-      return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Column(
-          children: [
-            HomeDesktopTopBar(
-              query: viewCtr.setQuery,
-              isRadioSection: isRadioSection,
-              showSearch: () async {
-                await showSearch(
-                  context: context,
-                  delegate: isRadioSection
-                      ? RadioSearchDelegate()
-                      : ViewSearchDelegate(),
-                );
-              },
-            ),
-            Expanded(
-              child: Row(
+      //
+      // `FlowDesktopTheme` re-tinta las superficies al negro azulado del
+      // rediseno. Se aplica aqui, envolviendo solo esta rama, para que el shell
+      // movil siga con los grises neutros del tema compartido.
+      return Theme(
+        data: FlowDesktopTheme.of(Theme.of(context)),
+        child: Builder(
+          builder: (context) {
+            final colors = Theme.of(context).colorScheme;
+            return Scaffold(
+              backgroundColor: Colors.transparent,
+              body: Column(
                 children: [
-                  const HomeDesktopSidebar(),
+                  HomeDesktopTopBar(
+                    query: viewCtr.setQuery,
+                    isRadioSection: isRadioSection,
+                    showSearch: () async {
+                      await showSearch(
+                        context: context,
+                        delegate: isRadioSection
+                            ? RadioSearchDelegate()
+                            : ViewSearchDelegate(),
+                      );
+                    },
+                  ),
                   Expanded(
-                    child: ColoredBox(
-                      color: colors.surface,
-                      child: HomePageContent(
-                        viewState: viewState,
-                        viewController: viewCtr,
-                        child: widget.child,
-                      ),
+                    child: Row(
+                      children: [
+                        const HomeDesktopSidebar(),
+                        Expanded(
+                          child: ColoredBox(
+                            color: colors.surface,
+                            child: HomePageContent(
+                              viewState: viewState,
+                              viewController: viewCtr,
+                              child: widget.child,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
+                  if (showMiniPlayer) const MiniPlayer(desktop: true),
                 ],
               ),
-            ),
-            if (showMiniPlayer) const MiniPlayer(),
-          ],
+            );
+          },
         ),
       );
     }

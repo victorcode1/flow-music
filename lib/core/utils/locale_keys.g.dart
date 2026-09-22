@@ -302,4 +302,15 @@ abstract class LocaleKeys {
   static const auth_delete_account_title = 'auth_delete_account_title';
   static const auth_delete_account_message = 'auth_delete_account_message';
   static const auth_account_deleted = 'auth_account_deleted';
+  static const your_playlists = 'your_playlists';
+  static const lyrics = 'lyrics';
+  static const stop = 'stop';
+  static const listeners_count = 'listeners_count';
+  static const added = 'added';
+  static const list_label = 'list_label';
+  static const play_all = 'play_all';
+  static const title = 'title';
+  static const songs = 'songs';
+  static const top_result = 'top_result';
+  static const playback_speed = 'playback_speed';
 }

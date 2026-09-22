@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/consts/enums.dart';
 import 'package:flow_music/core/theme/custom_theme.dart';
+import 'package:flow_music/core/theme/desktop_theme.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
+import 'package:flow_music/features/home/presentation/providers/desktop_queue_rail.dart';
 import 'package:flow_music/features/home/presentation/providers/text_search.dart';
 import 'package:flow_music/features/playlists/presentation/widgets/playlist_actions.dart';
 import 'package:flow_music/features/search/data/search_history_repository.dart';
@@ -39,12 +41,20 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
   void initState() {
     super.initState();
     _focusNode = FocusNode();
+    // La pastilla de busqueda se tine con el acento al enfocarse (mockup
+    // "Escritorio Inicio / Busqueda"), asi que repintamos con el foco.
+    _focusNode.addListener(_onFocusChanged);
   }
 
   @override
   void dispose() {
+    _focusNode.removeListener(_onFocusChanged);
     _focusNode.dispose();
     super.dispose();
+  }
+
+  void _onFocusChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -56,9 +66,11 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
         ? const <String>[]
         : ref.watch(searchHistoryControllerProvider);
     final playlistItem = ref.watch(songController).currentPlaylistItem;
+    final railVisible = ref.watch(desktopQueueRailVisibleProvider);
+    final searchFocused = _focusNode.hasFocus;
 
     return Container(
-      height: 64,
+      height: FlowDesktopTheme.topBarHeight,
       padding: const EdgeInsets.symmetric(horizontal: 22),
       decoration: BoxDecoration(
         color: colors.surfaceContainerLowest,
@@ -80,67 +92,75 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                         gradient: theme
                             .extension<FlowThemeExtras>()
                             ?.primaryGradient,
-                        borderRadius: BorderRadius.circular(9),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: SizedBox.square(
-                        dimension: 32,
+                        dimension: 30,
                         child: Icon(
                           Icons.graphic_eq_rounded,
                           color: colors.onPrimary,
-                          size: 18,
+                          size: 16,
                         ),
                       ),
                     ),
-                    const SizedBox(width: 11),
+                    const SizedBox(width: 10),
                     Text(
                       Variables.name.value,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -0.3,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.2,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            // Buscador como pill redondeado y centrado (diseno StreamBeat desktop).
-            SizedBox(
-              width: 460,
-              child: Container(
-                height: 42,
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: colors.outlineVariant),
+            // Buscador como pastilla centrada. Enfocada se ensancha y toma el
+            // borde del acento, como en el mockup.
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 160),
+              curve: Curves.easeOut,
+              width: searchFocused ? 460 : 440,
+              height: 40,
+              decoration: BoxDecoration(
+                color: colors.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(
+                  FlowDesktopTheme.pillRadius,
                 ),
-                padding: const EdgeInsets.only(left: 16, right: 6),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search_rounded,
-                      color: colors.onSurfaceVariant,
-                      size: 19,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: widget.isRadioSection
-                          ? _searchTextField(
-                              controller: searchController,
-                              theme: theme,
-                              colors: colors,
-                              hintText: LocaleKeys.search_radio.tr(),
-                            )
-                          : _musicSearchAutocomplete(
-                              controller: searchController,
-                              history: searchHistory,
-                              theme: theme,
-                              colors: colors,
-                            ),
-                    ),
-                  ],
+                border: Border.all(
+                  color: searchFocused ? colors.primary : colors.outline,
                 ),
+              ),
+              padding: const EdgeInsets.only(left: 16, right: 8),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search_rounded,
+                    color: searchFocused
+                        ? colors.primary
+                        : FlowDesktopTheme.faint(colors),
+                    size: 17,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: widget.isRadioSection
+                        ? _searchTextField(
+                            controller: searchController,
+                            theme: theme,
+                            colors: colors,
+                            hintText: LocaleKeys.search_radio.tr(),
+                          )
+                        : _musicSearchAutocomplete(
+                            controller: searchController,
+                            history: searchHistory,
+                            theme: theme,
+                            colors: colors,
+                          ),
+                  ),
+                ],
               ),
             ),
             // Acciones a la derecha.
@@ -150,7 +170,7 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (playlistItem != null) ...[
+                    if (playlistItem != null)
                       _HomeDesktopTopIconButton(
                         icon: Icons.playlist_add_rounded,
                         tooltip: LocaleKeys.add_to_playlist.tr(),
@@ -160,8 +180,14 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
                           audio: playlistItem,
                         ),
                       ),
-                      const SizedBox(width: 10),
-                    ],
+                    _HomeDesktopTopIconButton(
+                      icon: Icons.queue_music_rounded,
+                      tooltip: LocaleKeys.queue.tr(),
+                      selected: railVisible,
+                      onPressed: ref
+                          .read(desktopQueueRailVisibleProvider.notifier)
+                          .toggle,
+                    ),
                   ],
                 ),
               ),
@@ -219,74 +245,105 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
         );
       },
       optionsViewBuilder: (context, onSelected, options) {
-        return Align(
-          alignment: Alignment.topLeft,
-          child: Material(
-            elevation: 8,
-            color: colors.surfaceContainer,
-            shadowColor: colors.shadow.withValues(alpha: 0.24),
-            borderRadius: BorderRadius.circular(16),
-            clipBehavior: Clip.antiAlias,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 410, maxHeight: 360),
-              child: SizedBox(
-                width: 410,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 8, 2),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              LocaleKeys.recent_searches.tr(),
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
+        // El desplegable se monta en el Overlay del Navigator, fuera del
+        // `Theme` de escritorio que HomePage aplica solo a su rama. Sin
+        // re-aplicarlo hereda el tema movil y el panel sale con pastillas
+        // negras de 18px y el violeta del fondo ambiente. Ademas el
+        // `surfaceContainer` del diseno es blanco al 4.5% (translucido), asi
+        // que aqui el panel usa `surfaceBright`: el mismo tono opaco con el
+        // que el rediseno pinta menus y dialogos.
+        final desktopTheme = FlowDesktopTheme.of(Theme.of(context));
+        final desktopColors = desktopTheme.colorScheme;
+        return Theme(
+          data: desktopTheme.copyWith(
+            listTileTheme: desktopTheme.listTileTheme.copyWith(
+              tileColor: Colors.transparent,
+              iconColor: desktopColors.onSurfaceVariant,
+              textColor: desktopColors.onSurface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14),
+            ),
+          ),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: Material(
+              elevation: 8,
+              color: desktopColors.surfaceBright,
+              shadowColor: desktopColors.shadow.withValues(alpha: 0.24),
+              borderRadius: BorderRadius.circular(16),
+              clipBehavior: Clip.antiAlias,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: 410,
+                  maxHeight: 360,
+                ),
+                child: SizedBox(
+                  width: 410,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 8, 2),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                LocaleKeys.recent_searches.tr(),
+                                style: desktopTheme.textTheme.titleSmall
+                                    ?.copyWith(fontWeight: FontWeight.w700),
                               ),
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () => ref
-                                .read(searchHistoryControllerProvider.notifier)
-                                .clear(),
-                            child: Text(LocaleKeys.clear_search_history.tr()),
-                          ),
-                        ],
+                            TextButton(
+                              onPressed: () => ref
+                                  .read(
+                                    searchHistoryControllerProvider.notifier,
+                                  )
+                                  .clear(),
+                              child: Text(LocaleKeys.clear_search_history.tr()),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Flexible(
-                      child: ListView(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        shrinkWrap: true,
-                        children: options
-                            .map(
-                              (query) => ListTile(
-                                dense: true,
-                                leading: const Icon(Icons.history_rounded),
-                                title: Text(
-                                  query,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
+                      Flexible(
+                        child: ListView(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          shrinkWrap: true,
+                          children: options
+                              .map(
+                                (query) => ListTile(
+                                  dense: true,
+                                  leading: const Icon(
+                                    Icons.history_rounded,
+                                    size: 18,
+                                  ),
+                                  title: Text(
+                                    query,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  onTap: () => onSelected(query),
+                                  trailing: IconButton(
+                                    tooltip: LocaleKeys
+                                        .remove_search_history_item
+                                        .tr(),
+                                    onPressed: () => ref
+                                        .read(
+                                          searchHistoryControllerProvider
+                                              .notifier,
+                                        )
+                                        .remove(query),
+                                    iconSize: 16,
+                                    icon: const Icon(Icons.close_rounded),
+                                  ),
                                 ),
-                                onTap: () => onSelected(query),
-                                trailing: IconButton(
-                                  tooltip: LocaleKeys.remove_search_history_item
-                                      .tr(),
-                                  onPressed: () => ref
-                                      .read(
-                                        searchHistoryControllerProvider
-                                            .notifier,
-                                      )
-                                      .remove(query),
-                                  icon: const Icon(Icons.close_rounded),
-                                ),
-                              ),
-                            )
-                            .toList(growable: false),
+                              )
+                              .toList(growable: false),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -325,30 +382,40 @@ class _HomeDesktopTopBarState extends ConsumerState<HomeDesktopTopBar> {
 }
 
 /// Boton cuadrado de accion rapida para la top bar desktop.
+///
+/// El diseno lo deja sin relleno en reposo — solo el icono al 70% — y lo pinta
+/// al pasar el cursor. Con [selected] toma el acento, para que el boton de cola
+/// muestre si el riel derecho esta abierto.
 class _HomeDesktopTopIconButton extends StatelessWidget {
   const _HomeDesktopTopIconButton({
     required this.icon,
     required this.tooltip,
     required this.onPressed,
+    this.selected = false,
   });
 
   final IconData icon;
   final String tooltip;
   final VoidCallback onPressed;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     return SizedBox(
-      width: 40,
-      height: 40,
+      width: 38,
+      height: 38,
       child: Material(
-        color: colors.surfaceContainerHigh,
-        borderRadius: BorderRadius.circular(12),
+        color: selected
+            ? colors.primary.withValues(alpha: 0.14)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
         child: IconButton(
           padding: EdgeInsets.zero,
-          iconSize: 20,
+          iconSize: 19,
           tooltip: tooltip,
+          hoverColor: colors.onSurface.withValues(alpha: 0.08),
+          color: selected ? colors.primary : colors.onSurfaceVariant,
           icon: Icon(icon),
           onPressed: onPressed,
         ),
