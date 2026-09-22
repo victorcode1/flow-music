@@ -57,6 +57,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>StreamBeat usa tu ubicación solo mientras la app está abierta para sugerirte emisoras de tu país.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Tu permiso permite usar el identificador del dispositivo para personalizar anuncios y medir su rendimiento. Puedes rechazarlo y seguir escuchando radio.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>StreamBeat usa tu ubicación para mostrar emisoras cercanas y sugerirte contenido de tu país.</string>
 	<key>UIApplicationSceneManifest</key>

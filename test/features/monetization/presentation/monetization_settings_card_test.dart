@@ -29,13 +29,14 @@ void main() {
       ),
     ],
     SubscriptionAccess access = const SubscriptionAccess.free(),
+    AppUser? signedInUser = user,
   }) async {
     final subscriptions = _TrackingSubscriptionRepository();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           authRepositoryProvider.overrideWithValue(const _AvailableAuth()),
-          authUserProvider.overrideWith((ref) => Stream.value(user)),
+          authUserProvider.overrideWith((ref) => Stream.value(signedInUser)),
           subscriptionRepositoryProvider.overrideWithValue(subscriptions),
           subscriptionAccessProvider.overrideWith(
             (ref) => Stream.value(access),
@@ -69,6 +70,27 @@ void main() {
     );
     expect(find.text('retry'), findsNothing);
   });
+
+  testWidgets(
+    'shows products before sign-in and opens account instead of purchasing',
+    (tester) async {
+      final subscriptions = await pumpCard(tester, signedInUser: null);
+      expect(
+        find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
+        findsOneWidget,
+      );
+      await tester.tap(
+        find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsOneWidget);
+      expect(subscriptions.purchasedKinds, isEmpty);
+    },
+  );
 
   testWidgets('does not offer a purchase without store prices', (tester) async {
     await pumpCard(tester, offers: const []);

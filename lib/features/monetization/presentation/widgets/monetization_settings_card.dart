@@ -169,15 +169,17 @@ class _MonetizationSettingsCardState
                         : const Icon(Icons.workspace_premium_rounded),
                     label: Text(LocaleKeys.remove_ads_action.tr()),
                   ),
-                if (!monthlyActive && user != null && offersState.isLoading)
+                if (!monthlyActive && offersState.isLoading)
                   const SizedBox.square(
                     dimension: 24,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                if (!monthlyActive && user != null && monthly != null)
+                if (!monthlyActive && monthly != null)
                   FilledButton.icon(
                     onPressed: _busy
                         ? null
+                        : user == null
+                        ? _showAccountSheet
                         : () => _purchase(PremiumOfferKind.monthly),
                     icon: const Icon(Icons.autorenew_rounded),
                     label: Text(
@@ -186,10 +188,12 @@ class _MonetizationSettingsCardState
                       ),
                     ),
                   ),
-                if (!active && user != null && lifetime != null)
+                if (!active && lifetime != null)
                   OutlinedButton.icon(
                     onPressed: _busy
                         ? null
+                        : user == null
+                        ? _showAccountSheet
                         : () => _purchase(PremiumOfferKind.lifetime),
                     icon: const Icon(Icons.all_inclusive_rounded),
                     label: Text(
@@ -199,7 +203,6 @@ class _MonetizationSettingsCardState
                     ),
                   ),
                 if (!monthlyActive &&
-                    user != null &&
                     !offersState.isLoading &&
                     (offersState.hasError ||
                         monthly == null ||

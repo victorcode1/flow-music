@@ -47,6 +47,7 @@ dependencies:
   flutter_timezone: ^5.1.0
   in_app_review: ^2.0.12
   cupertino_icons: ^1.0.9
+  app_tracking_transparency: ^2.0.7
 
 dev_dependencies:
   audioplayers_platform_interface: ^7.2.0

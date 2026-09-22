@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flow_music/core/config/app_environment.dart';
+import 'package:flow_music/features/monetization/data/ios_tracking_authorization.dart';
 import 'package:flow_music/features/monetization/domain/repositories/ad_consent_repository.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -24,8 +25,12 @@ class GoogleMobileAdsConsentRepository implements AdConsentRepository {
     ConsentInformation.instance.requestConsentInfoUpdate(
       ConsentRequestParameters(),
       () async {
-        await ConsentForm.loadAndShowConsentFormIfRequired((_) {});
-        await _finishPreparation(completer);
+        try {
+          await ConsentForm.loadAndShowConsentFormIfRequired((_) {});
+          await _finishPreparation(completer);
+        } catch (_) {
+          if (!completer.isCompleted) completer.complete(false);
+        }
       },
       (_) async {
         // El consentimiento en cache puede seguir permitiendo anuncios aun si
@@ -38,12 +43,21 @@ class GoogleMobileAdsConsentRepository implements AdConsentRepository {
 
   Future<void> _finishPreparation(Completer<bool> completer) async {
     if (completer.isCompleted) return;
-    final canRequestAds = await ConsentInformation.instance.canRequestAds();
-    if (canRequestAds && !_initialized) {
-      await MobileAds.instance.initialize();
-      _initialized = true;
+    try {
+      final canRequestAds = await ConsentInformation.instance.canRequestAds();
+      if (!canRequestAds || !await prepareIosTrackingAuthorization()) {
+        completer.complete(false);
+        return;
+      }
+      if (!_initialized) {
+        await MobileAds.instance.initialize();
+        _initialized = true;
+      }
+      completer.complete(true);
+    } catch (_) {
+      // Never initialize ads after a failed privacy request.
+      if (!completer.isCompleted) completer.complete(false);
     }
-    completer.complete(canRequestAds);
   }
 
   @override
