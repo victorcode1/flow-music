@@ -127,7 +127,11 @@ subida ni a reenvío del build 24.
 - Código subido a `store`: commit b8ec452d5bc6288ab142aec046ccd27818563c82.
   GitHub Pages terminó de publicar la política ES/EN de aportes sin renovación.
 - Build firmado 1.1.15 (24), IPA generado correctamente y bundle/versión
-  verificados dentro del archivo. La subida y selección en Apple siguen pendientes.
+  verificados dentro del archivo. Subida completada con `Uploaded Runner` y
+  `EXPORT SUCCEEDED` el 1 de octubre; Apple confirmó
+  `1.1.15 (24) — Processing`, carga registrada a las 12:45 PM. Selección pendiente.
+  Registro local: `/private/tmp/streambeat-upload24.log`. Avisos dSYM de
+  frameworks no bloquearon la carga.
 - 75 pruebas de monetización, traducciones y configuración aprobadas;
   análisis de los archivos afectados sin incidencias.
 - El simulador mostró los tres precios reales de Apple: US$0.99, US$2.99 y
@@ -178,11 +182,16 @@ nuevo de aportes en Google Play.
 
 ### Pendientes reales
 
-- Subir el build 24, verificar procesamiento, sustituir el build seleccionado
+- Verificar procesamiento del build 24 ya subido, sustituir el build seleccionado
   y añadir la versión al envío de los tres aportes.
 - Completar compra y restauración en Apple sandbox, reinicio/reinstalación
   y asociación opcional de cuenta; la pantalla de acceso no prueba estos flujos.
-- Actualizar la respuesta histórica de las 10:54 AM que describía el build 23.
+- La respuesta histórica de las 10:54 AM se actualizó con un nuevo mensaje
+  enviado a las 12:47 PM: `Messages (7)`, build 24 subido y en procesamiento,
+  tres aportes, sandbox pendiente y enlace de Google Play como autoría.
+  Sigue pendiente la respuesta de Apple sobre documentación específica.
 - Aclaración o documentación de emisoras para 5.2.3; Radio Browser y Google
   Play no sustituyen permisos. PDF de relación desarrollador-app pendiente
   de revisión y firma personal de Victor, sin enviar ni firmar por el agente.
+
+La captura y el registro del catálogo se subieron a `store` en 88a6574.
