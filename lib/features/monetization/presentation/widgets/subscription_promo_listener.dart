@@ -93,7 +93,7 @@ class _SubscriptionPromoListenerState
     final dialogResult = showDialog<bool>(
       context: navigatorContext,
       builder: (dialogContext) => AlertDialog(
-        icon: const Icon(Icons.workspace_premium_rounded, size: 36),
+        icon: const Icon(Icons.favorite_outline_rounded, size: 36),
         title: Text(LocaleKeys.subscription_promo_title.tr()),
         content: Column(
           mainAxisSize: MainAxisSize.min,

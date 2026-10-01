@@ -17,25 +17,32 @@ void main() {
     WidgetTester tester, {
     List<PremiumOffer> offers = const [
       PremiumOffer(
-        kind: PremiumOfferKind.monthly,
-        productId: 'remove_ads_monthly',
+        kind: PremiumOfferKind.small,
+        productId: 'streambeat_support_small',
         priceLabel: r'$0.99',
-        period: 'P1M',
       ),
       PremiumOffer(
-        kind: PremiumOfferKind.lifetime,
-        productId: 'remove_ads_lifetime',
-        priceLabel: r'$9.99',
+        kind: PremiumOfferKind.medium,
+        productId: 'streambeat_support_medium',
+        priceLabel: r'$2.99',
+      ),
+      PremiumOffer(
+        kind: PremiumOfferKind.large,
+        productId: 'streambeat_support_large',
+        priceLabel: r'$4.99',
       ),
     ],
     SubscriptionAccess access = const SubscriptionAccess.free(),
     AppUser? signedInUser = user,
+    bool authAvailable = true,
   }) async {
     final subscriptions = _TrackingSubscriptionRepository();
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          authRepositoryProvider.overrideWithValue(const _AvailableAuth()),
+          authRepositoryProvider.overrideWithValue(
+            _AvailableAuth(signedInUser, authAvailable),
+          ),
           authUserProvider.overrideWith((ref) => Stream.value(signedInUser)),
           subscriptionRepositoryProvider.overrideWithValue(subscriptions),
           subscriptionAccessProvider.overrideWith(
@@ -55,53 +62,70 @@ void main() {
     return subscriptions;
   }
 
-  testWidgets('shows monthly and lifetime choices with store prices', (
-    tester,
-  ) async {
-    await pumpCard(tester);
-
-    expect(
-      find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
-      findsOneWidget,
-    );
-    expect(
-      find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-      findsOneWidget,
-    );
-    expect(find.text('retry'), findsNothing);
-  });
-
   testWidgets(
-    'shows products before sign-in and opens account instead of purchasing',
+    'offers three contribution amounts without subscriptions or lifetime sale',
     (tester) async {
-      final subscriptions = await pumpCard(tester, signedInUser: null);
-      expect(
-        find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
-        findsOneWidget,
-      );
-      expect(
-        find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-        findsOneWidget,
-      );
-      await tester.tap(
-        find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-      );
-      await tester.pumpAndSettle();
-      expect(find.byType(BottomSheet), findsOneWidget);
-      expect(subscriptions.purchasedKinds, isEmpty);
+      await pumpCard(tester);
+
+      expect(find.byKey(const ValueKey('contribution-small')), findsOneWidget);
+      expect(find.byKey(const ValueKey('contribution-large')), findsOneWidget);
+      expect(find.byKey(const ValueKey('contribution-medium')), findsOneWidget);
+      expect(find.text('subscribe_monthly_action'), findsNothing);
+      expect(find.text('buy_lifetime_action'), findsNothing);
+      expect(find.text('retry'), findsNothing);
     },
   );
 
+  for (final kind in PremiumOfferKind.values) {
+    testWidgets('guest $kind purchase opens store without account sheet', (
+      tester,
+    ) async {
+      final subscriptions = await pumpCard(tester, signedInUser: null);
+      final button = find.byKey(ValueKey('contribution-${kind.name}'));
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+      expect(find.byType(BottomSheet), findsNothing);
+      expect(subscriptions.purchasedKinds, [kind]);
+      expect(subscriptions.identifiedUserId, isNull);
+    });
+  }
+
+  testWidgets('guest restores without registration', (tester) async {
+    final subscriptions = await pumpCard(tester, signedInUser: null);
+    await tester.tap(find.text('restore_purchase'));
+    await tester.pumpAndSettle();
+    expect(subscriptions.restoreCalls, 1);
+    expect(find.byType(BottomSheet), findsNothing);
+  });
+
+  testWidgets('store remains available when account service is unavailable', (
+    tester,
+  ) async {
+    final subscriptions = await pumpCard(
+      tester,
+      signedInUser: null,
+      authAvailable: false,
+    );
+    await tester.tap(find.byKey(const ValueKey('contribution-large')));
+    await tester.pumpAndSettle();
+    expect(subscriptions.purchasedKinds, [PremiumOfferKind.large]);
+    expect(find.text('monetization_unavailable'), findsNothing);
+  });
+
+  testWidgets('guest may separately open the optional account sheet', (
+    tester,
+  ) async {
+    final subscriptions = await pumpCard(tester, signedInUser: null);
+    await tester.tap(find.text('auth_sign_in_button'));
+    await tester.pumpAndSettle();
+    expect(find.byType(BottomSheet), findsOneWidget);
+    expect(subscriptions.purchasedKinds, isEmpty);
+  });
+
   testWidgets('does not offer a purchase without store prices', (tester) async {
     await pumpCard(tester, offers: const []);
-    expect(
-      find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
-      findsNothing,
-    );
-    expect(
-      find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-      findsNothing,
-    );
+    expect(find.byKey(const ValueKey('contribution-small')), findsNothing);
+    expect(find.byKey(const ValueKey('contribution-large')), findsNothing);
     expect(find.text('retry'), findsOneWidget);
     expect(find.text('restore_purchase'), findsOneWidget);
   });
@@ -139,27 +163,23 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
   });
 
-  testWidgets('routes lifetime selection to the lifetime package', (
-    tester,
-  ) async {
+  testWidgets('routes large contribution to its store package', (tester) async {
     final subscriptions = await pumpCard(tester);
 
-    await tester.tap(
-      find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-    );
+    await tester.tap(find.byKey(const ValueKey('contribution-large')));
     await tester.pumpAndSettle();
 
-    expect(subscriptions.purchasedKinds, [PremiumOfferKind.lifetime]);
+    expect(subscriptions.purchasedKinds, [PremiumOfferKind.large]);
   });
 
-  testWidgets('offers retry while the lifetime product is propagating', (
+  testWidgets('offers retry while contribution products are propagating', (
     tester,
   ) async {
     await pumpCard(
       tester,
       offers: const [
         PremiumOffer(
-          kind: PremiumOfferKind.monthly,
+          kind: PremiumOfferKind.small,
           productId: 'remove_ads_monthly',
           priceLabel: r'$0.99',
           period: 'P1M',
@@ -168,14 +188,11 @@ void main() {
     );
 
     expect(find.text('retry'), findsOneWidget);
-    expect(
-      find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-      findsNothing,
-    );
+    expect(find.byKey(const ValueKey('contribution-large')), findsNothing);
   });
 
   testWidgets(
-    'lifetime owners can add monthly cloud without buying lifetime again',
+    'historical owners retain access without being asked to contribute',
     (tester) async {
       await pumpCard(
         tester,
@@ -187,14 +204,8 @@ void main() {
         ),
       );
 
-      expect(
-        find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
-        findsOneWidget,
-      );
-      expect(
-        find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-        findsNothing,
-      );
+      expect(find.byKey(const ValueKey('contribution-small')), findsNothing);
+      expect(find.byKey(const ValueKey('contribution-large')), findsNothing);
     },
   );
 
@@ -212,30 +223,27 @@ void main() {
         hasMonthlySubscription: true,
       ),
     );
-    expect(
-      find.widgetWithIcon(FilledButton, Icons.autorenew_rounded),
-      findsNothing,
-    );
-    expect(
-      find.widgetWithIcon(OutlinedButton, Icons.all_inclusive_rounded),
-      findsNothing,
-    );
+    expect(find.byKey(const ValueKey('contribution-small')), findsNothing);
+    expect(find.byKey(const ValueKey('contribution-large')), findsNothing);
   });
 }
 
 class _AvailableAuth extends UnavailableAuthRepository {
-  const _AvailableAuth();
+  const _AvailableAuth(this.user, this.available);
+  final AppUser? user;
+  final bool available;
 
   @override
-  bool get isAvailable => true;
+  bool get isAvailable => available;
 
   @override
-  AppUser? get currentUser =>
-      const AppUser(id: 'test-user', email: 'user@example.com');
+  AppUser? get currentUser => user;
 }
 
 class _TrackingSubscriptionRepository implements SubscriptionRepository {
   final purchasedKinds = <PremiumOfferKind>[];
+  String? identifiedUserId;
+  int restoreCalls = 0;
 
   @override
   bool get isAvailable => true;
@@ -244,8 +252,10 @@ class _TrackingSubscriptionRepository implements SubscriptionRepository {
   void dispose() {}
 
   @override
-  Future<SubscriptionAccess> identify(String? userId) async =>
-      const SubscriptionAccess.free();
+  Future<SubscriptionAccess> identify(String? userId) async {
+    identifiedUserId = userId;
+    return const SubscriptionAccess.free();
+  }
 
   @override
   Future<void> initialize({String? userId}) async {}
@@ -260,9 +270,7 @@ class _TrackingSubscriptionRepository implements SubscriptionRepository {
       isResolved: true,
       serviceAvailable: true,
       isActive: true,
-      productId: kind == PremiumOfferKind.lifetime
-          ? 'remove_ads_lifetime'
-          : 'remove_ads_monthly',
+      productId: 'streambeat_support_${kind.name}',
     );
   }
 
@@ -270,7 +278,10 @@ class _TrackingSubscriptionRepository implements SubscriptionRepository {
   Future<SubscriptionAccess> refresh() async => const SubscriptionAccess.free();
 
   @override
-  Future<SubscriptionAccess> restore() async => const SubscriptionAccess.free();
+  Future<SubscriptionAccess> restore() async {
+    restoreCalls++;
+    return const SubscriptionAccess.free();
+  }
 
   @override
   Stream<SubscriptionAccess> watchAccess() =>

@@ -6,16 +6,38 @@ import 'package:flow_music/features/monetization/domain/repositories/subscriptio
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test('purchase requires a signed-in account', () async {
-    final actions = SubscriptionActions(
-      _FakeAuthRepository(),
-      _FakeSubscriptionRepository(),
-    );
+  for (final kind in PremiumOfferKind.values) {
+    test('guest can purchase $kind without an account', () async {
+      final subscriptions = _FakeSubscriptionRepository();
+      final actions = SubscriptionActions(_FakeAuthRepository(), subscriptions);
+      final access = await actions.purchase(kind);
+      expect(subscriptions.identities, [null]);
+      expect(subscriptions.purchasedKinds, [kind]);
+      expect(access.isActive, isTrue);
+    });
+  }
 
-    await expectLater(
-      actions.purchase(PremiumOfferKind.monthly),
-      throwsA(isA<SubscriptionFailure>()),
-    );
+  test('guest can restore without an account', () async {
+    final subscriptions = _FakeSubscriptionRepository();
+    final access = await SubscriptionActions(
+      _FakeAuthRepository(),
+      subscriptions,
+    ).restore();
+    expect(subscriptions.identities, [null]);
+    expect(subscriptions.restoreCalls, 1);
+    expect(access.isActive, isTrue);
+  });
+
+  test('signed-in restoration uses the account identity', () async {
+    final subscriptions = _FakeSubscriptionRepository();
+    await SubscriptionActions(
+      _FakeAuthRepository(
+        user: const AppUser(id: 'stable-user-id', email: 'user@example.com'),
+      ),
+      subscriptions,
+    ).restore();
+    expect(subscriptions.identities, ['stable-user-id']);
+    expect(subscriptions.restoreCalls, 1);
   });
 
   test('purchase identifies RevenueCat with the Supabase user id', () async {
@@ -27,10 +49,10 @@ void main() {
       subscriptions,
     );
 
-    final access = await actions.purchase(PremiumOfferKind.monthly);
+    final access = await actions.purchase(PremiumOfferKind.small);
 
     expect(subscriptions.identifiedUserId, 'stable-user-id');
-    expect(subscriptions.purchasedKinds, [PremiumOfferKind.monthly]);
+    expect(subscriptions.purchasedKinds, [PremiumOfferKind.small]);
     expect(access.isActive, isTrue);
   });
 
@@ -43,11 +65,11 @@ void main() {
       subscriptions,
     );
 
-    final access = await actions.purchase(PremiumOfferKind.lifetime);
+    final access = await actions.purchase(PremiumOfferKind.large);
 
     expect(subscriptions.identifiedUserId, 'stable-user-id');
-    expect(subscriptions.purchasedKinds, [PremiumOfferKind.lifetime]);
-    expect(access.productId, 'remove_ads_lifetime');
+    expect(subscriptions.purchasedKinds, [PremiumOfferKind.large]);
+    expect(access.productId, 'streambeat_support_large');
     expect(access.expiresAt, isNull);
   });
 }
@@ -98,6 +120,8 @@ class _FakeAuthRepository implements AuthRepository {
 
 class _FakeSubscriptionRepository implements SubscriptionRepository {
   String? identifiedUserId;
+  final identities = <String?>[];
+  int restoreCalls = 0;
   final purchasedKinds = <PremiumOfferKind>[];
 
   @override
@@ -109,6 +133,7 @@ class _FakeSubscriptionRepository implements SubscriptionRepository {
   @override
   Future<SubscriptionAccess> identify(String? userId) async {
     identifiedUserId = userId;
+    identities.add(userId);
     return const SubscriptionAccess.free();
   }
 
@@ -118,14 +143,14 @@ class _FakeSubscriptionRepository implements SubscriptionRepository {
   @override
   Future<List<PremiumOffer>> loadOffers() async => const [
     PremiumOffer(
-      kind: PremiumOfferKind.monthly,
-      productId: 'remove_ads_monthly',
+      kind: PremiumOfferKind.small,
+      productId: 'streambeat_support_small',
       priceLabel: r'$0.99',
       period: 'P1M',
     ),
     PremiumOffer(
-      kind: PremiumOfferKind.lifetime,
-      productId: 'remove_ads_lifetime',
+      kind: PremiumOfferKind.large,
+      productId: 'streambeat_support_large',
       priceLabel: r'$9.99',
     ),
   ];
@@ -137,9 +162,9 @@ class _FakeSubscriptionRepository implements SubscriptionRepository {
       isResolved: true,
       serviceAvailable: true,
       isActive: true,
-      productId: kind == PremiumOfferKind.lifetime
-          ? 'remove_ads_lifetime'
-          : 'remove_ads_monthly',
+      productId: kind == PremiumOfferKind.large
+          ? 'streambeat_support_large'
+          : 'streambeat_support_small',
     );
   }
 
@@ -147,7 +172,14 @@ class _FakeSubscriptionRepository implements SubscriptionRepository {
   Future<SubscriptionAccess> refresh() async => const SubscriptionAccess.free();
 
   @override
-  Future<SubscriptionAccess> restore() async => const SubscriptionAccess.free();
+  Future<SubscriptionAccess> restore() async {
+    restoreCalls++;
+    return const SubscriptionAccess(
+      isResolved: true,
+      serviceAvailable: true,
+      isActive: true,
+    );
+  }
 
   @override
   Stream<SubscriptionAccess> watchAccess() =>

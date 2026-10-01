@@ -35,16 +35,13 @@ class _MonetizationSettingsCardState
     final access = ref.watch(subscriptionAccessProvider).value;
     final offersState = ref.watch(premiumOffersProvider);
     final offers = offersState.value ?? const <PremiumOffer>[];
-    final monthly = _offer(offers, PremiumOfferKind.monthly);
-    final lifetime = _offer(offers, PremiumOfferKind.lifetime);
     final authAvailable = ref.watch(authRepositoryProvider).isAvailable;
     final active = access?.isActive ?? false;
     final monthlyActive = access?.hasMonthlySubscription ?? false;
     final cloudState =
         ref.watch(cloudSyncStateProvider).value ?? CloudSyncState.localOnly;
     final managementUrl = SubscriptionLinks.management(access);
-    final serviceAvailable =
-        authAvailable && (access?.serviceAvailable ?? false);
+    final serviceAvailable = access?.serviceAvailable ?? false;
 
     return Container(
       padding: const EdgeInsets.all(18),
@@ -158,55 +155,27 @@ class _MonetizationSettingsCardState
               spacing: 8,
               runSpacing: 8,
               children: [
-                if (!active && user == null)
-                  FilledButton.icon(
-                    onPressed: _busy ? null : _showAccountSheet,
-                    icon: _busy
-                        ? const SizedBox.square(
-                            dimension: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.workspace_premium_rounded),
-                    label: Text(LocaleKeys.remove_ads_action.tr()),
-                  ),
-                if (!monthlyActive && offersState.isLoading)
+                if (!active && offersState.isLoading)
                   const SizedBox.square(
                     dimension: 24,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
-                if (!monthlyActive && monthly != null)
-                  FilledButton.icon(
-                    onPressed: _busy
-                        ? null
-                        : user == null
-                        ? _showAccountSheet
-                        : () => _purchase(PremiumOfferKind.monthly),
-                    icon: const Icon(Icons.autorenew_rounded),
-                    label: Text(
-                      LocaleKeys.subscribe_monthly_action.tr(
-                        namedArgs: {'price': monthly.priceLabel},
+                if (!active)
+                  for (final offer in offers)
+                    FilledButton.icon(
+                      key: ValueKey('contribution-${offer.kind.name}'),
+                      onPressed: _busy ? null : () => _purchase(offer.kind),
+                      icon: const Icon(Icons.favorite_outline_rounded),
+                      label: Text(
+                        'contribution_action'.tr(
+                          namedArgs: {'price': offer.priceLabel},
+                        ),
                       ),
                     ),
-                  ),
-                if (!active && lifetime != null)
-                  OutlinedButton.icon(
-                    onPressed: _busy
-                        ? null
-                        : user == null
-                        ? _showAccountSheet
-                        : () => _purchase(PremiumOfferKind.lifetime),
-                    icon: const Icon(Icons.all_inclusive_rounded),
-                    label: Text(
-                      LocaleKeys.buy_lifetime_action.tr(
-                        namedArgs: {'price': lifetime.priceLabel},
-                      ),
-                    ),
-                  ),
-                if (!monthlyActive &&
+                if (!active &&
                     !offersState.isLoading &&
                     (offersState.hasError ||
-                        monthly == null ||
-                        lifetime == null))
+                        offers.length < PremiumOfferKind.values.length))
                   TextButton.icon(
                     onPressed: _busy
                         ? null
@@ -214,10 +183,15 @@ class _MonetizationSettingsCardState
                     icon: const Icon(Icons.refresh_rounded),
                     label: Text(LocaleKeys.retry.tr()),
                   ),
-                if (user != null)
-                  OutlinedButton(
-                    onPressed: _busy ? null : _restore,
-                    child: Text(LocaleKeys.restore_purchase.tr()),
+                OutlinedButton(
+                  onPressed: _busy ? null : _restore,
+                  child: Text(LocaleKeys.restore_purchase.tr()),
+                ),
+                if (authAvailable && user == null)
+                  TextButton.icon(
+                    onPressed: _busy ? null : _showAccountSheet,
+                    icon: const Icon(Icons.cloud_outlined),
+                    label: Text(LocaleKeys.auth_sign_in_button.tr()),
                   ),
                 if (user != null)
                   TextButton(
@@ -232,6 +206,13 @@ class _MonetizationSettingsCardState
                   ),
               ],
             ),
+          if (authAvailable && user == null) ...[
+            const SizedBox(height: 12),
+            Text(
+              LocaleKeys.account_subscription_reason.tr(),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
           if (user != null) ...[
             const SizedBox(height: 12),
             Text(
@@ -256,7 +237,7 @@ class _MonetizationSettingsCardState
           ],
           const SizedBox(height: 8),
           const CloudLibraryTools(),
-          if (managementUrl != null)
+          if (monthlyActive && managementUrl != null)
             TextButton.icon(
               onPressed: _busy ? null : () => _openLink(managementUrl),
               icon: const Icon(Icons.manage_accounts_outlined),
@@ -299,13 +280,6 @@ class _MonetizationSettingsCardState
       showDragHandle: true,
       builder: (_) => const _AccountSheet(),
     );
-  }
-
-  PremiumOffer? _offer(List<PremiumOffer> offers, PremiumOfferKind kind) {
-    for (final offer in offers) {
-      if (offer.kind == kind) return offer;
-    }
-    return null;
   }
 
   Future<void> _purchase(PremiumOfferKind kind) async {

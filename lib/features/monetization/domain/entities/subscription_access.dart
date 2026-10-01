@@ -37,7 +37,7 @@ class SubscriptionAccess {
   final DateTime? monthlyExpiresAt;
 }
 
-enum PremiumOfferKind { monthly, lifetime }
+enum PremiumOfferKind { small, medium, large }
 
 class PremiumOffer {
   const PremiumOffer({

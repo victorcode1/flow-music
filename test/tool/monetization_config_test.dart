@@ -10,7 +10,10 @@ void main() {
     'REVENUECAT_IOS_API_KEY': 'appl_UnitTestOnly',
     'REVENUECAT_ENTITLEMENT_ID': 'remove_ads',
     'REVENUECAT_MONTHLY_PRODUCT_ID': 'remove_ads_monthly',
-    'REVENUECAT_LIFETIME_PRODUCT_ID': 'remove_ads_lifetime',
+    'REVENUECAT_OFFERING_ID': 'support',
+    'REVENUECAT_CONTRIBUTION_SMALL_PRODUCT_ID': 'streambeat_support_small',
+    'REVENUECAT_CONTRIBUTION_MEDIUM_PRODUCT_ID': 'streambeat_support_medium',
+    'REVENUECAT_CONTRIBUTION_LARGE_PRODUCT_ID': 'streambeat_support_large',
     'ADMOB_ANDROID_BANNER_ID': 'ca-app-pub-1234567890123456/1234567890',
     'ADMOB_IOS_BANNER_ID': 'ca-app-pub-1234567890123456/2345678901',
     'AUTH_CALLBACK_URL': 'com.victorflores.streambeat://auth-callback',
@@ -113,22 +116,25 @@ void main() {
     );
   });
 
-  test('lifetime product configuration remains required', () {
-    final config = configuration()..remove('REVENUECAT_LIFETIME_PRODUCT_ID');
-    final errors = validateMonetizationConfig(
-      config,
-      platform: MonetizationPlatform.android,
-    ).join('\n');
-    expect(errors, contains('REVENUECAT_LIFETIME_PRODUCT_ID'));
-    config['REVENUECAT_LIFETIME_PRODUCT_ID'] = 'wrong_product';
-    expect(
-      validateMonetizationConfig(
+  for (final tier in ['SMALL', 'MEDIUM', 'LARGE']) {
+    test('$tier contribution product configuration remains required', () {
+      final key = 'REVENUECAT_CONTRIBUTION_${tier}_PRODUCT_ID';
+      final config = configuration()..remove(key);
+      final errors = validateMonetizationConfig(
         config,
         platform: MonetizationPlatform.android,
-      ),
-      isNotEmpty,
-    );
-  });
+      ).join('\n');
+      expect(errors, contains(key));
+      config[key] = 'wrong_product';
+      expect(
+        validateMonetizationConfig(
+          config,
+          platform: MonetizationPlatform.android,
+        ),
+        isNotEmpty,
+      );
+    });
+  }
 
   test('administrative secrets cannot be bundled in the client', () {
     final config = configuration()

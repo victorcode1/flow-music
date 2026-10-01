@@ -23,13 +23,26 @@ class AppEnvironment {
     'REVENUECAT_ENTITLEMENT_ID',
     defaultValue: 'remove_ads',
   );
+  static const revenueCatOfferingId = String.fromEnvironment(
+    'REVENUECAT_OFFERING_ID',
+    defaultValue: 'support',
+  );
+  // Recognize historical monthly purchases without offering new subscriptions.
   static const revenueCatMonthlyProductId = String.fromEnvironment(
     'REVENUECAT_MONTHLY_PRODUCT_ID',
     defaultValue: 'remove_ads_monthly',
   );
-  static const revenueCatLifetimeProductId = String.fromEnvironment(
-    'REVENUECAT_LIFETIME_PRODUCT_ID',
-    defaultValue: 'remove_ads_lifetime',
+  static const revenueCatContributionSmallProductId = String.fromEnvironment(
+    'REVENUECAT_CONTRIBUTION_SMALL_PRODUCT_ID',
+    defaultValue: 'streambeat_support_small',
+  );
+  static const revenueCatContributionMediumProductId = String.fromEnvironment(
+    'REVENUECAT_CONTRIBUTION_MEDIUM_PRODUCT_ID',
+    defaultValue: 'streambeat_support_medium',
+  );
+  static const revenueCatContributionLargeProductId = String.fromEnvironment(
+    'REVENUECAT_CONTRIBUTION_LARGE_PRODUCT_ID',
+    defaultValue: 'streambeat_support_large',
   );
 
   static const admobAndroidBannerId = String.fromEnvironment(

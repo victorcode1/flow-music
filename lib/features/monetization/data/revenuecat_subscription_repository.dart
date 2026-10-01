@@ -89,28 +89,30 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
     await initialize(userId: _identifiedUserId);
     if (!_initialized) {
       throw const SubscriptionFailure(
-        'Las suscripciones todavia no estan configuradas.',
+        'Los aportes todavia no estan configurados.',
       );
     }
     try {
       final offerings = await Purchases.getOfferings();
-      final offering = offerings.current;
-      final monthly = _findPackage(
-        offering,
-        kind: PremiumOfferKind.monthly,
-        productId: AppEnvironment.revenueCatMonthlyProductId,
-      );
-      final lifetime = _findPackage(
-        offering,
-        kind: PremiumOfferKind.lifetime,
-        productId: AppEnvironment.revenueCatLifetimeProductId,
-      );
+      final offering = offerings.all[AppEnvironment.revenueCatOfferingId];
+      // Only contribution products are offered. Historical purchases remain
+      // attached to the entitlement so existing supporters retain their access.
+      final productIds = {
+        PremiumOfferKind.small:
+            AppEnvironment.revenueCatContributionSmallProductId,
+        PremiumOfferKind.medium:
+            AppEnvironment.revenueCatContributionMediumProductId,
+        PremiumOfferKind.large:
+            AppEnvironment.revenueCatContributionLargeProductId,
+      };
       _packages.clear();
-      if (monthly != null) _packages[PremiumOfferKind.monthly] = monthly;
-      if (lifetime != null) _packages[PremiumOfferKind.lifetime] = lifetime;
+      for (final entry in productIds.entries) {
+        final package = _findPackage(offering, productId: entry.value);
+        if (package != null) _packages[entry.key] = package;
+      }
       if (_packages.isEmpty) {
         throw const SubscriptionFailure(
-          'Las opciones Premium no estan disponibles en esta tienda.',
+          'Los aportes no estan disponibles en esta tienda.',
         );
       }
       return _packages.entries
@@ -136,9 +138,7 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
       final selected = _packages[kind];
       if (selected == null) {
         throw SubscriptionFailure(
-          kind == PremiumOfferKind.lifetime
-              ? 'La compra de por vida no esta disponible en esta tienda.'
-              : 'El plan mensual no esta disponible en esta tienda.',
+          'Este aporte no esta disponible en esta tienda.',
         );
       }
       final result = await Purchases.purchase(PurchaseParams.package(selected));
@@ -153,23 +153,8 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
     }
   }
 
-  Package? _findPackage(
-    Offering? offering, {
-    required PremiumOfferKind kind,
-    required String productId,
-  }) {
+  Package? _findPackage(Offering? offering, {required String productId}) {
     if (offering == null) return null;
-    final predefined = switch (kind) {
-      PremiumOfferKind.monthly => offering.monthly,
-      PremiumOfferKind.lifetime => offering.lifetime,
-    };
-    if (predefined != null &&
-        revenueCatProductIdentifierMatches(
-          predefined.storeProduct.identifier,
-          productId,
-        )) {
-      return predefined;
-    }
     return offering.availablePackages.cast<Package?>().firstWhere(
       (item) =>
           item != null &&
@@ -236,10 +221,9 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
     final access = SubscriptionAccess(
       isResolved: true,
       serviceAvailable: true,
-      isActive: _identifiedUserId != null && (entitlement?.isActive ?? false),
+      isActive: entitlement?.isActive ?? false,
       userId: _identifiedUserId,
-      hasMonthlySubscription:
-          _identifiedUserId != null && monthlyExpiry != null,
+      hasMonthlySubscription: monthlyExpiry != null,
       monthlyExpiresAt: monthlyExpiry,
       managementUrl: info.managementURL,
       willRenew: entitlement?.willRenew ?? false,
@@ -263,7 +247,7 @@ class RevenueCatSubscriptionRepository implements SubscriptionRepository {
       access.expiresAt,
       access.monthlyExpiresAt,
     ].whereType<DateTime>().where((date) => date.isAfter(now)).toList()..sort();
-    if (access.isResolved && access.userId != null && expirations.isNotEmpty) {
+    if (access.isResolved && expirations.isNotEmpty) {
       _expiryTimer = Timer(expirations.first.difference(now), () async {
         // Refresh at the paid boundary even if the app stays in the foreground.
         try {

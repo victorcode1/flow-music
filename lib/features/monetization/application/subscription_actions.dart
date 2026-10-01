@@ -9,24 +9,12 @@ class SubscriptionActions {
   final SubscriptionRepository _subscriptions;
 
   Future<SubscriptionAccess> purchase(PremiumOfferKind kind) async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      throw const SubscriptionFailure(
-        'Inicia sesion antes de comprar para conservar tu acceso.',
-      );
-    }
-    await _subscriptions.identify(user.id);
+    await _subscriptions.identify(_auth.currentUser?.id);
     return _subscriptions.purchase(kind);
   }
 
   Future<SubscriptionAccess> restore() async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      throw const SubscriptionFailure(
-        'Inicia sesion antes de restaurar tu suscripcion.',
-      );
-    }
-    await _subscriptions.identify(user.id);
+    await _subscriptions.identify(_auth.currentUser?.id);
     return _subscriptions.restore();
   }
 }

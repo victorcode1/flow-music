@@ -4,22 +4,43 @@ StreamBeat usa un modelo freemium deliberadamente discreto:
 
 - La versión gratuita muestra como máximo un banner adaptativo de AdMob.
 - El banner no cubre los controles y puede aparecer durante la reproducción.
-- `remove_ads_monthly` elimina anuncios e incluye copia y sincronización de
-  favoritos, playlists y preferencias. El precio se obtiene de la tienda.
-- `remove_ads_lifetime` elimina los anuncios con un pago único. No incluye nube;
-  un comprador de por vida puede contratar la mensualidad para añadirla.
+- Aportes voluntarios de US$0.99, US$2.99 y US$4.99 (precio base estadounidense;
+  la tienda muestra el precio y moneda de cada región).
+- Productos no consumibles `streambeat_support_small`,
+  `streambeat_support_medium` y `streambeat_support_large`. Cualquier importe
+  activa `remove_ads`, sin renovación automática. No se venden mensualidad
+  ni una opción llamada Premium de por vida.
+- Los aportes no incluyen nube ni eliminan anuncios de las propias emisoras.
+- Cada producto se compra una vez y el beneficio puede restaurarse sin cuenta.
+- Compras anteriores conservan sus derechos; no se desconectan los productos
+  históricos del entitlement. Las mensualidades antiguas se reconocen solo
+  para mantener/cancelar el acceso existente, sin ofertarlas de nuevo.
 - No hay intersticiales, anuncios de apertura ni recompensados.
 
 ## Límites de arquitectura
 
 El dominio depende de `AuthRepository`, `CustomerProfileRepository`,
 `SubscriptionRepository` y `AdConsentRepository`. Supabase, RevenueCat y AdMob
-son adaptadores reemplazables. El UID de Supabase es el `appUserID` de
-RevenueCat, por lo que la compra vuelve al iniciar sesión en otro dispositivo.
+son adaptadores reemplazables. Aportar y restaurar el beneficio sin anuncios no requiere cuenta.
+RevenueCat mantiene una identidad anónima persistente para esos usuarios y los
+derechos de la tienda eliminan anuncios también sin sesión. Al iniciar sesión
+opcionalmente, el UID de Supabase se usa como `appUserID` de RevenueCat. La nube
+se conserva únicamente para mensualidades históricas vigentes; los aportes
+no la habilitan ni condicionan la compra sin cuenta.
+
+Para reinstalación y restauración sin cuenta, verificar en RevenueCat que el
+comportamiento de restauración sea **Transfer to new App User ID**, como indica
+[su documentación](https://www.revenuecat.com/docs/projects/restore-behavior).
+No cambiar esta política sin revisar las consecuencias para cuentas existentes.
 
 RevenueCat es la fuente operativa para desbloquear la app. El webhook
 `revenuecat-webhook` mantiene un modelo de lectura en PostgreSQL. El cliente
 solo puede leer su propia fila mediante RLS y nunca puede concederse Premium.
+
+El nuevo cliente utiliza explícitamente el offering `support`. El offering
+`default` no se altera para evitar afectar clientes publicados antes de esta
+migración. Los tres productos deben estar conectados a `remove_ads` y al
+nuevo offering antes de distribuir el build 24.
 
 ## Variables de compilación
 

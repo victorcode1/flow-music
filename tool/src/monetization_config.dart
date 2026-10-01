@@ -17,7 +17,10 @@ List<String> validateMonetizationConfig(
     revenueKey,
     'REVENUECAT_ENTITLEMENT_ID',
     'REVENUECAT_MONTHLY_PRODUCT_ID',
-    'REVENUECAT_LIFETIME_PRODUCT_ID',
+    'REVENUECAT_OFFERING_ID',
+    'REVENUECAT_CONTRIBUTION_SMALL_PRODUCT_ID',
+    'REVENUECAT_CONTRIBUTION_MEDIUM_PRODUCT_ID',
+    'REVENUECAT_CONTRIBUTION_LARGE_PRODUCT_ID',
     bannerKey,
     'AUTH_CALLBACK_URL',
     'GOOGLE_WEB_CLIENT_ID',
@@ -79,12 +82,18 @@ List<String> validateMonetizationConfig(
       'AUTH_CALLBACK_URL debe coincidir con el esquema nativo de StreamBeat.',
     );
   }
-  if (value('REVENUECAT_ENTITLEMENT_ID') != 'remove_ads' ||
-      value('REVENUECAT_MONTHLY_PRODUCT_ID') != 'remove_ads_monthly' ||
-      value('REVENUECAT_LIFETIME_PRODUCT_ID') != 'remove_ads_lifetime') {
-    errors.add(
-      'Los identificadores deben ser remove_ads/remove_ads_monthly/remove_ads_lifetime.',
-    );
+  final expectedProducts = {
+    'REVENUECAT_ENTITLEMENT_ID': 'remove_ads',
+    'REVENUECAT_MONTHLY_PRODUCT_ID': 'remove_ads_monthly',
+    'REVENUECAT_OFFERING_ID': 'support',
+    'REVENUECAT_CONTRIBUTION_SMALL_PRODUCT_ID': 'streambeat_support_small',
+    'REVENUECAT_CONTRIBUTION_MEDIUM_PRODUCT_ID': 'streambeat_support_medium',
+    'REVENUECAT_CONTRIBUTION_LARGE_PRODUCT_ID': 'streambeat_support_large',
+  };
+  for (final entry in expectedProducts.entries) {
+    if (value(entry.key) != entry.value) {
+      errors.add('${entry.key} debe ser ${entry.value}.');
+    }
   }
   if (isIos) {
     for (final key in [
