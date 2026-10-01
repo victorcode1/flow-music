@@ -23,7 +23,8 @@ RevenueCat admite identidad anónima y asociación mediante `logIn`:
 https://www.revenuecat.com/docs/customers/identifying-customers
 La restauración con cuenta opcional necesita revisar `Transfer to new App User ID`:
 https://www.revenuecat.com/docs/projects/restore-behavior
-No se ha inspeccionado ni modificado esa configuración remota.
+La política remota se verificó después: `Transfer to new App User ID`,
+también en sandbox. No fue necesario modificarla.
 
 ## Evidencia local del candidato anterior
 
@@ -47,13 +48,14 @@ No se ha inspeccionado ni modificado esa configuración remota.
    con la misma cuenta de la tienda y tras cerrar sesión en la app.
 4. Probar vincular una compra de invitado al iniciar sesión opcionalmente,
    restaurar con una cuenta existente y cambiar de cuenta sin cruzar biblioteca.
-5. Verificar en RevenueCat la política remota de restauración indicada arriba.
+5. La política remota de RevenueCat ya está verificada; falta validar su
+   resultado con transacciones sandbox reales.
 6. Revisar y firmar personalmente el PDF de relación desarrollador-app.
 7. Adjuntar permisos reales de contenido o pedir aclaración a Apple antes de
    presentar 5.2.3 como resuelto. La documentación de Radio Browser sobre su
    directorio no acredita derechos sobre las emisiones subyacentes.
 8. Subir/seleccionar el build corregido solo después de verificar el candidato,
-   publicar la política de privacidad actualizada cuando se autorice el push,
+   la política de privacidad ya está publicada tras el push autorizado,
    y reenviar con documentación suficiente. No afirmar aprobación ni publicación.
 
 ## Borrador inicial de respuesta (reemplazado por aclaración enviada)
@@ -120,20 +122,67 @@ La respuesta enviada a Apple a las 10:54 describe el candidato anterior.
 Debe actualizarse al completar el nuevo build y catálogo; no equivale a
 subida ni a reenvío del build 24.
 
-## Evidencia del candidato 24 y catálogo en curso
+## Evidencia del candidato 24 y catálogo configurado
 
-- Build firmado 1.1.15 (24), IPA generado correctamente; pendiente de subida.
-- 75 pruebas de monetización, traducciones y configuración aprobadas.
-- Análisis de los archivos afectados: sin incidencias.
-- Se ofrecen solamente los tres aportes; comprar/restaurar no exige cuenta.
-- El catálogo Apple sigue en preparación: pequeño 6818231576 /
-  `streambeat_support_small`, mediano 6818244649 /
-  `streambeat_support_medium` (precio base US$2.99 y disponibilidad global
-  guardados). El aporte grande todavía no se ha creado.
-- RevenueCat: offering `support` creado; producto pequeño vinculado a
-  `remove_ads`. Faltan productos mediano/grande y los tres packages.
-- No se ha probado aún una transacción sandbox del candidato 24.
-- Siguen pendientes metadatos/capturas de Apple, sustituir los artículos
-  anteriores en revisión y verificar la política de restauración.
-- La ficha pública Android acredita un vínculo adicional con Victor Flores,
-  no permisos sobre emisoras: https://play.google.com/store/apps/details?id=com.victorflores.streambeat
+- Código subido a `store`: commit b8ec452d5bc6288ab142aec046ccd27818563c82.
+  GitHub Pages terminó de publicar la política ES/EN de aportes sin renovación.
+- Build firmado 1.1.15 (24), IPA generado correctamente y bundle/versión
+  verificados dentro del archivo. La subida y selección en Apple siguen pendientes.
+- 75 pruebas de monetización, traducciones y configuración aprobadas;
+  análisis de los archivos afectados sin incidencias.
+- El simulador mostró los tres precios reales de Apple: US$0.99, US$2.99 y
+  US$4.99. Comprar como invitado abrió el acceso de Apple, sin registro de
+  StreamBeat. No se completó ni cobró una transacción.
+- Captura nativa de 1320x2868 guardada en
+  `store_assets/screenshots/ios/es-MX/iap-review-contributions-6.9.png`.
+  La captura pública existente de Configuración no muestra ofertas antiguas.
+
+### App Store Connect
+
+Los tres productos son no consumibles y están en el mismo borrador iOS,
+creado el 1 de octubre a las 12:28 PM por Victor Flores:
+
+| Aporte | Product ID | Apple ID | Precio base EE. UU. |
+| --- | --- | --- | --- |
+| Pequeño | streambeat_support_small | 6818231576 | US$0.99 |
+| Mediano | streambeat_support_medium | 6818244649 | US$2.99 |
+| Grande | streambeat_support_large | 6818246866 | US$4.99 |
+
+Los tres tienen disponibilidad en 175 territorios y futuros territorios,
+localizaciones ES-MX/EN-US/PT-BR, notas y captura de revisión guardadas.
+Estado: `Ready for Review`. El borrador contiene exactamente los tres aportes.
+`Submit for Review` está deshabilitado: Apple exige añadir una versión de la app.
+No equivale a envío, aprobación ni publicación.
+
+La mensualidad, el producto vitalicio y el grupo antiguo se retiraron de la
+presentación rechazada. Mensualidad y vitalicio se retiraron de venta;
+los productos y derechos históricos permanecen para restauración y soporte.
+La versión 1.1.15 continúa rechazada con el build 22 seleccionado.
+
+Descripción y texto promocional guardados en los tres idiomas; notas de
+App Review actualizadas para el candidato 24, compra/restauración sin cuenta,
+beneficio sin renovación, sin nube ni eliminación de anuncios de las emisoras.
+La ficha Android se incluyó como evidencia de relación desarrollador-app:
+https://play.google.com/store/apps/details?id=com.victorflores.streambeat
+No se presenta como autorización sobre emisiones.
+
+### RevenueCat
+
+Offering `support` (ofrngdebb220961) configurado con packages personalizados
+`small`, `medium` y `large`. Los tres productos iOS anteriores están asociados
+al entitlement `remove_ads`. Política verificada: `Transfer to new App User ID`,
+también en sandbox. Las credenciales IAP existentes son válidas.
+Se conserva el offering anterior para clientes Android publicados y derechos
+históricos. No se ha publicado una nueva versión Android ni creado su catálogo
+nuevo de aportes en Google Play.
+
+### Pendientes reales
+
+- Subir el build 24, verificar procesamiento, sustituir el build seleccionado
+  y añadir la versión al envío de los tres aportes.
+- Completar compra y restauración en Apple sandbox, reinicio/reinstalación
+  y asociación opcional de cuenta; la pantalla de acceso no prueba estos flujos.
+- Actualizar la respuesta histórica de las 10:54 AM que describía el build 23.
+- Aclaración o documentación de emisoras para 5.2.3; Radio Browser y Google
+  Play no sustituyen permisos. PDF de relación desarrollador-app pendiente
+  de revisión y firma personal de Victor, sin enviar ni firmar por el agente.
