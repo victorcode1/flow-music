@@ -162,8 +162,10 @@ No equivale a envío, aprobación ni publicación.
 La mensualidad, el producto vitalicio y el grupo antiguo se retiraron de la
 presentación rechazada. Mensualidad y vitalicio se retiraron de venta;
 los productos y derechos históricos permanecen para restauración y soporte.
-La versión 1.1.15 continúa rechazada; ahora tiene el build 24 seleccionado
-y guardado. Todavía falta actualizar la presentación y reenviar a revisión.
+La presentación histórica se actualizó con `Update Review`: el artículo
+App Version ahora muestra `1.1.15 (24) — Ready for Review`.
+`Resubmit to App Review` está habilitado, sin pulsar. Los tres aportes
+siguen en el borrador separado; falta preparar el envío conjunto.
 
 Descripción y texto promocional guardados en los tres idiomas; notas de
 App Review actualizadas para el candidato 24, compra/restauración sin cuenta,
@@ -184,8 +186,8 @@ nuevo de aportes en Google Play.
 
 ### Pendientes reales
 
-- Build 24 subido, procesado y seleccionado. Falta actualizar la presentación
-  y añadir la versión al envío de los tres aportes antes de reenviar.
+- Build 24 subido, procesado, seleccionado y artículo de revisión actualizado.
+  Falta unir la versión y los tres aportes en la presentación antes de reenviar.
 - Completar compra y restauración en Apple sandbox, reinicio/reinstalación
   y asociación opcional de cuenta; la pantalla de acceso no prueba estos flujos.
 - La respuesta histórica de las 10:54 AM se actualizó con un nuevo mensaje
