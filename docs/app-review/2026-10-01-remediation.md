@@ -155,17 +155,21 @@ creado el 1 de octubre a las 12:28 PM por Victor Flores:
 
 Los tres tienen disponibilidad en 175 territorios y futuros territorios,
 localizaciones ES-MX/EN-US/PT-BR, notas y captura de revisión guardadas.
-Estado: `Ready for Review`. El borrador contiene exactamente los tres aportes.
-`Submit for Review` está deshabilitado: Apple exige añadir una versión de la app.
+Estado: `Ready for Review`. El borrador se completó con la versión iOS 1.1.15 (24): contiene cuatro
+artículos (versión y tres aportes). `Submit for Review` está habilitado, sin pulsar.
 No equivale a envío, aprobación ni publicación.
 
 La mensualidad, el producto vitalicio y el grupo antiguo se retiraron de la
 presentación rechazada. Mensualidad y vitalicio se retiraron de venta;
 los productos y derechos históricos permanecen para restauración y soporte.
-La presentación histórica se actualizó con `Update Review`: el artículo
-App Version ahora muestra `1.1.15 (24) — Ready for Review`.
-`Resubmit to App Review` está habilitado, sin pulsar. Los tres aportes
-siguen en el borrador separado; falta preparar el envío conjunto.
+La presentación histórica se actualizó primero con `Update Review`. Después
+se retiró su último artículo mediante `Remove From Submission` para reunirlo
+con las compras nuevas: Apple no admite agregar artículos nuevos a una
+presentación con incidencias. La presentación anterior ahora muestra `Removed`,
+y conserva su historial y siete mensajes. Build y metadatos no se borraron.
+La versión se agregó al borrador existente de las 12:28 PM; Apple muestra
+`Items Ready to Submit (4)`, `1.1.15 (24)` y `In-App Purchases (3)`.
+Última actualización verificada: Victor Flores, 12:56 PM. Sin envío aún.
 
 Descripción y texto promocional guardados en los tres idiomas; notas de
 App Review actualizadas para el candidato 24, compra/restauración sin cuenta,
@@ -187,7 +191,8 @@ nuevo de aportes en Google Play.
 ### Pendientes reales
 
 - Build 24 subido, procesado, seleccionado y artículo de revisión actualizado.
-  Falta unir la versión y los tres aportes en la presentación antes de reenviar.
+  Los cuatro artículos están unidos en el borrador; falta validar sandbox y
+  realizar el envío final de revisión con la documentación suficiente.
 - Completar compra y restauración en Apple sandbox, reinicio/reinstalación
   y asociación opcional de cuenta; la pantalla de acceso no prueba estos flujos.
 - La respuesta histórica de las 10:54 AM se actualizó con un nuevo mensaje
