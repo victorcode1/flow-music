@@ -204,3 +204,17 @@ nuevo de aportes en Google Play.
   de revisión y firma personal de Victor, sin enviar ni firmar por el agente.
 
 La captura y el registro del catálogo se subieron a `store` en 88a6574.
+
+
+### TestFlight preparado el 1 de octubre
+
+- Cuenta existente de Victor agregada al grupo interno `StreamBeat Internal`.
+  App Store Connect muestra `Invited`, 1 tester y 5 builds.
+- Build `1.1.15 (24)` verificado como `Ready to Test` en ese grupo.
+- Para la prueba básica, TestFlight utiliza sandbox automáticamente; no se creó
+  otra cuenta ni se cambiaron credenciales o permisos de administración.
+- La instalación en el iPhone y las transacciones siguen pendientes. El control
+  remoto de Duplicación del iPhone falló al abrir TestFlight; no hay evidencia
+  de compra completada ni de restauración en el dispositivo.
+- Aceptar la invitación de Apple e instalar el build 24 desde TestFlight permite
+  continuar esa validación. El envío final de App Review sigue sin realizarse.
