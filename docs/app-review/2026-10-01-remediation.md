@@ -129,7 +129,8 @@ subida ni a reenvío del build 24.
 - Build firmado 1.1.15 (24), IPA generado correctamente y bundle/versión
   verificados dentro del archivo. Subida completada con `Uploaded Runner` y
   `EXPORT SUCCEEDED` el 1 de octubre; Apple confirmó
-  `1.1.15 (24) — Processing`, carga registrada a las 12:45 PM. Selección pendiente.
+  carga registrada a las 12:45 PM; posteriormente terminó de procesar y
+  aparece como `Ready to Submit`. Build 24 seleccionado y guardado para 1.1.15.
   Registro local: `/private/tmp/streambeat-upload24.log`. Avisos dSYM de
   frameworks no bloquearon la carga.
 - 75 pruebas de monetización, traducciones y configuración aprobadas;
@@ -161,7 +162,8 @@ No equivale a envío, aprobación ni publicación.
 La mensualidad, el producto vitalicio y el grupo antiguo se retiraron de la
 presentación rechazada. Mensualidad y vitalicio se retiraron de venta;
 los productos y derechos históricos permanecen para restauración y soporte.
-La versión 1.1.15 continúa rechazada con el build 22 seleccionado.
+La versión 1.1.15 continúa rechazada; ahora tiene el build 24 seleccionado
+y guardado. Todavía falta actualizar la presentación y reenviar a revisión.
 
 Descripción y texto promocional guardados en los tres idiomas; notas de
 App Review actualizadas para el candidato 24, compra/restauración sin cuenta,
@@ -182,8 +184,8 @@ nuevo de aportes en Google Play.
 
 ### Pendientes reales
 
-- Verificar procesamiento del build 24 ya subido, sustituir el build seleccionado
-  y añadir la versión al envío de los tres aportes.
+- Build 24 subido, procesado y seleccionado. Falta actualizar la presentación
+  y añadir la versión al envío de los tres aportes antes de reenviar.
 - Completar compra y restauración en Apple sandbox, reinicio/reinstalación
   y asociación opcional de cuenta; la pantalla de acceso no prueba estos flujos.
 - La respuesta histórica de las 10:54 AM se actualizó con un nuevo mensaje
