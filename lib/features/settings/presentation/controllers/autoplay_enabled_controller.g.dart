@@ -48,7 +48,7 @@ final class AutoplayEnabledControllerProvider
 }
 
 String _$autoplayEnabledControllerHash() =>
-    r'725d3641dd1443031bab070a22cc0102e14ed4a9';
+    r'516b918abe2f798dbefdbde596b502df0237b789';
 
 /// Preferencia para avanzar a la siguiente emisora cuando una lista de radio
 /// tiene más elementos disponibles.

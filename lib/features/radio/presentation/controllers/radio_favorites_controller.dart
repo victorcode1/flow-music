@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/radio_favorites_repository.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,7 +17,7 @@ class RadioFavoritesController extends Notifier<List<RadioStation>> {
 
   @override
   List<RadioStation> build() {
-    ref.watch(userDataSyncRevisionProvider);
+    ref.watch(localUserDataRevisionProvider);
     return _repository.readAll();
   }
 
@@ -25,7 +25,7 @@ class RadioFavoritesController extends Notifier<List<RadioStation>> {
 
   Future<bool> toggle(RadioStation station) async {
     final added = await ref
-        .read(userDataSyncCoordinatorProvider)
+        .read(localUserDataCoordinatorProvider)
         .editFavorites(() => _repository.toggle(station));
     state = _repository.readAll();
     unawaited(
@@ -61,7 +61,7 @@ class RadioFavoritesController extends Notifier<List<RadioStation>> {
       }
     }
     await ref
-        .read(userDataSyncCoordinatorProvider)
+        .read(localUserDataCoordinatorProvider)
         .editFavorites(() => _repository.remove(stationId));
     state = _repository.readAll();
     unawaited(

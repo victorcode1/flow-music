@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flow_music/features/account/application/library_export.dart';
 import 'package:flow_music/features/account/data/auth_attempt_guard.dart';
-import 'package:flow_music/features/account/domain/entities/cloud_library_status.dart';
-import 'package:flow_music/features/account/domain/entities/synced_user_data.dart';
+import 'package:flow_music/features/account/domain/entities/local_user_data.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:flow_music/features/radio/data/models/radio_playlist.dart';
 import 'package:flow_music/features/settings/data/user_settings.dart';
@@ -13,7 +12,7 @@ void main() {
     'local export is portable and excludes account identifiers and sessions',
     () {
       final when = DateTime.utc(2026, 9, 9);
-      final data = SyncedUserData(
+      final data = LocalUserData(
         favorites: const [],
         playlists: [
           RadioPlaylist(
@@ -34,27 +33,8 @@ void main() {
       expect(json.containsKey('user_id'), isFalse);
       expect(json.containsKey('email'), isFalse);
       expect(json.containsKey('access_token'), isFalse);
-      final restored = SyncedUserData.fromDatabase(
-        Map<String, dynamic>.from(json),
-      );
+      final restored = LocalUserData.fromJson(Map<String, dynamic>.from(json));
       expect(restored.playlists.single.name, 'Mis radios');
-    },
-  );
-  test(
-    'cloud status distinguishes missing backup from zero bytes and parses deadline',
-    () {
-      final status = CloudLibraryStatus.fromJson({
-        'has_backup': true,
-        'bytes_used': 1024,
-        'max_bytes': 2097152,
-        'updated_at': '2026-09-09T19:00:00Z',
-        'delete_after': '2026-12-09T19:00:00Z',
-        'notice_required': false,
-      });
-      expect(status.hasBackup, isTrue);
-      expect(status.bytesUsed, 1024);
-      expect(status.updatedAt!.isUtc, isTrue);
-      expect(status.deleteAfter!.month, 12);
     },
   );
   test(

@@ -4,8 +4,8 @@ import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/audio/background_audio_handler.dart';
 import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
 import 'package:flow_music/core/utils/main_controller.dart';
-import 'package:flow_music/features/account/application/user_data_sync_coordinator.dart';
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/application/local_user_data_coordinator.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
 import 'package:flow_music/features/history/presentation/controllers/playback_history_controller.dart';
 import 'package:flow_music/features/monetization/application/monetization_coordinator.dart';
 import 'package:flow_music/features/monetization/application/monetization_coordinator_provider.dart';
@@ -32,8 +32,8 @@ class MainAppController {
   late final MonetizationCoordinator _monetizationCoordinator = ref.read(
     monetizationCoordinatorProvider,
   );
-  late final UserDataSyncCoordinator _userDataSyncCoordinator = ref.read(
-    userDataSyncCoordinatorProvider,
+  late final LocalUserDataCoordinator _localUserDataCoordinator = ref.read(
+    localUserDataCoordinatorProvider,
   );
 
   void initialize() {
@@ -43,12 +43,12 @@ class MainAppController {
     unawaited(ref.read(productAnalyticsProvider).track('app_open'));
     unawaited(ref.read(reviewPromptCoordinatorProvider).initialize());
     unawaited(_monetizationCoordinator.initialize());
-    unawaited(_userDataSyncCoordinator.initialize());
+    unawaited(_localUserDataCoordinator.initialize());
   }
 
   void dispose() {
     _monetizationCoordinator.dispose();
-    _userDataSyncCoordinator.dispose();
+    _localUserDataCoordinator.dispose();
     if (flowAudioHandler.onTrackComplete == handleTrackComplete) {
       flowAudioHandler.onTrackComplete = null;
     }
@@ -63,7 +63,7 @@ class MainAppController {
   Future<void> refreshAccount() async {
     try {
       await ref.read(subscriptionRepositoryProvider).refresh();
-      await _userDataSyncCoordinator.synchronizeNow();
+      await _localUserDataCoordinator.selectCurrentUser();
     } catch (_) {
       // A network failure leaves local changes available for the next resume.
     }

@@ -54,7 +54,7 @@ final class ThemeModeControllerProvider
 }
 
 String _$themeModeControllerHash() =>
-    r'04dbdd9084bd9db5401bcb2a252952f4b046325f';
+    r'd4006a3c8d8aea1232d6e6cde0da00ffd7a566d1';
 
 /// Controla el `ThemeMode` activo de la app.
 ///

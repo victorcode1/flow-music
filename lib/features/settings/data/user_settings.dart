@@ -29,7 +29,7 @@ class UserSettings {
   final String? accentColor;
 
   /// Marca de tiempo en ms desde epoch del momento en que se guardo este
-  /// ajuste. Se usa para resolver conflictos remoto/local.
+  /// ajuste en el dispositivo.
   final int? updatedAtMs;
 
   bool get isEmpty {

@@ -2,9 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flow_music/core/utils/locale_keys.g.dart';
 import 'package:flow_music/features/account/domain/repositories/auth_repository.dart';
 import 'package:flow_music/features/account/presentation/providers/account_providers.dart';
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
-import 'package:flow_music/features/account/domain/entities/cloud_sync_access.dart';
-import 'package:flow_music/features/account/presentation/widgets/cloud_library_tools.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
+import 'package:flow_music/features/account/presentation/widgets/local_library_tools.dart';
 import 'package:flow_music/features/monetization/domain/services/subscription_links.dart';
 import 'package:flow_music/features/monetization/presentation/widgets/subscription_legal_footer.dart';
 import 'package:flow_music/features/monetization/domain/entities/subscription_access.dart';
@@ -38,8 +37,6 @@ class _MonetizationSettingsCardState
     final authAvailable = ref.watch(authRepositoryProvider).isAvailable;
     final active = access?.isActive ?? false;
     final monthlyActive = access?.hasMonthlySubscription ?? false;
-    final cloudState =
-        ref.watch(cloudSyncStateProvider).value ?? CloudSyncState.localOnly;
     final managementUrl = SubscriptionLinks.management(access);
     final serviceAvailable = access?.serviceAvailable ?? false;
 
@@ -190,7 +187,7 @@ class _MonetizationSettingsCardState
                 if (authAvailable && user == null)
                   TextButton.icon(
                     onPressed: _busy ? null : _showAccountSheet,
-                    icon: const Icon(Icons.cloud_outlined),
+                    icon: const Icon(Icons.login_rounded),
                     label: Text(LocaleKeys.auth_sign_in_button.tr()),
                   ),
                 if (user != null)
@@ -213,30 +210,8 @@ class _MonetizationSettingsCardState
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
-          if (user != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              switch (cloudState) {
-                CloudSyncState.localOnly => 'cloud_sync_monthly_required',
-                CloudSyncState.verifying => 'cloud_sync_verifying',
-                CloudSyncState.synced => 'cloud_sync_synced',
-                CloudSyncState.pending => 'cloud_sync_pending',
-                CloudSyncState.unavailable => 'cloud_sync_unavailable',
-                CloudSyncState.rateLimited => 'cloud_sync_rate_limited',
-                CloudSyncState.quotaExceeded => 'cloud_sync_quota_exceeded',
-              }.tr(),
-              key: const Key('cloud-sync-status'),
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-            if (monthlyActive)
-              TextButton.icon(
-                onPressed: _busy ? null : _synchronize,
-                icon: const Icon(Icons.sync_rounded),
-                label: Text('cloud_sync_now'.tr()),
-              ),
-          ],
           const SizedBox(height: 8),
-          const CloudLibraryTools(),
+          const LocalLibraryTools(),
           if (monthlyActive && managementUrl != null)
             TextButton.icon(
               onPressed: _busy ? null : () => _openLink(managementUrl),
@@ -261,18 +236,6 @@ class _MonetizationSettingsCardState
     }
   }
 
-  Future<void> _synchronize() async {
-    setState(() => _busy = true);
-    try {
-      await ref.read(subscriptionRepositoryProvider).refresh();
-      await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
-    } catch (_) {
-      if (mounted) _showMessage('cloud_sync_unavailable'.tr());
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
   Future<void> _showAccountSheet() {
     return showModalBottomSheet<void>(
       context: context,
@@ -286,7 +249,6 @@ class _MonetizationSettingsCardState
     setState(() => _busy = true);
     try {
       await ref.read(subscriptionActionsProvider).purchase(kind);
-      await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
       if (mounted) _showMessage(LocaleKeys.subscription_success.tr());
     } on SubscriptionFailure catch (error) {
       if (mounted && !error.cancelled) {
@@ -301,7 +263,6 @@ class _MonetizationSettingsCardState
     setState(() => _busy = true);
     try {
       final access = await ref.read(subscriptionActionsProvider).restore();
-      await ref.read(userDataSyncCoordinatorProvider).synchronizeNow();
       if (mounted) {
         _showMessage(
           access.isActive

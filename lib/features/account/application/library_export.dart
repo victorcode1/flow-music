@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:flow_music/features/account/domain/entities/synced_user_data.dart';
+import 'package:flow_music/features/account/domain/entities/local_user_data.dart';
 
 /// Portable library only: never exports account IDs, email or auth tokens.
 class LibraryExport {
-  static Uint8List encode(SyncedUserData data, {DateTime? now}) =>
+  static Uint8List encode(LocalUserData data, {DateTime? now}) =>
       Uint8List.fromList(
         utf8.encode(
           const JsonEncoder.withIndent('  ').convert({

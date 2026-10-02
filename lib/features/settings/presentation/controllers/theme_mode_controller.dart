@@ -1,4 +1,4 @@
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
 import 'package:flow_music/features/settings/data/settings_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -18,7 +18,7 @@ const String _settingsUpdatedAtKey = 'settings_updated_at_ms';
 class ThemeModeController extends _$ThemeModeController {
   @override
   ThemeMode build() {
-    ref.watch(userDataSyncRevisionProvider);
+    ref.watch(localUserDataRevisionProvider);
     final box = Hive.box(settingsBoxName);
     final stored = box.get(_themeModeKey);
     return _decode(stored);
@@ -27,7 +27,7 @@ class ThemeModeController extends _$ThemeModeController {
   /// Cambia el modo activo y persiste el valor.
   Future<void> setMode(ThemeMode mode) async {
     final box = Hive.box(settingsBoxName);
-    await ref.read(userDataSyncCoordinatorProvider).editPreferences(() async {
+    await ref.read(localUserDataCoordinatorProvider).editPreferences(() async {
       await box.put(_themeModeKey, _encode(mode));
       await box.put(
         _settingsUpdatedAtKey,

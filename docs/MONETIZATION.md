@@ -10,7 +10,8 @@ StreamBeat usa un modelo freemium deliberadamente discreto:
   `streambeat_support_medium` y `streambeat_support_large`. Cualquier importe
   activa `remove_ads`, sin renovación automática. No se venden mensualidad
   ni una opción llamada Premium de por vida.
-- Los aportes no incluyen nube ni eliminan anuncios de las propias emisoras.
+- Los aportes no eliminan anuncios de las propias emisoras. Ninguna compra
+  habilita almacenamiento o sincronización en la nube: la biblioteca es local.
 - Cada producto se compra una vez y el beneficio puede restaurarse sin cuenta.
 - Compras anteriores conservan sus derechos; no se desconectan los productos
   históricos del entitlement. Las mensualidades antiguas se reconocen solo
@@ -24,9 +25,8 @@ El dominio depende de `AuthRepository`, `CustomerProfileRepository`,
 son adaptadores reemplazables. Aportar y restaurar el beneficio sin anuncios no requiere cuenta.
 RevenueCat mantiene una identidad anónima persistente para esos usuarios y los
 derechos de la tienda eliminan anuncios también sin sesión. Al iniciar sesión
-opcionalmente, el UID de Supabase se usa como `appUserID` de RevenueCat. La nube
-se conserva únicamente para mensualidades históricas vigentes; los aportes
-no la habilitan ni condicionan la compra sin cuenta.
+opcionalmente, el UID de Supabase se usa como `appUserID` de RevenueCat. La
+cuenta sirve para el perfil y las compras; no guarda la biblioteca.
 
 Para reinstalación y restauración sin cuenta, verificar en RevenueCat que el
 comportamiento de restauración sea **Transfer to new App User ID**, como indica
@@ -40,7 +40,7 @@ solo puede leer su propia fila mediante RLS y nunca puede concederse Premium.
 El nuevo cliente utiliza explícitamente el offering `support`. El offering
 `default` no se altera para evitar afectar clientes publicados antes de esta
 migración. Los tres productos deben estar conectados a `remove_ads` y al
-nuevo offering antes de distribuir el build 24.
+nuevo offering antes de distribuir esta versión.
 
 ## Variables de compilación
 
@@ -68,64 +68,13 @@ explícitos. Las funciones son:
   exacto del encabezado `Authorization` configurado en RevenueCat.
 - `delete-account`: requiere JWT de Supabase, vuelve a validar el usuario y
   elimina la cuenta con el cliente administrativo.
-- `cloud-sync-access`: requiere JWT, verifica la identidad con Supabase Auth
-  y consulta RevenueCat desde el servidor. No acepta un UID ni un estado de
-  pago suministrados por la app.
-
-La tabla `cloud_subscription_access` está separada del entitlement para anuncios.
-Solo se habilita con períodos mensuales de producción no reembolsados; se excluyen
-pruebas sandbox, períodos trial, compras vitalicias y extensiones de gracia no
-pagadas. Cancelar la renovación mantiene los días pagados. Cada verificación
-vence como máximo a las 24 horas o al terminar el período, lo que ocurra primero.
-La app revalida al entrar, comprar/restaurar, volver a primer plano y cuando
-vence su permiso. El webhook consulta el estado actual de RevenueCat, incluidas
-ambas cuentas en transferencias, y no interpreta un evento viejo como un pago nuevo.
-
-`user_data_sync_requires_paid_monthly` es una política RLS restrictiva y se
-combina con la propiedad de la fila. El acceso directo de clientes a
-`user_data_sync` está revocado: la app usa `cloud_library`, que obtiene el
-propietario de `auth.uid()` y aplica autorización y límites en el servidor.
-Una cuenta gratuita no puede sincronizar su biblioteca, aunque use un cliente
-antiguo o modificado. La exportación explícita de una copia propia existente
-se permite sin renovar como función de portabilidad, con su propio límite.
-Los cambios locales se agrupan durante dos segundos. No se mantiene un listener
-Realtime ni se suben snapshots sin cambios. Auth, perfiles y analítica conservan
-su funcionamiento previo; esta restricción no elimina sus costos de operación.
-
-Las copias admiten 500 favoritos, 200 playlists y 2 MiB por cuenta. Los límites
-de lectura son 120/hora y 1000/día; escritura 60/hora y 300/día; gestión y
-verificación 30/hora y 120/día; exportación 3/hora y 10/día. Los contadores
-privados tienen una fila por cuenta/operación, no un registro ilimitado de cada
-petición. El cliente conserva cambios locales al alcanzar un límite.
-
-Al vencer la suscripción se pausa la sincronización. La limpieza diaria a las
-07:15 UTC solo puede borrar copias con pago vencido hace 90 días o más, aviso
-confirmado en la app hace al menos 30 días y verificación de acceso menor a
-24 horas. Si falta cualquiera de estas condiciones, no se borra la copia.
-No existe un proceso que renueve por sí solo esa verificación: la limpieza
-puede aplazarse indefinidamente cuando no hay una verificación reciente.
-Renovar cancela la retención; eliminar la cuenta borra sus datos por cascada.
-El historial de reproducción siempre permanece local. Cerrar sesión archiva
-localmente la biblioteca bajo el UID para no perder cambios sin conexión ni
-mezclarlos con otra cuenta.
-
-Configuración muestra la última sincronización correcta y permite exportar
-la biblioteca local como JSON. Consultar la copia remota requiere una acción
-explícita; no hay sondeo automático para cuentas gratuitas. Las peticiones
-fijan el token de la cuenta capturada para evitar cruces al cambiar de sesión.
-La exportación advierte que las URLs de emisoras personalizadas pueden incluir
-información privada antes de abrir el menú de compartir.
 
 El límite de intentos de login de la app es solo una protección local; no
 sustituye los límites de Supabase Auth ni un CAPTCHA. CAPTCHA y el panel de
 rentabilidad siguen pendientes de integración/acceso a fuentes reales. No
 se han habilitado planes de pago ni se han usado ingresos sandbox como reales.
 
-La función usa la clave SDK **pública** de StreamBeat, que solo se utiliza para
-consultar Customer Info; puede reemplazarse mediante `REVENUECAT_CLOUD_API_KEY`.
 Las claves de servicio y el secreto de webhook siguen exclusivamente en Supabase.
-Para comprobar RLS sin conservar usuarios sintéticos, ejecutar el archivo
-`supabase/tests/paid_cloud_sync.sql`, que incluye BEGIN/ROLLBACK.
 
 Agregar `com.victorflores.streambeat://auth-callback` a las URL de redirección
 de Auth. Mantener confirmación de correo activada en producción.
@@ -141,15 +90,47 @@ En el proyecto remoto, configurar también los secretos
 de RevenueCat debe apuntar a
 `https://afgpugpnapajemftfbzz.supabase.co/functions/v1/revenuecat-webhook`.
 
+## Datos de uso locales
+
+Favoritos, playlists, preferencias e historial se guardan solo en el
+dispositivo y funcionan sin red. No hay respaldo remoto, sincronización entre
+dispositivos ni opción de compra que los habilite. Cada biblioteca local queda
+aislada por cuenta: cerrar sesión la archiva localmente bajo el UID para no
+mezclarla con otra cuenta, y vuelve a mostrarse al entrar con la misma cuenta
+en ese dispositivo. Eliminar la cuenta borra también su biblioteca local.
+Configuración no muestra estado de nube, sincronización manual ni exportación
+de copias remotas; permite exportar la biblioteca local como JSON mediante el
+menú de compartir, tras advertir que las URLs de emisoras personalizadas pueden
+incluir información privada.
+
+## Infraestructura histórica de nube
+
+Versiones anteriores ofrecían una copia en la nube a mensualidades históricas
+mediante la función `cloud-sync-access`, la tabla `cloud_subscription_access`,
+`cloud_library`, `user_data_sync` y una limpieza diaria de retención. Desde esta
+versión la app no invoca esas funciones ni depende de esas tablas, y sus
+migraciones no forman parte del flujo de esta versión. La prueba
+`supabase/tests/paid_cloud_sync.sql` y la variable `REVENUECAT_CLOUD_API_KEY`
+pertenecen a esa infraestructura. Esta versión no borra datos remotos guardados
+antes ni retira esa infraestructura; hacerlo requiere un cambio de backend aparte.
+
 ## Tiendas y RevenueCat
 
-1. Crear en Google Play y App Store el producto `remove_ads_monthly`, mensual,
-   con precio base USD 1.
-2. Crear el entitlement `remove_ads` en RevenueCat.
-3. Asociar el producto mensual al package `$rc_monthly` del offering actual.
-4. Configurar el webhook de RevenueCat con el encabezado secreto exacto.
-5. Probar compra, cancelación y restauración con usuarios sandbox antes de
-   publicar.
+1. Mantener el entitlement `remove_ads` en RevenueCat.
+2. Crear los tres productos no consumibles `streambeat_support_small`,
+   `streambeat_support_medium` y `streambeat_support_large`, con precios base
+   estadounidenses de US$0.99, US$2.99 y US$4.99, respectivamente.
+3. Asociar cada producto a `remove_ads` y a su package `small`, `medium` o
+   `large` del offering `support` en la plataforma correspondiente.
+4. Conservar los productos históricos y sus derechos para clientes anteriores.
+5. Configurar el webhook de RevenueCat con el encabezado secreto exacto y
+   probar compra y restauración con usuarios sandbox.
+
+El 2 de octubre de 2026 se activaron los tres aportes Android en las 174
+regiones de facturación admitidas por Google Play, con precios locales e
+impuestos calculados por la tienda. Se importaron en RevenueCat como no
+consumibles y se vincularon a `remove_ads` y a `support`. La configuración del
+catálogo no sustituye una prueba de compra real o sandbox en un dispositivo.
 
 Google Play requiere que primero exista un AAB que incluya Play Billing. Apple
 y Google deben mostrar y procesar el pago; una pasarela web directa no cumple

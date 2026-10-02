@@ -3,25 +3,11 @@
 // ignore_for_file: constant_identifier_names
 
 abstract class LocaleKeys {
-  static const cloud_last_success = 'cloud_last_success';
-  static const cloud_sync_rate_limited = 'cloud_sync_rate_limited';
-  static const cloud_sync_quota_exceeded = 'cloud_sync_quota_exceeded';
   static const library_export_local = 'library_export_local';
-  static const library_export_cloud = 'library_export_cloud';
   static const library_export_title = 'library_export_title';
   static const library_export_privacy = 'library_export_privacy';
   static const library_export_continue = 'library_export_continue';
   static const library_export_failed = 'library_export_failed';
-  static const cloud_details = 'cloud_details';
-  static const cloud_backup_exists = 'cloud_backup_exists';
-  static const cloud_no_backup = 'cloud_no_backup';
-  static const cloud_last_backup = 'cloud_last_backup';
-  static const cloud_storage_used = 'cloud_storage_used';
-  static const cloud_limits_info = 'cloud_limits_info';
-  static const cloud_retention_policy = 'cloud_retention_policy';
-  static const cloud_retention_notice = 'cloud_retention_notice';
-  static const cloud_delete_after = 'cloud_delete_after';
-  static const cloud_notice_understood = 'cloud_notice_understood';
   static const auth_local_rate_limit = 'auth_local_rate_limit';
   static const hello = 'hello';
   static const welcome = 'welcome';
@@ -403,10 +389,5 @@ abstract class LocaleKeys {
   static const subscription_promo_support = 'subscription_promo_support';
   static const subscription_promo_later = 'subscription_promo_later';
   static const subscription_promo_action = 'subscription_promo_action';
-  static const cloud_sync_monthly_required = 'cloud_sync_monthly_required';
-  static const cloud_sync_verifying = 'cloud_sync_verifying';
-  static const cloud_sync_synced = 'cloud_sync_synced';
-  static const cloud_sync_pending = 'cloud_sync_pending';
-  static const cloud_sync_unavailable = 'cloud_sync_unavailable';
-  static const cloud_sync_now = 'cloud_sync_now';
+  static const contribution_action = 'contribution_action';
 }

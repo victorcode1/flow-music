@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flow_music/core/analytics/product_analytics.dart';
 import 'package:flow_music/core/engagement/review_prompt_coordinator.dart';
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
 import 'package:flow_music/features/radio/data/models/radio_playlist.dart';
 import 'package:flow_music/features/radio/data/models/radio_station.dart';
 import 'package:flow_music/features/radio/data/radio_playlists_repository.dart';
@@ -18,7 +18,7 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
 
   @override
   List<RadioPlaylist> build() {
-    ref.watch(userDataSyncRevisionProvider);
+    ref.watch(localUserDataRevisionProvider);
     return _repository.readAll();
   }
 
@@ -36,9 +36,9 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
       items: const [],
     );
     await ref
-        .read(userDataSyncCoordinatorProvider)
+        .read(localUserDataCoordinatorProvider)
         .editPlaylists(() => _repository.save(playlist));
-    state = [playlist, ...state];
+    state = _repository.readAll();
     unawaited(ref.read(productAnalyticsProvider).track('playlist_created'));
     unawaited(
       ref
@@ -58,46 +58,52 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
       final key = radioPlaylistItemKey(item);
       if (key.isNotEmpty) uniqueItems[key] = item;
     }
-    final updated = playlist.copyWith(
-      updatedAt: DateTime.now(),
-      items: uniqueItems.values.toList(),
-    );
-    await ref
-        .read(userDataSyncCoordinatorProvider)
-        .editPlaylists(() => _repository.save(updated));
-    state = [
-      updated,
-      ...state.where((candidate) => candidate.id != updated.id),
-    ];
+    final updated = await ref
+        .read(localUserDataCoordinatorProvider)
+        .editPlaylists(() async {
+          final current = _findById(playlist.id);
+          if (current == null) {
+            throw StateError('The account changed while creating the playlist');
+          }
+          final next = current.copyWith(
+            updatedAt: DateTime.now(),
+            items: uniqueItems.values.toList(),
+          );
+          await _repository.save(next);
+          return next;
+        });
+    state = _repository.readAll();
     return updated;
   }
 
   Future<void> delete(String playlistId) async {
     await ref
-        .read(userDataSyncCoordinatorProvider)
+        .read(localUserDataCoordinatorProvider)
         .editPlaylists(() => _repository.delete(playlistId));
-    state = state.where((playlist) => playlist.id != playlistId).toList();
+    state = _repository.readAll();
   }
 
   Future<void> addStation(String playlistId, RadioStation station) async {
-    final playlist = _findById(playlistId);
-    if (playlist == null) return;
-    final key = radioPlaylistItemKey(station);
-    if (key.isEmpty ||
-        playlist.items.any((item) => radioPlaylistItemKey(item) == key)) {
-      return;
-    }
-    final updated = playlist.copyWith(
-      updatedAt: DateTime.now(),
-      items: [station, ...playlist.items],
-    );
-    await ref
-        .read(userDataSyncCoordinatorProvider)
-        .editPlaylists(() => _repository.save(updated));
-    state = [
-      updated,
-      ...state.where((candidate) => candidate.id != playlistId),
-    ];
+    final updated = await ref
+        .read(localUserDataCoordinatorProvider)
+        .editPlaylists(() async {
+          final current = _findById(playlistId);
+          if (current == null) return false;
+          final key = radioPlaylistItemKey(station);
+          if (key.isEmpty ||
+              current.items.any((item) => radioPlaylistItemKey(item) == key)) {
+            return false;
+          }
+          await _repository.save(
+            current.copyWith(
+              updatedAt: DateTime.now(),
+              items: [station, ...current.items],
+            ),
+          );
+          return true;
+        });
+    state = _repository.readAll();
+    if (!updated) return;
     unawaited(
       ref
           .read(productAnalyticsProvider)
@@ -114,26 +120,24 @@ class RadioPlaylistsController extends Notifier<List<RadioPlaylist>> {
   }
 
   Future<void> removeStation(String playlistId, RadioStation station) async {
-    final playlist = _findById(playlistId);
-    if (playlist == null) return;
-    final key = radioPlaylistItemKey(station);
-    final updated = playlist.copyWith(
-      updatedAt: DateTime.now(),
-      items: playlist.items
-          .where((item) => radioPlaylistItemKey(item) != key)
-          .toList(),
-    );
-    await ref
-        .read(userDataSyncCoordinatorProvider)
-        .editPlaylists(() => _repository.save(updated));
-    state = [
-      updated,
-      ...state.where((candidate) => candidate.id != playlistId),
-    ];
+    await ref.read(localUserDataCoordinatorProvider).editPlaylists(() async {
+      final current = _findById(playlistId);
+      if (current == null) return;
+      final key = radioPlaylistItemKey(station);
+      await _repository.save(
+        current.copyWith(
+          updatedAt: DateTime.now(),
+          items: current.items
+              .where((item) => radioPlaylistItemKey(item) != key)
+              .toList(),
+        ),
+      );
+    });
+    state = _repository.readAll();
   }
 
   RadioPlaylist? _findById(String playlistId) {
-    for (final playlist in state) {
+    for (final playlist in _repository.readAll()) {
       if (playlist.id == playlistId) return playlist;
     }
     return null;

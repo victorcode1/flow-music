@@ -209,7 +209,7 @@ void main() {
     },
   );
 
-  testWidgets('monthly cloud subscribers are not asked to buy again', (
+  testWidgets('historical monthly subscribers are not asked to buy again', (
     tester,
   ) async {
     await pumpCard(
@@ -225,6 +225,10 @@ void main() {
     );
     expect(find.byKey(const ValueKey('contribution-small')), findsNothing);
     expect(find.byKey(const ValueKey('contribution-large')), findsNothing);
+    expect(find.byKey(const Key('cloud-sync-status')), findsNothing);
+    expect(find.byKey(const Key('cloud-library-details')), findsNothing);
+    expect(find.byIcon(Icons.cloud_outlined), findsNothing);
+    expect(find.byKey(const Key('export-local-library')), findsOneWidget);
   });
 }
 

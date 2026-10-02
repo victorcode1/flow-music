@@ -1,4 +1,4 @@
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
 import 'package:flow_music/features/settings/data/settings_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
@@ -42,7 +42,7 @@ final accentColorControllerProvider =
 class AccentColorController extends Notifier<FlowAccent> {
   @override
   FlowAccent build() {
-    ref.watch(userDataSyncRevisionProvider);
+    ref.watch(localUserDataRevisionProvider);
     return _decode(Hive.box(settingsBoxName).get(_accentKey));
   }
 
@@ -50,7 +50,7 @@ class AccentColorController extends Notifier<FlowAccent> {
   Future<void> setAccent(FlowAccent accent) async {
     if (state == accent) return;
     final box = Hive.box(settingsBoxName);
-    await ref.read(userDataSyncCoordinatorProvider).editPreferences(() async {
+    await ref.read(localUserDataCoordinatorProvider).editPreferences(() async {
       await box.put(_accentKey, accent.name);
       await box.put(
         _settingsUpdatedAtKey,

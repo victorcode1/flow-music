@@ -7,7 +7,7 @@ import 'package:flow_music/core/utils/main_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/accent_color_controller.dart';
 import 'package:flow_music/features/settings/presentation/controllers/theme_mode_controller.dart';
 import 'package:flow_music/features/account/presentation/widgets/account_recovery_listener.dart';
-import 'package:flow_music/features/account/presentation/providers/user_data_sync_providers.dart';
+import 'package:flow_music/features/account/presentation/providers/local_user_data_providers.dart';
 import 'package:flow_music/features/settings/data/settings_local_data_source.dart';
 import 'package:flow_music/features/daily_recommendations/presentation/widgets/daily_recommendation_listener.dart';
 import 'package:flow_music/features/monetization/presentation/widgets/subscription_promo_listener.dart';
@@ -24,7 +24,7 @@ class MainApp extends ConsumerStatefulWidget {
 
 class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
   late final MainAppController _appController;
-  int _lastAppliedSyncRevision = 0;
+  int _lastAppliedLocalRevision = 0;
 
   @override
   void initState() {
@@ -54,11 +54,11 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     final router = ref.read(routeProvider);
     final themeMode = ref.watch(themeModeControllerProvider);
     final accent = ref.watch(accentColorControllerProvider);
-    final syncRevision = ref.watch(userDataSyncRevisionProvider);
-    if (syncRevision != _lastAppliedSyncRevision) {
-      _lastAppliedSyncRevision = syncRevision;
+    final localRevision = ref.watch(localUserDataRevisionProvider);
+    if (localRevision != _lastAppliedLocalRevision) {
+      _lastAppliedLocalRevision = localRevision;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _applySyncedLocale();
+        if (mounted) _applyLocalLocale();
       });
     }
 
@@ -88,7 +88,7 @@ class _MainAppState extends ConsumerState<MainApp> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> _applySyncedLocale() async {
+  Future<void> _applyLocalLocale() async {
     final tag = const SettingsLocalDataSource().read().locale;
     final requested = tag == null || tag.isEmpty
         ? WidgetsBinding.instance.platformDispatcher.locale
